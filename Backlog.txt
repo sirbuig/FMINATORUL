@@ -1,0 +1,87 @@
+Aplicatia noastra, FMInatorul, este dezvoltata pentru a ajuta studentii in timpul facultatii ca sa capete cunostinte despre materiile predate. Va fi o aplicatie stil quiz, care incurajeaza competitia intre studenti, dar poate fi folosita si de profesori ca o autoevaluare a materiei. Materialele folosite in cadrul aplicatiei sunt prelucrate cu ajutorul unui AI, antrenat de noi, care sumarizeaza si creeaza intrebari de tip quiz. 
+
+--------------------------------------------------------------------------------------------
+	PERSONAS
+--------------------------------------------------------------------------------------------
+
+Persona 1 :
+Student dornic sa treaca
+
+Nume: Mirel 
+Age: 20
+Hometown: Turnul Magurele
+
+Goal:
+- sa ia nota de trecere la fiecare materie
+- sa se distreze in timp ce o face
+- sa invete rapid ceva folositor
+
+Frustrations:
+- materialele sunt prea lungi
+- nu are rabdare sa citeasca toate cursurile
+- nu are modele de examen
+
+--------------------------------------------------
+Persona 2:
+Student care doreste sa exceleze
+
+Nume: Bursarescu
+Age: 20
+Hometown: Anglia
+
+Goal:
+- sa ia 10 la toate materiile
+- sa ia bursa
+- sa se pregateasca pentru interviuri
+- sa aprofundeze materia
+
+Frustrations:
+- materiile nu ofera o aprofundare pe zona de interviuri
+- nu interactioneaza destul in procesul de invatare cu colegii
+
+--------------------------------------------------
+Persona 3:
+Profesor
+
+Nume: Schiorel
+Age: 42
+Hometown: Bucuresti
+
+Goal:
+- sa observe care este nivelul studentilor de intelegere
+- sa isi poate autoevalua modalitatea de predare
+- sa dea punctaje in plus studentilor
+
+Frustrari:
+- nu stie cu ce bagaj de cunostinte pleaca studentii de la ore
+- procentaj mic de promovare a materiei
+
+
+--------------------------------------------------------------------------------------------
+	USER STORIES
+--------------------------------------------------------------------------------------------
+
+
+User stories pentru Mirel:
+
+1. Ca student, am nevoie sa ma loghez online in aplicatie, pentru a invata interactiv impreuna cu prietenii.
+2. Ca student, vreau sa imi sumarizez materialele, pentru a invata mai eficient.
+3. Ca student, vreau sa imi testez cunostintele, pentru a fi pregatit de examene.
+4. Ca student, vreau sa am mai multe modele de examen, pentru a ma pregati mai intens.
+
+
+User stories pentru Bursarescu:
+
+1. Ca student, vreau sa aprofundez materia, pentru a lua bursa.
+2. Ca student, vreau sa interactionez cu ai mei colegi, pentru a invata impreuna.
+3. Ca student, vreau sa ma pregatesc pentru interviuri, pentru a obtine un job.
+4. Ca student, vreau sa invat dupa materialele mele, pentru a aprofunda materiile de interes personal.
+
+
+User stories pentru Schiorel
+
+1. Ca profesor, vreau sa imi dau seama de nivelul de cunostinte al studentilor, pentru a avea un feedback obiectiv despre modalitatea de predare.
+2. Ca profesor, vreau sa cresc rata de promovabilitate, pentru a pregati studentii mai eficient pentru cariera.
+3. Ca profesor, vreau sa ofer puncte in plus, pentru a incuraja studentii sa invete.
+4. Ca profesor, vreau sa ma asigur ca cele mai importante elemente din materie sunt stiute, pentru a ma asigura ca  punctele principale sunt intelese.
+
