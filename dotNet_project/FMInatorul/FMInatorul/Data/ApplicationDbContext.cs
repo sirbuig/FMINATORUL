@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FMInatorul.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser,ApplicationProf,string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
