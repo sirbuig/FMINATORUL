@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "KByh0icsFMkAufFu1AjrFiNBvm+QvVNmgs3t4UN9G5mp1Dj2ZatqayoJ94LRRFnxMTpiML7OuFly6KAUuAEWSQ==",
+  "dgSpecHash": "l/NouDCKehDW2prjqGPhoZnxpnfAgSXF5Bj/qZHoEYGtrlGuOP4XcCAnR31mSLsu8Q74CDkfgE7dYGAo7PR5Yw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

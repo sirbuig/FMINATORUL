@@ -18,6 +18,7 @@ options.SignIn.RequireConfirmedAccount = true)
 );
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 var app = builder.Build();
 // PASUL 5 - useri si roluri
 using (var scope = app.Services.CreateScope())
