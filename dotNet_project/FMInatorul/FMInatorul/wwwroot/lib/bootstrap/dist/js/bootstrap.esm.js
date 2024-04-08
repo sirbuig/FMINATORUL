@@ -687,29 +687,7 @@ class BaseComponent {
         Data.set(this._element, this.constructor.DATA_KEY, this);
     }
 
-    dispose() {
-        Data.remove(this._element, this.constructor.DATA_KEY);
-        EventHandler.off(this._element, this.constructor.EVENT_KEY);
-        Object.getOwnPropertyNames(this).forEach(propertyName => {
-            this[propertyName] = null;
-        });
-    }
-
-    _queueCallback(callback, element, isAnimated = true) {
-        executeAfterTransition(callback, element, isAnimated);
-    }
-
-    /** Static */
-
-
-    static getInstance(element) {
-        return Data.get(getElement(element), this.DATA_KEY);
-    }
-
-    static getOrCreateInstance(element, config = {}) {
-        return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
-    }
-
+<<<<<<< HEAD
     static get VERSION() {
         return VERSION;
     }
@@ -724,6 +702,60 @@ class BaseComponent {
 
     static get EVENT_KEY() {
         return `.${this.DATA_KEY}`;
+    }
+
+=======
+    dispose() {
+        Data.remove(this._element, this.constructor.DATA_KEY);
+        EventHandler.off(this._element, this.constructor.EVENT_KEY);
+        Object.getOwnPropertyNames(this).forEach(propertyName => {
+            this[propertyName] = null;
+        });
+    }
+
+    _queueCallback(callback, element, isAnimated = true) {
+        executeAfterTransition(callback, element, isAnimated);
+    }
+
+>>>>>>> main
+    /** Static */
+
+
+    static getInstance(element) {
+        return Data.get(getElement(element), this.DATA_KEY);
+    }
+
+    static getOrCreateInstance(element, config = {}) {
+        return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
+    }
+
+<<<<<<< HEAD
+    dispose() {
+        Data.remove(this._element, this.constructor.DATA_KEY);
+        EventHandler.off(this._element, this.constructor.EVENT_KEY);
+        Object.getOwnPropertyNames(this).forEach(propertyName => {
+            this[propertyName] = null;
+        });
+    }
+
+    _queueCallback(callback, element, isAnimated = true) {
+        executeAfterTransition(callback, element, isAnimated);
+=======
+    static get VERSION() {
+        return VERSION;
+    }
+
+    static get NAME() {
+        throw new Error('You have to implement the static method "NAME", for each component!');
+    }
+
+    static get DATA_KEY() {
+        return `bs.${this.NAME}`;
+    }
+
+    static get EVENT_KEY() {
+        return `.${this.DATA_KEY}`;
+>>>>>>> main
     }
 
 }
@@ -786,7 +818,16 @@ class Alert extends BaseComponent {
         return NAME$d;
     } // Public
 
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Alert.getOrCreateInstance(this);
 
+<<<<<<< HEAD
+            if (typeof config !== 'string') {
+                return;
+            }
+
+=======
     close() {
         const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
 
@@ -818,6 +859,7 @@ class Alert extends BaseComponent {
                 return;
             }
 
+>>>>>>> main
             if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
                 throw new TypeError(`No method named "${config}"`);
             }
@@ -826,6 +868,30 @@ class Alert extends BaseComponent {
         });
     }
 
+<<<<<<< HEAD
+    close() {
+        const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
+
+        if (closeEvent.defaultPrevented) {
+            return;
+        }
+
+        this._element.classList.remove(CLASS_NAME_SHOW$8);
+
+        const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$5);
+
+        this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
+    } // Private
+
+    _destroyElement() {
+        this._element.remove();
+
+        EventHandler.trigger(this._element, EVENT_CLOSED);
+        this.dispose();
+    } // Static
+
+=======
+>>>>>>> main
 }
 
 /**
@@ -877,7 +943,22 @@ class Button extends BaseComponent {
         return NAME$c;
     } // Public
 
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Button.getOrCreateInstance(this);
 
+<<<<<<< HEAD
+            if (config === 'toggle') {
+                data[config]();
+            }
+        });
+    }
+
+    toggle() {
+        // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+        this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
+    } // Static
+=======
     toggle() {
         // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
         this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
@@ -893,6 +974,7 @@ class Button extends BaseComponent {
             }
         });
     }
+>>>>>>> main
 
 }
 
@@ -1174,6 +1256,183 @@ class Carousel extends BaseComponent {
         return NAME$b;
     } // Public
 
+<<<<<<< HEAD
+    static carouselInterface(element, config) {
+        const data = Carousel.getOrCreateInstance(element, config);
+        let {
+            _config
+        } = data;
+
+        if (typeof config === 'object') {
+            _config = {
+                ..._config,
+                ...config
+            };
+        }
+
+        const action = typeof config === 'string' ? config : _config.slide;
+
+        if (typeof config === 'number') {
+            data.to(config);
+        } else if (typeof action === 'string') {
+            if (typeof data[action] === 'undefined') {
+                throw new TypeError(`No method named "${action}"`);
+            }
+
+            data[action]();
+        } else if (_config.interval && _config.ride) {
+            data.pause();
+            data.cycle();
+        }
+    }
+
+    static jQueryInterface(config) {
+        return this.each(function () {
+            Carousel.carouselInterface(this, config);
+        });
+    }
+
+    static dataApiClickHandler(event) {
+        const target = getElementFromSelector(this);
+
+        if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+            return;
+        }
+
+        const config = {
+            ...Manipulator.getDataAttributes(target),
+            ...Manipulator.getDataAttributes(this)
+        };
+        const slideIndex = this.getAttribute('data-bs-slide-to');
+
+        if (slideIndex) {
+            config.interval = false;
+        }
+
+        Carousel.carouselInterface(target, config);
+
+        if (slideIndex) {
+            Carousel.getInstance(target).to(slideIndex);
+        }
+
+        event.preventDefault();
+    }
+
+    next() {
+        this._slide(ORDER_NEXT);
+    }
+
+    nextWhenVisible() {
+        // Don't call next when the page isn't visible
+        // or the carousel or its parent isn't visible
+        if (!document.hidden && isVisible(this._element)) {
+            this.next();
+        }
+    }
+
+    prev() {
+        this._slide(ORDER_PREV);
+    }
+
+    pause(event) {
+        if (!event) {
+            this._isPaused = true;
+        }
+
+        if (SelectorEngine.findOne(SELECTOR_NEXT_PREV, this._element)) {
+            triggerTransitionEnd(this._element);
+            this.cycle(true);
+        }
+
+        clearInterval(this._interval);
+        this._interval = null;
+    }
+
+    cycle(event) {
+        if (!event) {
+            this._isPaused = false;
+        }
+
+        if (this._interval) {
+            clearInterval(this._interval);
+            this._interval = null;
+        }
+
+        if (this._config && this._config.interval && !this._isPaused) {
+            this._updateInterval();
+
+            this._interval = setInterval((document.visibilityState ? this.nextWhenVisible : this.next).bind(this), this._config.interval);
+        }
+    }
+
+    to(index) {
+        this._activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
+
+        const activeIndex = this._getItemIndex(this._activeElement);
+
+        if (index > this._items.length - 1 || index < 0) {
+            return;
+        }
+
+        if (this._isSliding) {
+            EventHandler.one(this._element, EVENT_SLID, () => this.to(index));
+            return;
+        }
+
+        if (activeIndex === index) {
+            this.pause();
+            this.cycle();
+            return;
+        }
+
+        const order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
+
+        this._slide(order, this._items[index]);
+    } // Private
+
+    _getConfig(config) {
+        config = {
+            ...Default$a,
+            ...Manipulator.getDataAttributes(this._element),
+            ...(typeof config === 'object' ? config : {})
+        };
+        typeCheckConfig(NAME$b, config, DefaultType$a);
+        return config;
+    }
+
+    _handleSwipe() {
+        const absDeltax = Math.abs(this.touchDeltaX);
+
+        if (absDeltax <= SWIPE_THRESHOLD) {
+            return;
+        }
+
+        const direction = absDeltax / this.touchDeltaX;
+        this.touchDeltaX = 0;
+
+        if (!direction) {
+            return;
+        }
+
+        this._slide(direction > 0 ? DIRECTION_RIGHT : DIRECTION_LEFT);
+    }
+
+    _addEventListeners() {
+        if (this._config.keyboard) {
+            EventHandler.on(this._element, EVENT_KEYDOWN, event => this._keydown(event));
+        }
+
+        if (this._config.pause === 'hover') {
+            EventHandler.on(this._element, EVENT_MOUSEENTER, event => this.pause(event));
+            EventHandler.on(this._element, EVENT_MOUSELEAVE, event => this.cycle(event));
+        }
+
+        if (this._config.touch && this._touchSupported) {
+            this._addTouchEventListeners();
+        }
+    }
+
+=======
 
     next() {
         this._slide(ORDER_NEXT);
@@ -1290,6 +1549,7 @@ class Carousel extends BaseComponent {
         }
     }
 
+>>>>>>> main
     _addTouchEventListeners() {
         const start = event => {
             if (this._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
@@ -1523,6 +1783,8 @@ class Carousel extends BaseComponent {
 
         return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static carouselInterface(element, config) {
@@ -1585,6 +1847,7 @@ class Carousel extends BaseComponent {
 
         event.preventDefault();
     }
+>>>>>>> main
 
 }
 
@@ -1697,6 +1960,28 @@ class Collapse extends BaseComponent {
         return NAME$a;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const _config = {};
+
+            if (typeof config === 'string' && /show|hide/.test(config)) {
+                _config.toggle = false;
+            }
+
+            const data = Collapse.getOrCreateInstance(this, _config);
+
+            if (typeof config === 'string') {
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            }
+        });
+    }
+=======
+>>>>>>> main
 
     toggle() {
         if (this._isShown()) {
@@ -1831,7 +2116,10 @@ class Collapse extends BaseComponent {
         return element.classList.contains(CLASS_NAME_SHOW$7);
     } // Private
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     _getConfig(config) {
         config = {
             ...Default$9,
@@ -1879,6 +2167,8 @@ class Collapse extends BaseComponent {
             elem.setAttribute('aria-expanded', isOpen);
         });
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -1900,6 +2190,7 @@ class Collapse extends BaseComponent {
             }
         });
     }
+>>>>>>> main
 
 }
 
@@ -2023,8 +2314,357 @@ class Dropdown extends BaseComponent {
     static get NAME() {
         return NAME$9;
     } // Public
+<<<<<<< HEAD
+
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Dropdown.getOrCreateInstance(this, config);
+=======
+>>>>>>> main
+
+            if (typeof config !== 'string') {
+                return;
+            }
+
+<<<<<<< HEAD
+            if (typeof data[config] === 'undefined') {
+                throw new TypeError(`No method named "${config}"`);
+            }
+
+            data[config]();
+        });
+    }
+
+    static clearMenus(event) {
+        if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY$1)) {
+            return;
+        }
+
+        const toggles = SelectorEngine.find(SELECTOR_DATA_TOGGLE$3);
+
+        for (let i = 0, len = toggles.length; i < len; i++) {
+            const context = Dropdown.getInstance(toggles[i]);
+
+            if (!context || context._config.autoClose === false) {
+                continue;
+            }
+
+            if (!context._isShown()) {
+                continue;
+            }
+
+            const relatedTarget = {
+                relatedTarget: context._element
+            };
+
+            if (event) {
+                const composedPath = event.composedPath();
+                const isMenuTarget = composedPath.includes(context._menu);
+
+                if (composedPath.includes(context._element) || context._config.autoClose === 'inside' && !isMenuTarget || context._config.autoClose === 'outside' && isMenuTarget) {
+                    continue;
+                } // Tab navigation through the dropdown menu or events from contained inputs shouldn't close the menu
 
 
+                if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY$1 || /input|select|option|textarea|form/i.test(event.target.tagName))) {
+                    continue;
+                }
+
+                if (event.type === 'click') {
+                    relatedTarget.clickEvent = event;
+                }
+            }
+
+            context._completeHide(relatedTarget);
+        }
+    }
+
+    static getParentFromElement(element) {
+        return getElementFromSelector(element) || element.parentNode;
+    }
+
+    static dataApiKeydownHandler(event) {
+        // If not input/textarea:
+        //  - And not a key in REGEXP_KEYDOWN => not a dropdown command
+        // If input/textarea:
+        //  - If space key => not a dropdown command
+        //  - If key is other than escape
+        //    - If key is not up or down => not a dropdown command
+        //    - If trigger inside the menu => not a dropdown command
+        if (/input|textarea/i.test(event.target.tagName) ? event.key === SPACE_KEY || event.key !== ESCAPE_KEY$2 && (event.key !== ARROW_DOWN_KEY && event.key !== ARROW_UP_KEY || event.target.closest(SELECTOR_MENU)) : !REGEXP_KEYDOWN.test(event.key)) {
+            return;
+        }
+
+        const isActive = this.classList.contains(CLASS_NAME_SHOW$6);
+
+        if (!isActive && event.key === ESCAPE_KEY$2) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (isDisabled(this)) {
+            return;
+        }
+
+        const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$3) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$3)[0];
+        const instance = Dropdown.getOrCreateInstance(getToggleButton);
+
+        if (event.key === ESCAPE_KEY$2) {
+            instance.hide();
+            return;
+        }
+
+        if (event.key === ARROW_UP_KEY || event.key === ARROW_DOWN_KEY) {
+            if (!isActive) {
+                instance.show();
+            }
+
+            instance._selectMenuItem(event);
+
+            return;
+        }
+
+        if (!isActive || event.key === SPACE_KEY) {
+            Dropdown.clearMenus();
+        }
+    }
+
+    toggle() {
+        return this._isShown() ? this.hide() : this.show();
+    }
+
+    show() {
+        if (isDisabled(this._element) || this._isShown(this._menu)) {
+            return;
+        }
+
+        const relatedTarget = {
+            relatedTarget: this._element
+        };
+        const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$4, relatedTarget);
+
+        if (showEvent.defaultPrevented) {
+            return;
+        }
+
+        const parent = Dropdown.getParentFromElement(this._element); // Totally disable Popper for Dropdowns in Navbar
+
+        if (this._inNavbar) {
+            Manipulator.setDataAttribute(this._menu, 'popper', 'none');
+        } else {
+            this._createPopper(parent);
+        } // If this is a touch-enabled device we add extra
+        // empty mouseover listeners to the body's immediate children;
+        // only needed because of broken event delegation on iOS
+        // https://www.quirksmode.org/blog/archives/2014/02/mouse_event_bub.html
+
+
+        if ('ontouchstart' in document.documentElement && !parent.closest(SELECTOR_NAVBAR_NAV)) {
+            [].concat(...document.body.children).forEach(elem => EventHandler.on(elem, 'mouseover', noop));
+        }
+
+        this._element.focus();
+
+        this._element.setAttribute('aria-expanded', true);
+
+        this._menu.classList.add(CLASS_NAME_SHOW$6);
+
+        this._element.classList.add(CLASS_NAME_SHOW$6);
+
+        EventHandler.trigger(this._element, EVENT_SHOWN$4, relatedTarget);
+    }
+
+    hide() {
+        if (isDisabled(this._element) || !this._isShown(this._menu)) {
+            return;
+        }
+
+        const relatedTarget = {
+            relatedTarget: this._element
+        };
+
+        this._completeHide(relatedTarget);
+    }
+
+    dispose() {
+        if (this._popper) {
+            this._popper.destroy();
+        }
+
+        super.dispose();
+    }
+
+    update() {
+        this._inNavbar = this._detectNavbar();
+
+        if (this._popper) {
+            this._popper.update();
+        }
+    } // Private
+
+    _completeHide(relatedTarget) {
+        const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$4, relatedTarget);
+
+        if (hideEvent.defaultPrevented) {
+            return;
+        } // If this is a touch-enabled device we remove the extra
+        // empty mouseover listeners we added for iOS support
+
+
+        if ('ontouchstart' in document.documentElement) {
+            [].concat(...document.body.children).forEach(elem => EventHandler.off(elem, 'mouseover', noop));
+        }
+
+        if (this._popper) {
+            this._popper.destroy();
+        }
+
+        this._menu.classList.remove(CLASS_NAME_SHOW$6);
+
+        this._element.classList.remove(CLASS_NAME_SHOW$6);
+
+        this._element.setAttribute('aria-expanded', 'false');
+
+        Manipulator.removeDataAttribute(this._menu, 'popper');
+        EventHandler.trigger(this._element, EVENT_HIDDEN$4, relatedTarget);
+    }
+
+    _getConfig(config) {
+        config = {
+            ...this.constructor.Default,
+            ...Manipulator.getDataAttributes(this._element),
+            ...config
+        };
+        typeCheckConfig(NAME$9, config, this.constructor.DefaultType);
+
+        if (typeof config.reference === 'object' && !isElement(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
+            // Popper virtual elements require a getBoundingClientRect method
+            throw new TypeError(`${NAME$9.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
+        }
+
+        return config;
+    }
+
+    _createPopper(parent) {
+        if (typeof Popper === 'undefined') {
+            throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
+        }
+
+        let referenceElement = this._element;
+
+        if (this._config.reference === 'parent') {
+            referenceElement = parent;
+        } else if (isElement(this._config.reference)) {
+            referenceElement = getElement(this._config.reference);
+        } else if (typeof this._config.reference === 'object') {
+            referenceElement = this._config.reference;
+        }
+
+        const popperConfig = this._getPopperConfig();
+
+        const isDisplayStatic = popperConfig.modifiers.find(modifier => modifier.name === 'applyStyles' && modifier.enabled === false);
+        this._popper = Popper.createPopper(referenceElement, this._menu, popperConfig);
+
+        if (isDisplayStatic) {
+            Manipulator.setDataAttribute(this._menu, 'popper', 'static');
+        }
+    }
+
+    _isShown(element = this._element) {
+        return element.classList.contains(CLASS_NAME_SHOW$6);
+    }
+
+    _getMenuElement() {
+        return SelectorEngine.next(this._element, SELECTOR_MENU)[0];
+    }
+
+    _getPlacement() {
+        const parentDropdown = this._element.parentNode;
+
+        if (parentDropdown.classList.contains(CLASS_NAME_DROPEND)) {
+            return PLACEMENT_RIGHT;
+        }
+
+        if (parentDropdown.classList.contains(CLASS_NAME_DROPSTART)) {
+            return PLACEMENT_LEFT;
+        } // We need to trim the value because custom properties can also include spaces
+
+
+        const isEnd = getComputedStyle(this._menu).getPropertyValue('--bs-position').trim() === 'end';
+
+        if (parentDropdown.classList.contains(CLASS_NAME_DROPUP)) {
+            return isEnd ? PLACEMENT_TOPEND : PLACEMENT_TOP;
+        }
+
+        return isEnd ? PLACEMENT_BOTTOMEND : PLACEMENT_BOTTOM;
+    }
+
+    _detectNavbar() {
+        return this._element.closest(`.${CLASS_NAME_NAVBAR}`) !== null;
+    }
+
+    _getOffset() {
+        const {
+            offset
+        } = this._config;
+
+        if (typeof offset === 'string') {
+            return offset.split(',').map(val => Number.parseInt(val, 10));
+        }
+
+        if (typeof offset === 'function') {
+            return popperData => offset(popperData, this._element);
+        }
+
+        return offset;
+    }
+
+    _getPopperConfig() {
+        const defaultBsPopperConfig = {
+            placement: this._getPlacement(),
+            modifiers: [{
+                name: 'preventOverflow',
+                options: {
+                    boundary: this._config.boundary
+                }
+            }, {
+                name: 'offset',
+                options: {
+                    offset: this._getOffset()
+                }
+            }]
+        }; // Disable Popper if we have a static display
+
+        if (this._config.display === 'static') {
+            defaultBsPopperConfig.modifiers = [{
+                name: 'applyStyles',
+                enabled: false
+            }];
+        }
+
+        return {
+            ...defaultBsPopperConfig,
+            ...(typeof this._config.popperConfig === 'function' ? this._config.popperConfig(defaultBsPopperConfig) : this._config.popperConfig)
+        };
+    }
+
+    _selectMenuItem({
+                        key,
+                        target
+                    }) {
+        const items = SelectorEngine.find(SELECTOR_VISIBLE_ITEMS, this._menu).filter(isVisible);
+
+        if (!items.length) {
+            return;
+        } // if target isn't included in items (e.g. when expanding the dropdown)
+        // allow cycling to get the last item in case key equals ARROW_UP_KEY
+
+
+        getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
+    } // Static
+=======
     toggle() {
         return this._isShown() ? this.hide() : this.show();
     }
@@ -2372,6 +3012,7 @@ class Dropdown extends BaseComponent {
             Dropdown.clearMenus();
         }
     }
+>>>>>>> main
 
 }
 
@@ -2806,6 +3447,22 @@ class Modal extends BaseComponent {
         return NAME$6;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config, relatedTarget) {
+        return this.each(function () {
+            const data = Modal.getOrCreateInstance(this, config);
+
+            if (typeof config !== 'string') {
+                return;
+            }
+
+            if (typeof data[config] === 'undefined') {
+                throw new TypeError(`No method named "${config}"`);
+            }
+
+            data[config](relatedTarget);
+        });
+    }
 
     toggle(relatedTarget) {
         return this._isShown ? this.hide() : this.show(relatedTarget);
@@ -2856,6 +3513,58 @@ class Modal extends BaseComponent {
             return;
         }
 
+=======
+
+    toggle(relatedTarget) {
+        return this._isShown ? this.hide() : this.show(relatedTarget);
+    }
+
+    show(relatedTarget) {
+        if (this._isShown || this._isTransitioning) {
+            return;
+        }
+
+        const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$3, {
+            relatedTarget
+        });
+
+        if (showEvent.defaultPrevented) {
+            return;
+        }
+
+        this._isShown = true;
+
+        if (this._isAnimated()) {
+            this._isTransitioning = true;
+        }
+
+        this._scrollBar.hide();
+
+        document.body.classList.add(CLASS_NAME_OPEN);
+
+        this._adjustDialog();
+
+        this._setEscapeEvent();
+
+        this._setResizeEvent();
+
+        EventHandler.on(this._dialog, EVENT_MOUSEDOWN_DISMISS, () => {
+            EventHandler.one(this._element, EVENT_MOUSEUP_DISMISS, event => {
+                if (event.target === this._element) {
+                    this._ignoreBackdropClick = true;
+                }
+            });
+        });
+
+        this._showBackdrop(() => this._showElement(relatedTarget));
+    }
+
+    hide() {
+        if (!this._isShown || this._isTransitioning) {
+            return;
+        }
+
+>>>>>>> main
         const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$3);
 
         if (hideEvent.defaultPrevented) {
@@ -2898,7 +3607,10 @@ class Modal extends BaseComponent {
         this._adjustDialog();
     } // Private
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     _initializeBackDrop() {
         return new Backdrop({
             isVisible: Boolean(this._config.backdrop),
@@ -3037,6 +3749,12 @@ class Modal extends BaseComponent {
         return this._element.classList.contains(CLASS_NAME_FADE$3);
     }
 
+<<<<<<< HEAD
+    // the following methods are used to handle overflowing modals
+    // ----------------------------------------------------------------------
+
+=======
+>>>>>>> main
     _triggerBackdropTransition() {
         const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
 
@@ -3073,10 +3791,25 @@ class Modal extends BaseComponent {
 
         this._element.focus();
     } // ----------------------------------------------------------------------
+<<<<<<< HEAD
+=======
     // the following methods are used to handle overflowing modals
     // ----------------------------------------------------------------------
+>>>>>>> main
 
+    _adjustDialog() {
+        const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
 
+<<<<<<< HEAD
+        const scrollbarWidth = this._scrollBar.getWidth();
+
+        const isBodyOverflowing = scrollbarWidth > 0;
+
+        if (!isBodyOverflowing && isModalOverflowing && !isRTL() || isBodyOverflowing && !isModalOverflowing && isRTL()) {
+            this._element.style.paddingLeft = `${scrollbarWidth}px`;
+        }
+
+=======
     _adjustDialog() {
         const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
 
@@ -3088,6 +3821,7 @@ class Modal extends BaseComponent {
             this._element.style.paddingLeft = `${scrollbarWidth}px`;
         }
 
+>>>>>>> main
         if (isBodyOverflowing && !isModalOverflowing && !isRTL() || !isBodyOverflowing && isModalOverflowing && isRTL()) {
             this._element.style.paddingRight = `${scrollbarWidth}px`;
         }
@@ -3097,6 +3831,8 @@ class Modal extends BaseComponent {
         this._element.style.paddingLeft = '';
         this._element.style.paddingRight = '';
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config, relatedTarget) {
@@ -3114,6 +3850,7 @@ class Modal extends BaseComponent {
             data[config](relatedTarget);
         });
     }
+>>>>>>> main
 
 }
 
@@ -3221,6 +3958,145 @@ class Offcanvas extends BaseComponent {
         return Default$4;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Offcanvas.getOrCreateInstance(this, config);
+
+            if (typeof config !== 'string') {
+                return;
+            }
+
+            if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+                throw new TypeError(`No method named "${config}"`);
+            }
+
+            data[config](this);
+        });
+    }
+
+    toggle(relatedTarget) {
+        return this._isShown ? this.hide() : this.show(relatedTarget);
+    }
+
+    show(relatedTarget) {
+        if (this._isShown) {
+            return;
+        }
+
+        const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$2, {
+            relatedTarget
+        });
+
+        if (showEvent.defaultPrevented) {
+            return;
+        }
+
+        this._isShown = true;
+        this._element.style.visibility = 'visible';
+
+        this._backdrop.show();
+
+        if (!this._config.scroll) {
+            new ScrollBarHelper().hide();
+        }
+
+        this._element.removeAttribute('aria-hidden');
+
+        this._element.setAttribute('aria-modal', true);
+
+        this._element.setAttribute('role', 'dialog');
+
+        this._element.classList.add(CLASS_NAME_SHOW$3);
+
+        const completeCallBack = () => {
+            if (!this._config.scroll) {
+                this._focustrap.activate();
+            }
+
+            EventHandler.trigger(this._element, EVENT_SHOWN$2, {
+                relatedTarget
+            });
+        };
+
+        this._queueCallback(completeCallBack, this._element, true);
+    }
+
+    hide() {
+        if (!this._isShown) {
+            return;
+        }
+
+        const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$2);
+
+        if (hideEvent.defaultPrevented) {
+            return;
+        }
+
+        this._focustrap.deactivate();
+
+        this._element.blur();
+
+        this._isShown = false;
+
+        this._element.classList.remove(CLASS_NAME_SHOW$3);
+
+        this._backdrop.hide();
+
+        const completeCallback = () => {
+            this._element.setAttribute('aria-hidden', true);
+
+            this._element.removeAttribute('aria-modal');
+
+            this._element.removeAttribute('role');
+
+            this._element.style.visibility = 'hidden';
+
+            if (!this._config.scroll) {
+                new ScrollBarHelper().reset();
+            }
+
+            EventHandler.trigger(this._element, EVENT_HIDDEN$2);
+        };
+
+        this._queueCallback(completeCallback, this._element, true);
+    }
+
+    dispose() {
+        this._backdrop.dispose();
+
+        this._focustrap.deactivate();
+
+        super.dispose();
+    } // Private
+
+    _getConfig(config) {
+        config = {
+            ...Default$4,
+            ...Manipulator.getDataAttributes(this._element),
+            ...(typeof config === 'object' ? config : {})
+        };
+        typeCheckConfig(NAME$5, config, DefaultType$4);
+        return config;
+    }
+
+    _initializeBackDrop() {
+        return new Backdrop({
+            className: CLASS_NAME_BACKDROP,
+            isVisible: this._config.backdrop,
+            isAnimated: true,
+            rootElement: this._element.parentNode,
+            clickCallback: () => this.hide()
+        });
+    }
+
+    _initializeFocusTrap() {
+        return new FocusTrap({
+            trapElement: this._element
+        });
+    }
+
+=======
 
     toggle(relatedTarget) {
         return this._isShown ? this.hide() : this.show(relatedTarget);
@@ -3344,6 +4220,7 @@ class Offcanvas extends BaseComponent {
         });
     }
 
+>>>>>>> main
     _addEventListeners() {
         EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, event => {
             if (this._config.keyboard && event.key === ESCAPE_KEY) {
@@ -3351,6 +4228,8 @@ class Offcanvas extends BaseComponent {
             }
         });
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -3368,6 +4247,7 @@ class Offcanvas extends BaseComponent {
             data[config](this);
         });
     }
+>>>>>>> main
 
 }
 
@@ -3659,6 +4539,22 @@ class Tooltip extends BaseComponent {
         return DefaultType$3;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Tooltip.getOrCreateInstance(this, config);
+
+            if (typeof config === 'string') {
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            }
+        });
+    }
+=======
+>>>>>>> main
 
     enable() {
         this._isEnabled = true;
@@ -3853,7 +4749,10 @@ class Tooltip extends BaseComponent {
         }
     } // Protected
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     isWithContent() {
         return Boolean(this.getTitle());
     }
@@ -3937,7 +4836,10 @@ class Tooltip extends BaseComponent {
         return attachment;
     } // Private
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     _initializeOnDelegatedTarget(event, context) {
         return context || this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
     }
@@ -4205,6 +5107,8 @@ class Tooltip extends BaseComponent {
 
         this._addAttachmentClass(this._getAttachment(state.placement));
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -4220,6 +5124,7 @@ class Tooltip extends BaseComponent {
             }
         });
     }
+>>>>>>> main
 
 }
 
@@ -4300,7 +5205,25 @@ class Popover extends Tooltip {
         return DefaultType$2;
     } // Overrides
 
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Popover.getOrCreateInstance(this, config);
 
+<<<<<<< HEAD
+            if (typeof config === 'string') {
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            }
+        });
+    }
+
+    isWithContent() {
+        return this.getTitle() || this._getContent();
+    }
+=======
     isWithContent() {
         return this.getTitle() || this._getContent();
     }
@@ -4310,8 +5233,23 @@ class Popover extends Tooltip {
 
         this._sanitizeAndSetContent(tip, this._getContent(), SELECTOR_CONTENT);
     } // Private
+>>>>>>> main
 
+    setContent(tip) {
+        this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TITLE);
 
+<<<<<<< HEAD
+        this._sanitizeAndSetContent(tip, this._getContent(), SELECTOR_CONTENT);
+    } // Private
+
+    _getContent() {
+        return this._resolvePossibleFunction(this._config.content);
+    }
+
+    _getBasicClassPrefix() {
+        return CLASS_PREFIX;
+    } // Static
+=======
     _getContent() {
         return this._resolvePossibleFunction(this._config.content);
     }
@@ -4334,6 +5272,7 @@ class Popover extends Tooltip {
             }
         });
     }
+>>>>>>> main
 
 }
 
@@ -4419,6 +5358,38 @@ class ScrollSpy extends BaseComponent {
         return NAME$2;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = ScrollSpy.getOrCreateInstance(this, config);
+
+            if (typeof config !== 'string') {
+                return;
+            }
+
+            if (typeof data[config] === 'undefined') {
+                throw new TypeError(`No method named "${config}"`);
+            }
+
+            data[config]();
+        });
+    }
+
+    refresh() {
+        const autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
+        const offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
+        const offsetBase = offsetMethod === METHOD_POSITION ? this._getScrollTop() : 0;
+        this._offsets = [];
+        this._targets = [];
+        this._scrollHeight = this._getScrollHeight();
+        const targets = SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target);
+        targets.map(element => {
+            const targetSelector = getSelectorFromElement(element);
+            const target = targetSelector ? SelectorEngine.findOne(targetSelector) : null;
+
+            if (target) {
+                const targetBCR = target.getBoundingClientRect();
+=======
 
     refresh() {
         const autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
@@ -4452,7 +5423,26 @@ class ScrollSpy extends BaseComponent {
         EventHandler.off(this._scrollElement, EVENT_KEY$2);
         super.dispose();
     } // Private
+>>>>>>> main
 
+                if (targetBCR.width || targetBCR.height) {
+                    return [Manipulator[offsetMethod](target).top + offsetBase, targetSelector];
+                }
+            }
+
+<<<<<<< HEAD
+            return null;
+        }).filter(item => item).sort((a, b) => a[0] - b[0]).forEach(item => {
+            this._offsets.push(item[0]);
+
+            this._targets.push(item[1]);
+        });
+    }
+
+    dispose() {
+        EventHandler.off(this._scrollElement, EVENT_KEY$2);
+        super.dispose();
+    } // Private
 
     _getConfig(config) {
         config = {
@@ -4473,6 +5463,27 @@ class ScrollSpy extends BaseComponent {
         return this._scrollElement.scrollHeight || Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     }
 
+=======
+    _getConfig(config) {
+        config = {
+            ...Default$1,
+            ...Manipulator.getDataAttributes(this._element),
+            ...(typeof config === 'object' && config ? config : {})
+        };
+        config.target = getElement(config.target) || document.documentElement;
+        typeCheckConfig(NAME$2, config, DefaultType$1);
+        return config;
+    }
+
+    _getScrollTop() {
+        return this._scrollElement === window ? this._scrollElement.pageYOffset : this._scrollElement.scrollTop;
+    }
+
+    _getScrollHeight() {
+        return this._scrollElement.scrollHeight || Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    }
+
+>>>>>>> main
     _getOffsetHeight() {
         return this._scrollElement === window ? window.innerHeight : this._scrollElement.getBoundingClientRect().height;
     }
@@ -4546,6 +5557,8 @@ class ScrollSpy extends BaseComponent {
     _clear() {
         SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target).filter(node => node.classList.contains(CLASS_NAME_ACTIVE$1)).forEach(node => node.classList.remove(CLASS_NAME_ACTIVE$1));
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -4563,6 +5576,7 @@ class ScrollSpy extends BaseComponent {
             data[config]();
         });
     }
+>>>>>>> main
 
 }
 
@@ -4630,7 +5644,23 @@ class Tab extends BaseComponent {
         return NAME$1;
     } // Public
 
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Tab.getOrCreateInstance(this);
 
+<<<<<<< HEAD
+            if (typeof config === 'string') {
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            }
+        });
+    }
+
+=======
+>>>>>>> main
     show() {
         if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
             return;
@@ -4676,7 +5706,10 @@ class Tab extends BaseComponent {
         }
     } // Private
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     _activate(element, container, callback) {
         const activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? SelectorEngine.find(SELECTOR_ACTIVE_UL, container) : SelectorEngine.children(container, SELECTOR_ACTIVE);
         const active = activeElements[0];
@@ -4739,6 +5772,8 @@ class Tab extends BaseComponent {
             callback();
         }
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -4754,6 +5789,7 @@ class Tab extends BaseComponent {
             }
         });
     }
+>>>>>>> main
 
 }
 
@@ -4854,6 +5890,22 @@ class Toast extends BaseComponent {
         return NAME;
     } // Public
 
+<<<<<<< HEAD
+    static jQueryInterface(config) {
+        return this.each(function () {
+            const data = Toast.getOrCreateInstance(this, config);
+
+            if (typeof config === 'string') {
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config](this);
+            }
+        });
+    }
+=======
+>>>>>>> main
 
     show() {
         const showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
@@ -4925,7 +5977,10 @@ class Toast extends BaseComponent {
         super.dispose();
     } // Private
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     _getConfig(config) {
         config = {
             ...Default,
@@ -4989,6 +6044,8 @@ class Toast extends BaseComponent {
         clearTimeout(this._timeout);
         this._timeout = null;
     } // Static
+<<<<<<< HEAD
+=======
 
 
     static jQueryInterface(config) {
@@ -5004,6 +6061,7 @@ class Toast extends BaseComponent {
             }
         });
     }
+>>>>>>> main
 
 }
 

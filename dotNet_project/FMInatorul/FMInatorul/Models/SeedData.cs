@@ -1,8 +1,5 @@
 ﻿using FMInatorul.Data;
 using FMInatorul.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 public static class SeedData
 {

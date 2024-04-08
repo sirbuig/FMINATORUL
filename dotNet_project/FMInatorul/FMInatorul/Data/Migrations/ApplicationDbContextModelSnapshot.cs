@@ -92,7 +92,7 @@ namespace FMInatorul.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("ApplicationUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -232,6 +232,20 @@ namespace FMInatorul.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
+                {
+                    b.HasBaseType("FMInatorul.Models.ApplicationUser");
+
+                    b.ToTable("Profesors", (string)null);
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Student", b =>
+                {
+                    b.HasBaseType("FMInatorul.Models.ApplicationUser");
+
+                    b.ToTable("Students", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -280,6 +294,24 @@ namespace FMInatorul.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
+                {
+                    b.HasOne("FMInatorul.Models.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("FMInatorul.Models.Profesor", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Student", b =>
+                {
+                    b.HasOne("FMInatorul.Models.ApplicationUser", null)
+                        .WithOne()
+                        .HasForeignKey("FMInatorul.Models.Student", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

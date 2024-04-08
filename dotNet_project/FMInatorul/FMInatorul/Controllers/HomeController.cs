@@ -1,7 +1,4 @@
 ﻿using FMInatorul.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace FMInatorul.Controllers;
 
