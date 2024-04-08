@@ -147,7 +147,7 @@ public class RegisterModel : PageModel
                     var student = new Student
                     {
 
-                        IdApplicationUser = user.Id
+                        ApplicationUserId = user.Id
                     };
                     db.Students.Add(student);
 
@@ -156,7 +156,7 @@ public class RegisterModel : PageModel
                 {
                     var profesor = new Profesor
                     {
-                        IdApplicationUser = user.Id
+                        ApplicationUserId = user.Id
                     };
                     db.Profesors.Add(profesor);
                 }
