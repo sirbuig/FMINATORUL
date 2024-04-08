@@ -1,5 +1,10 @@
 ﻿namespace FMInatorul.Models;
 
+<<<<<<< HEAD
+=======
+namespace FMInatorul.Models;
+
+>>>>>>> main
 public class ApplicationUser : IdentityUser
 {
     [PersonalData]

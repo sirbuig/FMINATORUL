@@ -692,6 +692,32 @@
             Data.set(this._element, this.constructor.DATA_KEY, this);
         }
 
+<<<<<<< HEAD
+=======
+        dispose() {
+            Data.remove(this._element, this.constructor.DATA_KEY);
+            EventHandler.off(this._element, this.constructor.EVENT_KEY);
+            Object.getOwnPropertyNames(this).forEach(propertyName => {
+                this[propertyName] = null;
+            });
+        }
+
+        _queueCallback(callback, element, isAnimated = true) {
+            executeAfterTransition(callback, element, isAnimated);
+        }
+
+        /** Static */
+
+
+        static getInstance(element) {
+            return Data.get(getElement(element), this.DATA_KEY);
+        }
+
+        static getOrCreateInstance(element, config = {}) {
+            return this.getInstance(element) || new this(element, typeof config === 'object' ? config : null);
+        }
+
+>>>>>>> main
         static get VERSION() {
             return VERSION;
         }
@@ -708,6 +734,7 @@
             return `.${this.DATA_KEY}`;
         }
 
+<<<<<<< HEAD
         /** Static */
 
 
@@ -731,6 +758,8 @@
             executeAfterTransition(callback, element, isAnimated);
         }
 
+=======
+>>>>>>> main
     }
 
     /**
@@ -791,6 +820,33 @@
             return NAME$d;
         } // Public
 
+<<<<<<< HEAD
+=======
+
+        close() {
+            const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
+
+            if (closeEvent.defaultPrevented) {
+                return;
+            }
+
+            this._element.classList.remove(CLASS_NAME_SHOW$8);
+
+            const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$5);
+
+            this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
+        } // Private
+
+
+        _destroyElement() {
+            this._element.remove();
+
+            EventHandler.trigger(this._element, EVENT_CLOSED);
+            this.dispose();
+        } // Static
+
+
+>>>>>>> main
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Alert.getOrCreateInstance(this);
@@ -806,6 +862,7 @@
                 data[config](this);
             });
         }
+<<<<<<< HEAD
 
         close() {
             const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
@@ -827,6 +884,8 @@
             EventHandler.trigger(this._element, EVENT_CLOSED);
             this.dispose();
         } // Static
+=======
+>>>>>>> main
 
     }
 
@@ -879,20 +938,37 @@
             return NAME$c;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Button.getOrCreateInstance(this);
 
-                if (config === 'toggle') {
-                    data[config]();
-                }
-            });
-        }
+=======
 
         toggle() {
             // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
             this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
         } // Static
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Button.getOrCreateInstance(this);
+
+>>>>>>> main
+                if (config === 'toggle') {
+                    data[config]();
+                }
+            });
+        }
+<<<<<<< HEAD
+
+        toggle() {
+            // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+            this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
+        } // Static
+=======
+>>>>>>> main
 
     }
 
@@ -1174,6 +1250,7 @@
             return NAME$b;
         } // Public
 
+<<<<<<< HEAD
         static carouselInterface(element, config) {
             const data = Carousel.getOrCreateInstance(element, config);
             let {
@@ -1234,6 +1311,8 @@
 
             event.preventDefault();
         }
+=======
+>>>>>>> main
 
         next() {
             this._slide(ORDER_NEXT);
@@ -1307,6 +1386,10 @@
             this._slide(order, this._items[index]);
         } // Private
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         _getConfig(config) {
             config = {
                 ...Default$a,
@@ -1583,6 +1666,71 @@
             return order === ORDER_PREV ? DIRECTION_RIGHT : DIRECTION_LEFT;
         } // Static
 
+<<<<<<< HEAD
+=======
+
+        static carouselInterface(element, config) {
+            const data = Carousel.getOrCreateInstance(element, config);
+            let {
+                _config
+            } = data;
+
+            if (typeof config === 'object') {
+                _config = {
+                    ..._config,
+                    ...config
+                };
+            }
+
+            const action = typeof config === 'string' ? config : _config.slide;
+
+            if (typeof config === 'number') {
+                data.to(config);
+            } else if (typeof action === 'string') {
+                if (typeof data[action] === 'undefined') {
+                    throw new TypeError(`No method named "${action}"`);
+                }
+
+                data[action]();
+            } else if (_config.interval && _config.ride) {
+                data.pause();
+                data.cycle();
+            }
+        }
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                Carousel.carouselInterface(this, config);
+            });
+        }
+
+        static dataApiClickHandler(event) {
+            const target = getElementFromSelector(this);
+
+            if (!target || !target.classList.contains(CLASS_NAME_CAROUSEL)) {
+                return;
+            }
+
+            const config = {
+                ...Manipulator.getDataAttributes(target),
+                ...Manipulator.getDataAttributes(this)
+            };
+            const slideIndex = this.getAttribute('data-bs-slide-to');
+
+            if (slideIndex) {
+                config.interval = false;
+            }
+
+            Carousel.carouselInterface(target, config);
+
+            if (slideIndex) {
+                Carousel.getInstance(target).to(slideIndex);
+            }
+
+            event.preventDefault();
+        }
+
+>>>>>>> main
     }
 
     /**
@@ -1694,6 +1842,7 @@
             return NAME$a;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const _config = {};
@@ -1895,6 +2044,212 @@
             });
         } // Static
 
+=======
+
+        toggle() {
+            if (this._isShown()) {
+                this.hide();
+            } else {
+                this.show();
+            }
+        }
+
+        show() {
+            if (this._isTransitioning || this._isShown()) {
+                return;
+            }
+
+            let actives = [];
+            let activesData;
+
+            if (this._config.parent) {
+                const children = SelectorEngine.find(`.${CLASS_NAME_COLLAPSE} .${CLASS_NAME_COLLAPSE}`, this._config.parent);
+                actives = SelectorEngine.find(SELECTOR_ACTIVES, this._config.parent).filter(elem => !children.includes(elem)); // remove children if greater depth
+            }
+
+            const container = SelectorEngine.findOne(this._selector);
+
+            if (actives.length) {
+                const tempActiveData = actives.find(elem => container !== elem);
+                activesData = tempActiveData ? Collapse.getInstance(tempActiveData) : null;
+
+                if (activesData && activesData._isTransitioning) {
+                    return;
+                }
+            }
+
+            const startEvent = EventHandler.trigger(this._element, EVENT_SHOW$5);
+
+            if (startEvent.defaultPrevented) {
+                return;
+            }
+
+            actives.forEach(elemActive => {
+                if (container !== elemActive) {
+                    Collapse.getOrCreateInstance(elemActive, {
+                        toggle: false
+                    }).hide();
+                }
+
+                if (!activesData) {
+                    Data.set(elemActive, DATA_KEY$9, null);
+                }
+            });
+
+            const dimension = this._getDimension();
+
+            this._element.classList.remove(CLASS_NAME_COLLAPSE);
+
+            this._element.classList.add(CLASS_NAME_COLLAPSING);
+
+            this._element.style[dimension] = 0;
+
+            this._addAriaAndCollapsedClass(this._triggerArray, true);
+
+            this._isTransitioning = true;
+
+            const complete = () => {
+                this._isTransitioning = false;
+
+                this._element.classList.remove(CLASS_NAME_COLLAPSING);
+
+                this._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
+
+                this._element.style[dimension] = '';
+                EventHandler.trigger(this._element, EVENT_SHOWN$5);
+            };
+
+            const capitalizedDimension = dimension[0].toUpperCase() + dimension.slice(1);
+            const scrollSize = `scroll${capitalizedDimension}`;
+
+            this._queueCallback(complete, this._element, true);
+
+            this._element.style[dimension] = `${this._element[scrollSize]}px`;
+        }
+
+        hide() {
+            if (this._isTransitioning || !this._isShown()) {
+                return;
+            }
+
+            const startEvent = EventHandler.trigger(this._element, EVENT_HIDE$5);
+
+            if (startEvent.defaultPrevented) {
+                return;
+            }
+
+            const dimension = this._getDimension();
+
+            this._element.style[dimension] = `${this._element.getBoundingClientRect()[dimension]}px`;
+            reflow(this._element);
+
+            this._element.classList.add(CLASS_NAME_COLLAPSING);
+
+            this._element.classList.remove(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$7);
+
+            const triggerArrayLength = this._triggerArray.length;
+
+            for (let i = 0; i < triggerArrayLength; i++) {
+                const trigger = this._triggerArray[i];
+                const elem = getElementFromSelector(trigger);
+
+                if (elem && !this._isShown(elem)) {
+                    this._addAriaAndCollapsedClass([trigger], false);
+                }
+            }
+
+            this._isTransitioning = true;
+
+            const complete = () => {
+                this._isTransitioning = false;
+
+                this._element.classList.remove(CLASS_NAME_COLLAPSING);
+
+                this._element.classList.add(CLASS_NAME_COLLAPSE);
+
+                EventHandler.trigger(this._element, EVENT_HIDDEN$5);
+            };
+
+            this._element.style[dimension] = '';
+
+            this._queueCallback(complete, this._element, true);
+        }
+
+        _isShown(element = this._element) {
+            return element.classList.contains(CLASS_NAME_SHOW$7);
+        } // Private
+
+
+        _getConfig(config) {
+            config = {
+                ...Default$9,
+                ...Manipulator.getDataAttributes(this._element),
+                ...config
+            };
+            config.toggle = Boolean(config.toggle); // Coerce string values
+
+            config.parent = getElement(config.parent);
+            typeCheckConfig(NAME$a, config, DefaultType$9);
+            return config;
+        }
+
+        _getDimension() {
+            return this._element.classList.contains(CLASS_NAME_HORIZONTAL) ? WIDTH : HEIGHT;
+        }
+
+        _initializeChildren() {
+            if (!this._config.parent) {
+                return;
+            }
+
+            const children = SelectorEngine.find(`.${CLASS_NAME_COLLAPSE} .${CLASS_NAME_COLLAPSE}`, this._config.parent);
+            SelectorEngine.find(SELECTOR_DATA_TOGGLE$4, this._config.parent).filter(elem => !children.includes(elem)).forEach(element => {
+                const selected = getElementFromSelector(element);
+
+                if (selected) {
+                    this._addAriaAndCollapsedClass([element], this._isShown(selected));
+                }
+            });
+        }
+
+        _addAriaAndCollapsedClass(triggerArray, isOpen) {
+            if (!triggerArray.length) {
+                return;
+            }
+
+            triggerArray.forEach(elem => {
+                if (isOpen) {
+                    elem.classList.remove(CLASS_NAME_COLLAPSED);
+                } else {
+                    elem.classList.add(CLASS_NAME_COLLAPSED);
+                }
+
+                elem.setAttribute('aria-expanded', isOpen);
+            });
+        } // Static
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const _config = {};
+
+                if (typeof config === 'string' && /show|hide/.test(config)) {
+                    _config.toggle = false;
+                }
+
+                const data = Collapse.getOrCreateInstance(this, _config);
+
+                if (typeof config === 'string') {
+                    if (typeof data[config] === 'undefined') {
+                        throw new TypeError(`No method named "${config}"`);
+                    }
+
+                    data[config]();
+                }
+            });
+        }
+
+>>>>>>> main
     }
 
     /**
@@ -3800,6 +4155,7 @@
             return NAME$9;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Dropdown.getOrCreateInstance(this, config);
@@ -3911,6 +4267,8 @@
                 Dropdown.clearMenus();
             }
         }
+=======
+>>>>>>> main
 
         toggle() {
             return this._isShown() ? this.hide() : this.show();
@@ -3985,6 +4343,10 @@
             }
         } // Private
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         _completeHide(relatedTarget) {
             const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$4, relatedTarget);
 
@@ -4146,6 +4508,122 @@
             getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
         } // Static
 
+<<<<<<< HEAD
+=======
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Dropdown.getOrCreateInstance(this, config);
+
+                if (typeof config !== 'string') {
+                    return;
+                }
+
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            });
+        }
+
+        static clearMenus(event) {
+            if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY$1)) {
+                return;
+            }
+
+            const toggles = SelectorEngine.find(SELECTOR_DATA_TOGGLE$3);
+
+            for (let i = 0, len = toggles.length; i < len; i++) {
+                const context = Dropdown.getInstance(toggles[i]);
+
+                if (!context || context._config.autoClose === false) {
+                    continue;
+                }
+
+                if (!context._isShown()) {
+                    continue;
+                }
+
+                const relatedTarget = {
+                    relatedTarget: context._element
+                };
+
+                if (event) {
+                    const composedPath = event.composedPath();
+                    const isMenuTarget = composedPath.includes(context._menu);
+
+                    if (composedPath.includes(context._element) || context._config.autoClose === 'inside' && !isMenuTarget || context._config.autoClose === 'outside' && isMenuTarget) {
+                        continue;
+                    } // Tab navigation through the dropdown menu or events from contained inputs shouldn't close the menu
+
+
+                    if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY$1 || /input|select|option|textarea|form/i.test(event.target.tagName))) {
+                        continue;
+                    }
+
+                    if (event.type === 'click') {
+                        relatedTarget.clickEvent = event;
+                    }
+                }
+
+                context._completeHide(relatedTarget);
+            }
+        }
+
+        static getParentFromElement(element) {
+            return getElementFromSelector(element) || element.parentNode;
+        }
+
+        static dataApiKeydownHandler(event) {
+            // If not input/textarea:
+            //  - And not a key in REGEXP_KEYDOWN => not a dropdown command
+            // If input/textarea:
+            //  - If space key => not a dropdown command
+            //  - If key is other than escape
+            //    - If key is not up or down => not a dropdown command
+            //    - If trigger inside the menu => not a dropdown command
+            if (/input|textarea/i.test(event.target.tagName) ? event.key === SPACE_KEY || event.key !== ESCAPE_KEY$2 && (event.key !== ARROW_DOWN_KEY && event.key !== ARROW_UP_KEY || event.target.closest(SELECTOR_MENU)) : !REGEXP_KEYDOWN.test(event.key)) {
+                return;
+            }
+
+            const isActive = this.classList.contains(CLASS_NAME_SHOW$6);
+
+            if (!isActive && event.key === ESCAPE_KEY$2) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (isDisabled(this)) {
+                return;
+            }
+
+            const getToggleButton = this.matches(SELECTOR_DATA_TOGGLE$3) ? this : SelectorEngine.prev(this, SELECTOR_DATA_TOGGLE$3)[0];
+            const instance = Dropdown.getOrCreateInstance(getToggleButton);
+
+            if (event.key === ESCAPE_KEY$2) {
+                instance.hide();
+                return;
+            }
+
+            if (event.key === ARROW_UP_KEY || event.key === ARROW_DOWN_KEY) {
+                if (!isActive) {
+                    instance.show();
+                }
+
+                instance._selectMenuItem(event);
+
+                return;
+            }
+
+            if (!isActive || event.key === SPACE_KEY) {
+                Dropdown.clearMenus();
+            }
+        }
+
+>>>>>>> main
     }
 
     /**
@@ -4579,6 +5057,7 @@
             return NAME$6;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config, relatedTarget) {
             return this.each(function () {
                 const data = Modal.getOrCreateInstance(this, config);
@@ -4594,6 +5073,8 @@
                 data[config](relatedTarget);
             });
         }
+=======
+>>>>>>> main
 
         toggle(relatedTarget) {
             return this._isShown ? this.hide() : this.show(relatedTarget);
@@ -4686,6 +5167,10 @@
             this._adjustDialog();
         } // Private
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         _initializeBackDrop() {
             return new Backdrop({
                 isVisible: Boolean(this._config.backdrop),
@@ -4824,9 +5309,12 @@
             return this._element.classList.contains(CLASS_NAME_FADE$3);
         }
 
+<<<<<<< HEAD
         // the following methods are used to handle overflowing modals
         // ----------------------------------------------------------------------
 
+=======
+>>>>>>> main
         _triggerBackdropTransition() {
             const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
 
@@ -4863,6 +5351,12 @@
 
             this._element.focus();
         } // ----------------------------------------------------------------------
+<<<<<<< HEAD
+=======
+        // the following methods are used to handle overflowing modals
+        // ----------------------------------------------------------------------
+
+>>>>>>> main
 
         _adjustDialog() {
             const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
@@ -4884,6 +5378,26 @@
             this._element.style.paddingLeft = '';
             this._element.style.paddingRight = '';
         } // Static
+<<<<<<< HEAD
+=======
+
+
+        static jQueryInterface(config, relatedTarget) {
+            return this.each(function () {
+                const data = Modal.getOrCreateInstance(this, config);
+
+                if (typeof config !== 'string') {
+                    return;
+                }
+
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config](relatedTarget);
+            });
+        }
+>>>>>>> main
 
     }
 
@@ -4991,6 +5505,7 @@
             return Default$4;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Offcanvas.getOrCreateInstance(this, config);
@@ -5006,6 +5521,61 @@
                 data[config](this);
             });
         }
+
+        toggle(relatedTarget) {
+            return this._isShown ? this.hide() : this.show(relatedTarget);
+        }
+
+        show(relatedTarget) {
+            if (this._isShown) {
+                return;
+            }
+
+            const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$2, {
+                relatedTarget
+            });
+
+            if (showEvent.defaultPrevented) {
+                return;
+            }
+
+            this._isShown = true;
+            this._element.style.visibility = 'visible';
+
+            this._backdrop.show();
+
+            if (!this._config.scroll) {
+                new ScrollBarHelper().hide();
+            }
+
+            this._element.removeAttribute('aria-hidden');
+
+            this._element.setAttribute('aria-modal', true);
+
+            this._element.setAttribute('role', 'dialog');
+
+            this._element.classList.add(CLASS_NAME_SHOW$3);
+
+            const completeCallBack = () => {
+                if (!this._config.scroll) {
+                    this._focustrap.activate();
+                }
+
+                EventHandler.trigger(this._element, EVENT_SHOWN$2, {
+                    relatedTarget
+                });
+            };
+
+            this._queueCallback(completeCallBack, this._element, true);
+        }
+
+        hide() {
+            if (!this._isShown) {
+                return;
+            }
+
+            const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$2);
+=======
 
         toggle(relatedTarget) {
             return this._isShown ? this.hide() : this.show(relatedTarget);
@@ -5101,6 +5671,49 @@
 
             super.dispose();
         } // Private
+>>>>>>> main
+
+            if (hideEvent.defaultPrevented) {
+                return;
+            }
+
+<<<<<<< HEAD
+            this._focustrap.deactivate();
+
+            this._element.blur();
+
+            this._isShown = false;
+
+            this._element.classList.remove(CLASS_NAME_SHOW$3);
+
+            this._backdrop.hide();
+
+            const completeCallback = () => {
+                this._element.setAttribute('aria-hidden', true);
+
+                this._element.removeAttribute('aria-modal');
+
+                this._element.removeAttribute('role');
+
+                this._element.style.visibility = 'hidden';
+
+                if (!this._config.scroll) {
+                    new ScrollBarHelper().reset();
+                }
+
+                EventHandler.trigger(this._element, EVENT_HIDDEN$2);
+            };
+
+            this._queueCallback(completeCallback, this._element, true);
+        }
+
+        dispose() {
+            this._backdrop.dispose();
+
+            this._focustrap.deactivate();
+
+            super.dispose();
+        } // Private
 
         _getConfig(config) {
             config = {
@@ -5138,6 +5751,61 @@
 
     }
 
+=======
+        _getConfig(config) {
+            config = {
+                ...Default$4,
+                ...Manipulator.getDataAttributes(this._element),
+                ...(typeof config === 'object' ? config : {})
+            };
+            typeCheckConfig(NAME$5, config, DefaultType$4);
+            return config;
+        }
+
+        _initializeBackDrop() {
+            return new Backdrop({
+                className: CLASS_NAME_BACKDROP,
+                isVisible: this._config.backdrop,
+                isAnimated: true,
+                rootElement: this._element.parentNode,
+                clickCallback: () => this.hide()
+            });
+        }
+
+        _initializeFocusTrap() {
+            return new FocusTrap({
+                trapElement: this._element
+            });
+        }
+
+        _addEventListeners() {
+            EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, event => {
+                if (this._config.keyboard && event.key === ESCAPE_KEY) {
+                    this.hide();
+                }
+            });
+        } // Static
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Offcanvas.getOrCreateInstance(this, config);
+
+                if (typeof config !== 'string') {
+                    return;
+                }
+
+                if (data[config] === undefined || config.startsWith('_') || config === 'constructor') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config](this);
+            });
+        }
+
+    }
+
+>>>>>>> main
     /**
      * ------------------------------------------------------------------------
      * Data Api implementation
@@ -5426,6 +6094,7 @@
             return DefaultType$3;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Tooltip.getOrCreateInstance(this, config);
@@ -5439,6 +6108,8 @@
                 }
             });
         }
+=======
+>>>>>>> main
 
         enable() {
             this._isEnabled = true;
@@ -5633,6 +6304,10 @@
             }
         } // Protected
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         isWithContent() {
             return Boolean(this.getTitle());
         }
@@ -5716,6 +6391,10 @@
             return attachment;
         } // Private
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         _initializeOnDelegatedTarget(event, context) {
             return context || this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
         }
@@ -5983,6 +6662,24 @@
 
             this._addAttachmentClass(this._getAttachment(state.placement));
         } // Static
+<<<<<<< HEAD
+=======
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Tooltip.getOrCreateInstance(this, config);
+
+                if (typeof config === 'string') {
+                    if (typeof data[config] === 'undefined') {
+                        throw new TypeError(`No method named "${config}"`);
+                    }
+
+                    data[config]();
+                }
+            });
+        }
+>>>>>>> main
 
     }
 
@@ -6053,6 +6750,7 @@
 
         static get NAME() {
             return NAME$3;
+<<<<<<< HEAD
         }
 
         static get Event() {
@@ -6095,6 +6793,53 @@
             return CLASS_PREFIX;
         } // Static
 
+=======
+        }
+
+        static get Event() {
+            return Event$1;
+        }
+
+        static get DefaultType() {
+            return DefaultType$2;
+        } // Overrides
+
+
+        isWithContent() {
+            return this.getTitle() || this._getContent();
+        }
+
+        setContent(tip) {
+            this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TITLE);
+
+            this._sanitizeAndSetContent(tip, this._getContent(), SELECTOR_CONTENT);
+        } // Private
+
+
+        _getContent() {
+            return this._resolvePossibleFunction(this._config.content);
+        }
+
+        _getBasicClassPrefix() {
+            return CLASS_PREFIX;
+        } // Static
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Popover.getOrCreateInstance(this, config);
+
+                if (typeof config === 'string') {
+                    if (typeof data[config] === 'undefined') {
+                        throw new TypeError(`No method named "${config}"`);
+                    }
+
+                    data[config]();
+                }
+            });
+        }
+
+>>>>>>> main
     }
 
     /**
@@ -6178,6 +6923,7 @@
         static get NAME() {
             return NAME$2;
         } // Public
+<<<<<<< HEAD
 
         static jQueryInterface(config) {
             return this.each(function () {
@@ -6214,6 +6960,43 @@
                         return [Manipulator[offsetMethod](target).top + offsetBase, targetSelector];
                     }
                 }
+=======
+>>>>>>> main
+
+                return null;
+            }).filter(item => item).sort((a, b) => a[0] - b[0]).forEach(item => {
+                this._offsets.push(item[0]);
+
+<<<<<<< HEAD
+                this._targets.push(item[1]);
+            });
+        }
+
+        dispose() {
+            EventHandler.off(this._scrollElement, EVENT_KEY$2);
+            super.dispose();
+        } // Private
+
+=======
+        refresh() {
+            const autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
+            const offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
+            const offsetBase = offsetMethod === METHOD_POSITION ? this._getScrollTop() : 0;
+            this._offsets = [];
+            this._targets = [];
+            this._scrollHeight = this._getScrollHeight();
+            const targets = SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target);
+            targets.map(element => {
+                const targetSelector = getSelectorFromElement(element);
+                const target = targetSelector ? SelectorEngine.findOne(targetSelector) : null;
+
+                if (target) {
+                    const targetBCR = target.getBoundingClientRect();
+
+                    if (targetBCR.width || targetBCR.height) {
+                        return [Manipulator[offsetMethod](target).top + offsetBase, targetSelector];
+                    }
+                }
 
                 return null;
             }).filter(item => item).sort((a, b) => a[0] - b[0]).forEach(item => {
@@ -6228,6 +7011,8 @@
             super.dispose();
         } // Private
 
+
+>>>>>>> main
         _getConfig(config) {
             config = {
                 ...Default$1,
@@ -6320,6 +7105,26 @@
         _clear() {
             SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target).filter(node => node.classList.contains(CLASS_NAME_ACTIVE$1)).forEach(node => node.classList.remove(CLASS_NAME_ACTIVE$1));
         } // Static
+<<<<<<< HEAD
+=======
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = ScrollSpy.getOrCreateInstance(this, config);
+
+                if (typeof config !== 'string') {
+                    return;
+                }
+
+                if (typeof data[config] === 'undefined') {
+                    throw new TypeError(`No method named "${config}"`);
+                }
+
+                data[config]();
+            });
+        }
+>>>>>>> main
 
     }
 
@@ -6387,6 +7192,7 @@
             return NAME$1;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Tab.getOrCreateInstance(this);
@@ -6511,6 +7317,135 @@
 
     }
 
+=======
+
+        show() {
+            if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
+                return;
+            }
+
+            let previous;
+            const target = getElementFromSelector(this._element);
+
+            const listElement = this._element.closest(SELECTOR_NAV_LIST_GROUP);
+
+            if (listElement) {
+                const itemSelector = listElement.nodeName === 'UL' || listElement.nodeName === 'OL' ? SELECTOR_ACTIVE_UL : SELECTOR_ACTIVE;
+                previous = SelectorEngine.find(itemSelector, listElement);
+                previous = previous[previous.length - 1];
+            }
+
+            const hideEvent = previous ? EventHandler.trigger(previous, EVENT_HIDE$1, {
+                relatedTarget: this._element
+            }) : null;
+            const showEvent = EventHandler.trigger(this._element, EVENT_SHOW$1, {
+                relatedTarget: previous
+            });
+
+            if (showEvent.defaultPrevented || hideEvent !== null && hideEvent.defaultPrevented) {
+                return;
+            }
+
+            this._activate(this._element, listElement);
+
+            const complete = () => {
+                EventHandler.trigger(previous, EVENT_HIDDEN$1, {
+                    relatedTarget: this._element
+                });
+                EventHandler.trigger(this._element, EVENT_SHOWN$1, {
+                    relatedTarget: previous
+                });
+            };
+
+            if (target) {
+                this._activate(target, target.parentNode, complete);
+            } else {
+                complete();
+            }
+        } // Private
+
+
+        _activate(element, container, callback) {
+            const activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? SelectorEngine.find(SELECTOR_ACTIVE_UL, container) : SelectorEngine.children(container, SELECTOR_ACTIVE);
+            const active = activeElements[0];
+            const isTransitioning = callback && active && active.classList.contains(CLASS_NAME_FADE$1);
+
+            const complete = () => this._transitionComplete(element, active, callback);
+
+            if (active && isTransitioning) {
+                active.classList.remove(CLASS_NAME_SHOW$1);
+
+                this._queueCallback(complete, element, true);
+            } else {
+                complete();
+            }
+        }
+
+        _transitionComplete(element, active, callback) {
+            if (active) {
+                active.classList.remove(CLASS_NAME_ACTIVE);
+                const dropdownChild = SelectorEngine.findOne(SELECTOR_DROPDOWN_ACTIVE_CHILD, active.parentNode);
+
+                if (dropdownChild) {
+                    dropdownChild.classList.remove(CLASS_NAME_ACTIVE);
+                }
+
+                if (active.getAttribute('role') === 'tab') {
+                    active.setAttribute('aria-selected', false);
+                }
+            }
+
+            element.classList.add(CLASS_NAME_ACTIVE);
+
+            if (element.getAttribute('role') === 'tab') {
+                element.setAttribute('aria-selected', true);
+            }
+
+            reflow(element);
+
+            if (element.classList.contains(CLASS_NAME_FADE$1)) {
+                element.classList.add(CLASS_NAME_SHOW$1);
+            }
+
+            let parent = element.parentNode;
+
+            if (parent && parent.nodeName === 'LI') {
+                parent = parent.parentNode;
+            }
+
+            if (parent && parent.classList.contains(CLASS_NAME_DROPDOWN_MENU)) {
+                const dropdownElement = element.closest(SELECTOR_DROPDOWN);
+
+                if (dropdownElement) {
+                    SelectorEngine.find(SELECTOR_DROPDOWN_TOGGLE, dropdownElement).forEach(dropdown => dropdown.classList.add(CLASS_NAME_ACTIVE));
+                }
+
+                element.setAttribute('aria-expanded', true);
+            }
+
+            if (callback) {
+                callback();
+            }
+        } // Static
+
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Tab.getOrCreateInstance(this);
+
+                if (typeof config === 'string') {
+                    if (typeof data[config] === 'undefined') {
+                        throw new TypeError(`No method named "${config}"`);
+                    }
+
+                    data[config]();
+                }
+            });
+        }
+
+    }
+
+>>>>>>> main
     /**
      * ------------------------------------------------------------------------
      * Data Api implementation
@@ -6608,6 +7543,7 @@
             return NAME;
         } // Public
 
+<<<<<<< HEAD
         static jQueryInterface(config) {
             return this.each(function () {
                 const data = Toast.getOrCreateInstance(this, config);
@@ -6621,6 +7557,8 @@
                 }
             });
         }
+=======
+>>>>>>> main
 
         show() {
             const showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
@@ -6692,6 +7630,10 @@
             super.dispose();
         } // Private
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
         _getConfig(config) {
             config = {
                 ...Default,
@@ -6756,6 +7698,24 @@
             this._timeout = null;
         } // Static
 
+<<<<<<< HEAD
+=======
+
+        static jQueryInterface(config) {
+            return this.each(function () {
+                const data = Toast.getOrCreateInstance(this, config);
+
+                if (typeof config === 'string') {
+                    if (typeof data[config] === 'undefined') {
+                        throw new TypeError(`No method named "${config}"`);
+                    }
+
+                    data[config](this);
+                }
+            });
+        }
+
+>>>>>>> main
     }
 
     enableDismissTrigger(Toast);

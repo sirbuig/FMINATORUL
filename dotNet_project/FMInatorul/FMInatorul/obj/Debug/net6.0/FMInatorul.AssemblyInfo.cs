@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FMInatorul")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2bf105f3ffa6915192eeb522d5d9d6325ee6d9da")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c8354be914c97f93e5d434cf420e89861115484")]
 [assembly: System.Reflection.AssemblyProductAttribute("FMInatorul")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FMInatorul")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
