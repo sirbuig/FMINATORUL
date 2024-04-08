@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace FMInatorul.Models;
 
-namespace FMInatorul.Models
+public class ApplicationUser : IdentityUser
 {
-    public class ApplicationUser : IdentityUser
-    {
-        [PersonalData]
-        [Column(TypeName = "nvarchar(100)")]
-        public string FirstName { get; set; }
+    [PersonalData]
+    [Column(TypeName = "nvarchar(100)")]
+    public string FirstName { get; set; }
 
+<<<<<<< HEAD
         [PersonalData]
         [Column(TypeName = "nvarchar(100)")]
         public string LastName { get; set; }
@@ -26,3 +24,9 @@ namespace FMInatorul.Models
     }
 
 }
+=======
+    [PersonalData]
+    [Column(TypeName = "nvarchar(100)")]
+    public string LastName { get; set; }
+}
+>>>>>>> 4c8354be914c97f93e5d434cf420e89861115484
