@@ -1,6 +1,5 @@
-﻿namespace FMInatorul.Models
+﻿namespace FMInatorul.Models;
+
+public class RoomProfesor
 {
-    public class RoomProfesor
-    {
-    }
 }

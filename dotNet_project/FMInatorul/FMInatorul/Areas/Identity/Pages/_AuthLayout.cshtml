@@ -31,7 +31,7 @@
 </div>
 
 @section Scripts{
-    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", false)
     <script>
         $(function () {
             const currentPage = location.pathname;

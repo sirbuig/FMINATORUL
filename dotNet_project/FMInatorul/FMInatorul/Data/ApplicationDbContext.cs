@@ -2,13 +2,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace FMInatorul.Data
+namespace FMInatorul.Data;
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationProf, string>
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser,ApplicationProf,string>
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
     }
 }
