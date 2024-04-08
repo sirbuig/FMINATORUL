@@ -36,8 +36,6 @@ public static class SeedData
                     Id = "8e445865-a24d-4543-a6c6-9443d048cdb0",
                     // primary key
                     UserName = "admin@test.com",
-                    FirstName = "Admin",
-                    LastName = "Admin",
                     EmailConfirmed = true,
                     NormalizedEmail = "ADMIN@TEST.COM",
                     Email = "admin@test.com",
@@ -50,8 +48,6 @@ public static class SeedData
                     Id = "8e445865-a24d-4543-a6c6-9443d048cdb1",
                     // primary key
                     UserName = "profesor@test.com",
-                    FirstName = "Profesor",
-                    LastName = "Profesor",
                     EmailConfirmed = true,
                     NormalizedEmail = "PROFESOR@TEST.COM",
                     Email = "profesor@test.com",
@@ -63,8 +59,6 @@ public static class SeedData
                     Id = "8e445865-a24d-4543-a6c6-9443d048cdb2",
                     // primary key
                     UserName = "student@test.com",
-                    FirstName = "Student",
-                    LastName = "Student",
                     EmailConfirmed = true,
                     NormalizedEmail = "STUDENT@TEST.COM",
                     Email = "student@test.com",

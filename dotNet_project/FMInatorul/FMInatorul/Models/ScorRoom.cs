@@ -1,7 +1,10 @@
-namespace FMInatorul.Models;
 using System.ComponentModel.DataAnnotations;
-public class ScorRoom
+
+namespace FMInatorul.Models
 {
-    [Key]
-    public int Id { get; set; }
+    public class ScorRoom
+    {
+        [Key]
+        public int Id { get; set; }
+    }
 }
