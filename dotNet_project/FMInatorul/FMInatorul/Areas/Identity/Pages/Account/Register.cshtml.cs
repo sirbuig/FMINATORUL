@@ -142,6 +142,25 @@ public class RegisterModel : PageModel
 
             if (result.Succeeded)
             {
+                if (Input.Email.Contains("@s.unibuc"))
+                {
+                    var student = new Student
+                    {
+
+                        IdApplicationUser = user.Id
+                    };
+                    db.Students.Add(student);
+
+                }
+                else if (Input.Email.Contains("@unibuc"))
+                {
+                    var profesor = new Profesor
+                    {
+                        IdApplicationUser = user.Id
+                    };
+                    db.Profesors.Add(profesor);
+                }
+
                 _logger.LogInformation("User created a new account with password.");
 
                 if (Input.Email.Contains("@s.unibuc"))
@@ -169,27 +188,12 @@ public class RegisterModel : PageModel
                     await _signInManager.SignInAsync(user, false);
                     return LocalRedirect(returnUrl);
                 }
+
+                
             }
 
 
-            if (Input.Email.Contains("@s.unibuc"))
-            {
-                var student = new Student
-                {
-
-                    IdApplicationUser = user.Id
-                };
-                db.Students.Add(student);
-
-            }
-            else if (Input.Email.Contains("@unibuc"))
-            {
-                var profesor = new Profesor
-                {
-                    IdApplicationUser = user.Id
-                };
-                db.Profesors.Add(profesor);
-            }
+            
 
             foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
         }
