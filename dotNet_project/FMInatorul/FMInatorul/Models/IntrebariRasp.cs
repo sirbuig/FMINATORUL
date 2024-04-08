@@ -1,10 +1,7 @@
+namespace FMInatorul.Models;
 using System.ComponentModel.DataAnnotations;
-
-namespace FMInatorul.Models
+public class IntrebariRasp
 {
-    public class IntrebariRasp
-    {
-        [Key]
-        public int Id { get; set; }
-    }
+    [Key]
+    public int Id { get; set; }
 }

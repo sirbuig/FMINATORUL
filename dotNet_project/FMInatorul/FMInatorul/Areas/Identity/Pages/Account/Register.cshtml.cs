@@ -1,37 +1,50 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using FMInatorul.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
+using FMInatorul.Data;
 
 namespace FMInatorul.Areas.Identity.Pages.Account;
 
 public class RegisterModel : PageModel
 {
-<<<<<<< HEAD
-    private readonly IEmailSender _emailSender;
-    private readonly IUserEmailStore<ApplicationUser> _emailStore;
-    private readonly ILogger<RegisterModel> _logger;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IUserStore<ApplicationUser> _userStore;
-=======
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserStore<ApplicationUser> _userStore;
     private readonly IUserEmailStore<ApplicationUser> _emailStore;
     private readonly ILogger<RegisterModel> _logger;
     private readonly IEmailSender _emailSender;
->>>>>>> main
+
+    private readonly ApplicationDbContext db;
+   
 
     public RegisterModel(
+        ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         IUserStore<ApplicationUser> userStore,
         SignInManager<ApplicationUser> signInManager,
         ILogger<RegisterModel> logger,
         IEmailSender emailSender)
     {
+        db = context;
         _userManager = userManager;
         _userStore = userStore;
         _emailStore = GetEmailStore();
@@ -59,30 +72,6 @@ public class RegisterModel : PageModel
     /// </summary>
     public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-<<<<<<< HEAD
-
-    public async Task OnGetAsync(string returnUrl = null)
-    {
-        ReturnUrl = returnUrl;
-        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    }
-
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-    {
-        returnUrl ??= Url.Content("~/");
-        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        if (ModelState.IsValid)
-        {
-            var user = CreateUser();
-
-            user.FirstName = Input.FirstName;
-            user.LastName = Input.LastName;
-
-            await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-            var result = await _userManager.CreateAsync(user, Input.Password);
-
-=======
     /// <summary>
     ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
     ///     directly from your code. This API may change or be removed in future releases.
@@ -151,9 +140,27 @@ public class RegisterModel : PageModel
             await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
             var result = await _userManager.CreateAsync(user, Input.Password);
 
->>>>>>> main
             if (result.Succeeded)
             {
+                if (Input.Email.Contains("@s.unibuc"))
+                {
+                    var student = new Student
+                    {
+
+                        ApplicationUserId = user.Id
+                    };
+                    db.Students.Add(student);
+
+                }
+                else if (Input.Email.Contains("@unibuc"))
+                {
+                    var profesor = new Profesor
+                    {
+                        ApplicationUserId = user.Id
+                    };
+                    db.Profesors.Add(profesor);
+                }
+
                 _logger.LogInformation("User created a new account with password.");
 
                 if (Input.Email.Contains("@s.unibuc"))
@@ -165,26 +172,14 @@ public class RegisterModel : PageModel
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
-<<<<<<< HEAD
-                    pageHandler: null,
-                    values: new { area = "Identity", userId, code, returnUrl },
-                    protocol: Request.Scheme);
-=======
                     null,
                     new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     Request.Scheme);
->>>>>>> main
 
                 await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
-<<<<<<< HEAD
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
-
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl);
-=======
                 {
                     return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                 }
@@ -193,8 +188,12 @@ public class RegisterModel : PageModel
                     await _signInManager.SignInAsync(user, false);
                     return LocalRedirect(returnUrl);
                 }
->>>>>>> main
+
+                
             }
+
+
+            
 
             foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
         }
@@ -213,11 +212,7 @@ public class RegisterModel : PageModel
         {
             throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
                                                 $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-<<<<<<< HEAD
-                                                "override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-=======
                                                 $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
->>>>>>> main
         }
     }
 
@@ -227,53 +222,4 @@ public class RegisterModel : PageModel
             throw new NotSupportedException("The default UI requires a user store with email support.");
         return (IUserEmailStore<ApplicationUser>)_userStore;
     }
-<<<<<<< HEAD
-
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public class InputModel
-    {
-        [Required]
-        [DataType(DataType.Text)]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Required]
-        [DataType(DataType.Text)]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
-            MinimumLength = 6)]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
-    }
-=======
->>>>>>> main
 }
