@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using FMInatorul.Data;
 
 namespace FMInatorul.Areas.Identity.Pages.Account;
 
@@ -32,13 +33,18 @@ public class RegisterModel : PageModel
     private readonly ILogger<RegisterModel> _logger;
     private readonly IEmailSender _emailSender;
 
+    private readonly ApplicationDbContext db;
+   
+
     public RegisterModel(
+        ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         IUserStore<ApplicationUser> userStore,
         SignInManager<ApplicationUser> signInManager,
         ILogger<RegisterModel> logger,
         IEmailSender emailSender)
     {
+        db = context;
         _userManager = userManager;
         _userStore = userStore;
         _emailStore = GetEmailStore();
@@ -163,6 +169,26 @@ public class RegisterModel : PageModel
                     await _signInManager.SignInAsync(user, false);
                     return LocalRedirect(returnUrl);
                 }
+            }
+
+
+            if (Input.Email.Contains("@s.unibuc"))
+            {
+                var student = new Student
+                {
+
+                    IdApplicationUser = user.Id
+                };
+                db.Students.Add(student);
+
+            }
+            else if (Input.Email.Contains("@unibuc"))
+            {
+                var profesor = new Profesor
+                {
+                    IdApplicationUser = user.Id
+                };
+                db.Profesors.Add(profesor);
             }
 
             foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
