@@ -1,5 +1,11 @@
-﻿namespace FMInatorul.Models;
+using System.ComponentModel.DataAnnotations;
 
-public class StudHistory
+namespace FMInatorul.Models
 {
+    public class StudHistory
+    {
+        [Key]
+        public int Id { get; set; }
+    }
 }
+

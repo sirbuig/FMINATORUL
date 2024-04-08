@@ -1,5 +1,10 @@
-﻿namespace FMInatorul.Models;
+using System.ComponentModel.DataAnnotations;
 
-public class Materie
+namespace FMInatorul.Models
 {
+    public class Materie
+    {
+        [Key]
+        public int Id { get; set; }
+    }
 }
