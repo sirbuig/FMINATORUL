@@ -1,6 +1,5 @@
-﻿namespace FMInatorul.Models
+﻿namespace FMInatorul.Models;
+
+public class IntrebariRasp
 {
-    public class IntrebariRasp
-    {
-    }
 }

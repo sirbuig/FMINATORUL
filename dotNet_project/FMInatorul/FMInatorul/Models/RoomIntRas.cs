@@ -1,6 +1,5 @@
-﻿namespace FMInatorul.Models
+﻿namespace FMInatorul.Models;
+
+public class RoomIntRas
 {
-    public class RoomIntRas
-    {
-    }
 }

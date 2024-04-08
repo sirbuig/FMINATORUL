@@ -1,6 +1,5 @@
-﻿namespace FMInatorul.Models
+﻿namespace FMInatorul.Models;
+
+public class Scoruri
 {
-    public class Scoruri
-    {
-    }
 }
