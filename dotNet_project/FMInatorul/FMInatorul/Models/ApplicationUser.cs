@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FMInatorul.Models;
@@ -16,4 +16,4 @@ public class ApplicationUser : IdentityUser
     public int IdStud { get; set; }
     public int IdProf { get; set; }
 
-}
+}   

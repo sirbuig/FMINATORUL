@@ -1,4 +1,4 @@
-﻿namespace FMInatorul.Models;
+namespace FMInatorul.Models;
 using System.ComponentModel.DataAnnotations;
 public class ProfMaterie
 {
