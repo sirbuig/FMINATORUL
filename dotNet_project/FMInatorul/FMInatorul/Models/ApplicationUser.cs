@@ -14,4 +14,15 @@ namespace FMInatorul.Models
         public string LastName { get; set; }
 
     }
+
+    public class Student : ApplicationUser
+    {
+        //some details for student
+    }
+
+    public class Profesor : ApplicationUser
+    {
+        //some details for profesor
+    }
+
 }

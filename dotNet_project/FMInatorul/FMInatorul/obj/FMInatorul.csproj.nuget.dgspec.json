@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj": {}
+    "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj": {
+    "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
+        "projectUniqueName": "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
         "projectName": "FMInatorul",
-        "projectPath": "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
+        "projectPath": "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\FMInatorul.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Admin\\Desktop\\sem2-fmi\\MDS-LAB\\dotNet_project\\FMInatorul\\FMInatorul\\obj\\",
+        "outputPath": "C:\\Users\\Admin\\source\\repos\\FMINATORUL\\dotNet_project\\FMInatorul\\FMInatorul\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",

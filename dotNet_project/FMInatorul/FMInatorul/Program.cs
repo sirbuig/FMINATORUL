@@ -20,9 +20,6 @@ options.SignIn.RequireConfirmedAccount = true)
 builder.Services.AddIdentityCore<Student>().AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddIdentityCore<Profesor>().AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddIdentityCore<Student>().AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddIdentityCore<Profesor>().AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 var app = builder.Build();
