@@ -27,5 +27,55 @@ namespace FMInatorul.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadPdf([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded!");
+            }
+
+            if (!IsPdfFile(file))
+            {
+                return BadRequest("Invalid file format. Only PDF files allowed!");
+            }
+
+            // Upload the PDF to your Flask API (replace with your actual API URL)
+            var response = await UploadPdfToFlaskApiAsync(file, "https://plankton-app-q3r46.ondigitalocean.app/");
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Get the string response from the API
+                var responseString = await response.Content.ReadAsStringAsync();
+                return Ok(responseString); // Return the API response string
+            }
+            else
+            {
+                // Handle API upload error
+                return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
+            }
+        }
+
+        private bool IsPdfFile(IFormFile file)
+        {
+            return file.ContentType.Contains("application/pdf");
+        }
+
+        private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
+        {
+            using (var client = new HttpClient())
+            {
+                using (var multipartContent = new MultipartFormDataContent())
+                {
+                    using (var fileStream = file.OpenReadStream())
+                    {
+                        multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
+                        var response = await client.PostAsync(url, multipartContent);
+                        return response;
+                    }
+                }
+            }
+        }
     }
 }
