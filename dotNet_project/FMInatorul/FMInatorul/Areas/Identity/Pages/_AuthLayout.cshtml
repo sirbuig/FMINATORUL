@@ -2,27 +2,64 @@
     Layout = "/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row justify-content-center">
-    <div class="col-5 mt-5">
-        <div class="card login-logout-card">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Identity/Account/Login">
-                            Log In
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/Identity/Account/Register">
-                            Register
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="row justify-content-center">
-                    <div class="col-10 my-4">
-                        @RenderBody()
+<head>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+
+        /* Am facut casetele pentru login si register mai transparente*/
+        .body-auth {
+            background-color: rgba(255, 255, 255, 0); 
+            padding: 20px;
+        }
+
+        .login-logout-card {
+            background-color: rgba(255, 255, 255, 0.3); 
+            border: none;
+        }
+
+        .nav-tabs {
+            background-color: transparent !important;
+        }
+
+        .nav-tabs .nav-item .nav-link {
+            background-color: transparent !important;
+            border: none;
+            color: #000; /* Culorea textului pentru tab-uri */
+        }
+
+        .nav-tabs .nav-item .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2) !important; 
+        }
+
+        .nav-tabs .nav-item .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.3) !important; 
+        }
+    </style>
+</head>
+
+<div class="body-auth">
+    <div class="row justify-content-center">
+        <div class="col-5 mt-5">
+            <div class="card login-logout-card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Identity/Account/Login">
+                                Log In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Identity/Account/Register">
+                                Register
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col-10 my-4">
+                            @RenderBody()
+                        </div>
                     </div>
                 </div>
             </div>

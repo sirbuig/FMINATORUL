@@ -1,4 +1,4 @@
-html {
+﻿html {
     font-size: 14px;
 }
 
@@ -15,4 +15,19 @@ html {
 
 body {
     margin-bottom: 60px;
+    background-image: url('../images/login.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
 }
+
+
+
+
+
+
+
+
+
+
