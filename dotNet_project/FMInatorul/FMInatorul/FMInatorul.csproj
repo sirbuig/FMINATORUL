@@ -9,10 +9,6 @@
 
     <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
-<<<<<<< HEAD
-        <None Include="wwwroot\images\login.png" />
-=======
->>>>>>> 0300c25c554dc2200ffb5a7c598145adb3407365
     </ItemGroup>
 
     <ItemGroup>
