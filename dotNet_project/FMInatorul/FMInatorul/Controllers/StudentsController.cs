@@ -42,7 +42,8 @@ namespace FMInatorul.Controllers
             }
 
             // Upload the PDF to your Flask API (replace with your actual API URL)
-            var response = await UploadPdfToFlaskApiAsync(file, "https://plankton-app-q3r46.ondigitalocean.app/");
+            //http://46.101.136.24/
+            var response = await UploadPdfToFlaskApiAsync(file, "http://46.101.136.24:5555/");
 
             if (response.IsSuccessStatusCode)
             {
