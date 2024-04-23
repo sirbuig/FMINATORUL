@@ -49,7 +49,7 @@ namespace FMInatorul.Controllers
             {
                 // Get the string response from the API
                 var responseString = await response.Content.ReadAsStringAsync();
-                return Ok(responseString); // Return the API response string
+                return View("UploadPdf", responseString); // Return the API response string
             }
             else
             {

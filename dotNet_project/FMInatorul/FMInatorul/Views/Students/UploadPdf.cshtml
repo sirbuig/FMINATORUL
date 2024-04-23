@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+    <style>
+        .question-box {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            color: white; /* Schimbați culoarea textului la alb */
+        }
+
+        .choices-box {
+            margin-left: 25px;
+        }
+
+        label {
+            color: white; /* Schimbați culoarea textului la alb pentru etichetele de răspuns */
+            display: block; /* Afișați fiecare etichetă pe un nou rând */
+            margin-bottom: 10px; /* Adăugați spațiu între fiecare etichetă */
+        }
+
+        input[type="radio"] {
+            margin-right: 5px; /* Ajustați spațiul dintre butonul radio și etichetă */
+        }
+
+        input[type="submit"] {
+            display: block; /* Afișați butonul de submit pe un nou rând */
+            margin-top: 20px; /* Adăugați spațiu între buton și casetele de răspuns */
+        }
+    </style>
+</head>
+<body>
+    <h2>Quiz</h2>
+    <div id="quizContainer">
+        @if (!string.IsNullOrEmpty(Model))
+        {
+            <form method="post" action="/Students/SubmitQuiz">
+                <script>
+                    var jsonData = @Html.Raw(Model);
+
+                    var quizContainer = document.getElementById('quizContainer');
+                    var questionIndex = 0; // Indexul întrebării pentru a crea un nume unic pentru butonul radio
+
+                    jsonData.questions.forEach(function (question) {
+                        var questionBox = document.createElement('div');
+                        questionBox.className = 'question-box';
+                        questionBox.innerHTML = '<p>' + question.question + '</p>';
+
+                        var choicesBox = document.createElement('div');
+                        choicesBox.className = 'choices-box';
+                        var choiceIndex = 0; // Indexul variantei de răspuns pentru a crea un id unic pentru butonul radio
+
+                        Object.keys(question.choices).forEach(function (choiceKey) {
+                            var label = document.createElement('label');
+                            var radio = document.createElement('input');
+                            radio.type = 'radio';
+                            radio.name = 'question' + questionIndex; // Utilizați indexul întrebării pentru a crea un nume unic
+                            radio.id = 'question' + questionIndex + 'choice' + choiceIndex; // Utilizați indexul întrebării și indexul variantei de răspuns pentru a crea un id unic
+                            radio.value = choiceKey;
+                            label.htmlFor = radio.id; // Atribuiți id-ul butonului radio la atributul htmlFor al etichetei label
+                            label.appendChild(radio);
+                            label.appendChild(document.createTextNode(question.choices[choiceKey]));
+                            choicesBox.appendChild(label);
+                            choiceIndex++;
+                        });
+
+                        questionBox.appendChild(choicesBox);
+                        quizContainer.appendChild(questionBox);
+                        questionIndex++;
+                    });
+                </script>
+
+                <input type="submit" value="Submit Quiz">
+            </form>
+        }
+        else
+        {
+            <p>No quiz data available.</p>
+        }
+    </div>
+</body>
+</html>
