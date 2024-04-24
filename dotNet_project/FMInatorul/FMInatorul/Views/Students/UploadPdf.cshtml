@@ -45,6 +45,7 @@
                     jsonData.questions.forEach(function (question) {
                         var questionBox = document.createElement('div');
                         questionBox.className = 'question-box';
+                        questionBox.classList.add("glass");
                         questionBox.innerHTML = '<p>' + question.question + '</p>';
 
                         var choicesBox = document.createElement('div');
