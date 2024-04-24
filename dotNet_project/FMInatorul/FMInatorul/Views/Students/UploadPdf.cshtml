@@ -35,7 +35,8 @@
     <div id="quizContainer">
         @if (!string.IsNullOrEmpty(Model))
         {
-            <form method="post" action="/Students/SubmitQuiz">
+            <form method="post" asp-controller="Students" asp-action="QuizResult">
+                <input type="hidden" id="jsonData" name="jsonData" value="QuizModel.Questions"/>
                 <script>
                     var jsonData = @Html.Raw(Model);
 
@@ -79,6 +80,15 @@
         {
             <p>No quiz data available.</p>
         }
+
+        
+
     </div>
+
+    <script>
+        // JavaScript pentru a popula și a trimite obiectul JSON la submit-ul formularului
+        var jsonData = @Html.Raw(Json.Serialize(Model));
+        document.getElementById('jsonData').value = JSON.stringify(jsonData);
+    </script>
 </body>
 </html>

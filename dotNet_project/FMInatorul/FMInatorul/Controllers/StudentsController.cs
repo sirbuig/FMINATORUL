@@ -2,6 +2,7 @@
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace FMInatorul.Controllers
 {
@@ -14,6 +15,7 @@ namespace FMInatorul.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
 
         private readonly ApplicationDbContext db;
+        private object form;
 
         public StudentsController(ApplicationDbContext context,
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
@@ -57,6 +59,34 @@ namespace FMInatorul.Controllers
                 return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
             }
         }
+
+        [HttpGet]
+        public IActionResult QuizResult([FromBody] QuizModel quizModel)
+        {
+            if (quizModel != null)
+            {
+                var totalQuestions = quizModel.Questions.Count;
+                var correctAnswers = 0;
+
+                foreach (var question in quizModel.Questions)
+                {
+                    if (question.Answer == question.SelectedAnswer)
+                    {
+                        correctAnswers++;
+                    }
+                }
+
+                float score = correctAnswers * 100 / totalQuestions;
+                ViewBag.Score = score;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Error");
+            }
+        }
+
+
 
         private bool IsPdfFile(IFormFile file)
         {
