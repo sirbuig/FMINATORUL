@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+    <body>
+    <div class="container mt-5">
+        <h2>Chat Room</h2>
+        <div class="row">
+            <div class="col-12">
+                <input type="text" id="userInput" placeholder="Enter your name" class="form-control" />
+            </div>
+            <div class="col-12 mt-2">
+                <input type="text" id="messageInput" placeholder="Type your message here..." class="form-control" />
+            </div>
+            <div class="col-12 mt-2">
+                <button id="sendButton" class="btn btn-primary">Send Message</button>
+            </div>
+            <div class="col-12 mt-3">
+                <ul id="messagesList" class="list-unstyled"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    </body>
+</html>

@@ -1,4 +1,5 @@
 using FMInatorul.Data;
+using FMInatorul.Hubs;
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// service - signalR - multiplayer
+builder.Services.AddSignalR();
 
 
 builder.Services.AddControllersWithViews();
@@ -51,5 +55,6 @@ app.MapControllerRoute(
     "default",
     "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

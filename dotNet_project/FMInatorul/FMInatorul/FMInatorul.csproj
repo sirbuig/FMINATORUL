@@ -8,6 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Views\NewFolder\**" />
+      <Content Remove="Views\NewFolder\**" />
+      <EmbeddedResource Remove="Views\NewFolder\**" />
+      <None Remove="Views\NewFolder\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
@@ -27,10 +34,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Views\NewFolder\" />
     </ItemGroup>
 
 </Project>

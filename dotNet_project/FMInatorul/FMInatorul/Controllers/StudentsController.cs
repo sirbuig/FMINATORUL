@@ -108,5 +108,10 @@ namespace FMInatorul.Controllers
                 }
             }
         }
+
+        public ActionResult ChatView()
+        {
+            return View();
+        }
     }
 }
