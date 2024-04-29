@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240408090238_student_profesor_bundle")]
-    partial class student_profesor_bundle
+    [Migration("20240429082121_chat")]
+    partial class chat
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,6 +46,12 @@ namespace FMInatorul.Data.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("IdProf")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdStud")
+                        .HasColumnType("int");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -94,7 +100,45 @@ namespace FMInatorul.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("ApplicationUsers", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Profesors");
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -236,16 +280,24 @@ namespace FMInatorul.Data.Migrations
 
             modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
                 {
-                    b.HasBaseType("FMInatorul.Models.ApplicationUser");
+                    b.HasOne("FMInatorul.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.ToTable("Profesors", (string)null);
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("FMInatorul.Models.Student", b =>
                 {
-                    b.HasBaseType("FMInatorul.Models.ApplicationUser");
+                    b.HasOne("FMInatorul.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.ToTable("Students", (string)null);
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -296,24 +348,6 @@ namespace FMInatorul.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
-                {
-                    b.HasOne("FMInatorul.Models.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("FMInatorul.Models.Profesor", "Id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("FMInatorul.Models.Student", b =>
-                {
-                    b.HasOne("FMInatorul.Models.ApplicationUser", null)
-                        .WithOne()
-                        .HasForeignKey("FMInatorul.Models.Student", "Id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
