@@ -51,7 +51,8 @@ namespace FMInatorul.Controllers
             {
                 // Get the string response from the API
                 var responseString = await response.Content.ReadAsStringAsync();
-                return View("UploadPdf", responseString); // Return the API response string
+                var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
+                return View("Quiz", quiz); // Pass the quiz model to the view
             }
             else
             {
@@ -59,35 +60,7 @@ namespace FMInatorul.Controllers
                 return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
             }
         }
-
-        [HttpGet]
-        public IActionResult QuizResult([FromBody] QuizModel quizModel)
-        {
-            if (quizModel != null)
-            {
-                var totalQuestions = quizModel.Questions.Count;
-                var correctAnswers = 0;
-
-                foreach (var question in quizModel.Questions)
-                {
-                    if (question.Answer == question.SelectedAnswer)
-                    {
-                        correctAnswers++;
-                    }
-                }
-
-                float score = correctAnswers * 100 / totalQuestions;
-                ViewBag.Score = score;
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Error");
-            }
-        }
-
-
-
+        
         private bool IsPdfFile(IFormFile file)
         {
             return file.ContentType.Contains("application/pdf");
@@ -107,6 +80,12 @@ namespace FMInatorul.Controllers
                     }
                 }
             }
+        }
+        
+        [HttpPost]
+        public IActionResult SubmitQuiz(QuizModel quiz)
+        {
+            return View("Results", quiz); // You could also pass the entire model to show detailed results
         }
     }
 }

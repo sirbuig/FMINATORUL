@@ -31,64 +31,51 @@
     </style>
 </head>
 <body>
-    <h2>Quiz</h2>
-    <div id="quizContainer">
-        @if (!string.IsNullOrEmpty(Model))
-        {
-            <form method="post" asp-controller="Students" asp-action="QuizResult">
-                <input type="hidden" id="jsonData" name="jsonData" value="QuizModel.Questions"/>
-                <script>
-                    var jsonData = @Html.Raw(Model);
+<h2>Quiz</h2>
+<div id="quizContainer">
+    @if (!string.IsNullOrEmpty(Model))
+    {
+    <form method="post" asp-controller="Students" asp-action="QuizResult">
+        <!-- Serialize the entire model for debugging -->
+        <input type="hidden" id="jsonData" name="jsonData" value="@Html.Raw(Json.Serialize(Model))" />
+        <script>
+            var jsonData = JSON.parse('@Html.Raw(Json.Serialize(Model))');
 
-                    var quizContainer = document.getElementById('quizContainer');
-                    var questionIndex = 0; // Indexul întrebării pentru a crea un nume unic pentru butonul radio
+            var quizContainer = document.getElementById('quizContainer');
+            var questionIndex = 0; // Index for each question
 
-                    jsonData.questions.forEach(function (question) {
-                        var questionBox = document.createElement('div');
-                        questionBox.className = 'question-box';
-                        questionBox.classList.add("glass");
-                        questionBox.innerHTML = '<p>' + question.question + '</p>';
+            jsonData.questions.forEach(function (question) {
+                var questionBox = document.createElement('div');
+                questionBox.className = 'question-box';
+                questionBox.innerHTML = '<p>' + question.question + '</p>';
 
-                        var choicesBox = document.createElement('div');
-                        choicesBox.className = 'choices-box';
-                        var choiceIndex = 0; // Indexul variantei de răspuns pentru a crea un id unic pentru butonul radio
+                var choicesBox = document.createElement('div');
+                choicesBox.className = 'choices-box';
 
-                        Object.keys(question.choices).forEach(function (choiceKey) {
-                            var label = document.createElement('label');
-                            var radio = document.createElement('input');
-                            radio.type = 'radio';
-                            radio.name = 'question' + questionIndex; // Utilizați indexul întrebării pentru a crea un nume unic
-                            radio.id = 'question' + questionIndex + 'choice' + choiceIndex; // Utilizați indexul întrebării și indexul variantei de răspuns pentru a crea un id unic
-                            radio.value = choiceKey;
-                            label.htmlFor = radio.id; // Atribuiți id-ul butonului radio la atributul htmlFor al etichetei label
-                            label.appendChild(radio);
-                            label.appendChild(document.createTextNode(question.choices[choiceKey]));
-                            choicesBox.appendChild(label);
-                            choiceIndex++;
-                        });
+                for (var choiceKey in question.choices) {
+                    var label = document.createElement('label');
+                    var radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'Questions[' + questionIndex + '].SelectedAnswer'; // Correct naming to bind with the model
+                    radio.value = choiceKey;
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(question.choices[choiceKey]));
+                    choicesBox.appendChild(label);
+                }
 
-                        questionBox.appendChild(choicesBox);
-                        quizContainer.appendChild(questionBox);
-                        questionIndex++;
-                    });
-                </script>
-
-                <input type="submit" value="Submit Quiz">
-            </form>
-        }
-        else
-        {
-            <p>No quiz data available.</p>
-        }
-
-        
-
-    </div>
-
-    <script>
-        // JavaScript pentru a popula și a trimite obiectul JSON la submit-ul formularului
-        var jsonData = @Html.Raw(Json.Serialize(Model));
-        document.getElementById('jsonData').value = JSON.stringify(jsonData);
-    </script>
+                questionBox.appendChild(choicesBox);
+                quizContainer.appendChild(questionBox);
+                questionIndex++;
+            });
+        </script>
+        <input type="submit" value="Submit Quiz">
+    </form>
+    }
+    else
+    {
+    <p>No quiz data available.</p>
+    }
+</div>
 </body>
+
 </html>
