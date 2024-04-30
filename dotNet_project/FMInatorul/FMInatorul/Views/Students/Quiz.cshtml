@@ -1,0 +1,71 @@
+﻿@model QuizModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz</title>
+    <style>
+        .question-box {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #333; /* Changed for visibility */
+            color: white; /* Text color changed to white for visibility */
+        }
+
+        .choices-box {
+            margin-left: 25px;
+        }
+
+        label {
+            color: white;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        input[type="submit"] {
+            display: block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h2>Quiz</h2>
+<div id="quizContainer">
+    @if (Model.Questions.Any())
+    {
+        <form method="post" asp-controller="Students" asp-action="SubmitQuiz">
+            @for (int i = 0; i < Model.Questions.Count; i++)
+            {
+            <div class="question-box glass">
+                <p>@Model.Questions[i].Question</p>
+                <p>@Model.Questions[i].Answer</p>
+                <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
+                <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
+                <div class="choices-box">
+                    @foreach (var choice in Model.Questions[i].Choices)
+                    {
+                    <label>
+                        <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key">
+                        @choice.Value
+                    </label>
+                    <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
+                    }
+                </div>
+            </div>
+            }
+
+            <input type="submit" value="Submit Quiz">
+        </form>
+    }
+    else
+    {
+        <p>No quiz data available.</p>
+    }
+</div>
+</body>
+</html>

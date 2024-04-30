@@ -1,0 +1,43 @@
+﻿@model QuizModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Results</title>
+    <style>
+        .correct { color: green; }
+        .incorrect { color: red; }
+        .question-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<h1>Quiz Results</h1>
+@if (Model?.Questions != null && Model.Questions.Any())
+{
+    <div>
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            <div class="question-box">
+                <p><strong>Question:</strong> @Model.Questions[i].Question</p>
+                <p><strong>Your Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].SelectedAnswer] (@Model.Questions[i].SelectedAnswer)</p>
+                <p><strong>Correct Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].Answer] (@Model.Questions[i].Answer)</p>
+                <p class="@(Model.Questions[i].SelectedAnswer == Model.Questions[i].Answer ? "correct" : "incorrect")">
+                    @(Model.Questions[i].SelectedAnswer == Model.Questions[i].Answer ? "Correct" : "Incorrect")
+                </p>
+            </div>
+        }
+        <h2>Your Score: @Model.Questions.Count(question => question.SelectedAnswer == question.Answer) out of @Model.Questions.Count</h2>
+    </div>
+}
+else
+{
+    <p>No results to display.</p>
+}
+
+</body>
+</html>
