@@ -41,6 +41,23 @@ else
 {
     <p>No results to display.</p>
 }
-
+<div class="finalChoices">
+    <button type="button" id="playAgain" class="btn btn-outline-primary">Incearca din nou</button>
+    <button type="button" id="exit" class="btn btn-outline-primary">Exit</button>
+</div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const againBtn = document.getElementById('playAgain');
+        const exitBtn = document.getElementById('exit');
+        
+        againBtn.addEventListener('click', function () {
+            window.location.href = '@Url.Action("Play", "Students")';
+        });
+        
+        exitBtn.addEventListener('click', function () {
+            window.location.href = '@Url.Action("Index", "Home")';
+        });
+    });
+</script>
 </html>
