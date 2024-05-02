@@ -12,6 +12,9 @@
             margin-bottom: 20px;
             padding: 10px;
             border: 1px solid #ddd;
+            background: linear-gradient(135deg, rgba(250, 235, 215, 100), rgb(0, 0, 0,0.5));
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
     </style>
 </head>
@@ -23,7 +26,7 @@
         @for (int i = 0; i < Model.Questions.Count; i++)
         {
             <div class="question-box">
-                <p><strong>Question:</strong> @Model.Questions[i].Question</p>
+                <p>@Model.Questions[i].Question</p>
                 <p><strong>Your Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].SelectedAnswer] (@Model.Questions[i].SelectedAnswer)</p>
                 <p><strong>Correct Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].Answer] (@Model.Questions[i].Answer)</p>
                 <p class="@(Model.Questions[i].SelectedAnswer == Model.Questions[i].Answer ? "correct" : "incorrect")">
@@ -31,7 +34,7 @@
                 </p>
             </div>
         }
-        <h2>Your Score: @Model.Questions.Count(question => question.SelectedAnswer == question.Answer) out of @Model.Questions.Count</h2>
+        <h2 class="text-white">Your Score: @Model.Questions.Count(question => question.SelectedAnswer == question.Answer) out of @Model.Questions.Count</h2>
     </div>
 }
 else

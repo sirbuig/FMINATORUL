@@ -7,7 +7,39 @@
             color: white;
             background-color: #007bff;
         }
+
+        #uploadForm {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #uploadForm input[type="file"] {
+            width: 50%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        #uploadForm input[type="submit"] {
+            width: 20%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #uploadForm input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
     </style>
+
 </head>
 <body>
 <div>
@@ -22,6 +54,15 @@
         <button type="button" id="myMaterials" class="btn btn-outline-primary">Am propriile mele materiale.</button>
         <button type="button" id="yourMaterials" class="btn btn-outline-primary">As vrea sa le incerc pe cele deja existente.</button>
     </div>
+
+    <div id="materialsForm" style="display: none;">
+        <div id="uploadForm">
+            <form method="post" enctype="multipart/form-data" asp-action="UploadPdf">
+                <input type="file" name="file" accept=".pdf"/>
+                <input type="submit" value="Upload PDF"/>
+            </form>
+        </div>
+    </div>
 </div>
 </body>
 <script>
@@ -31,6 +72,7 @@
         const materialsQuestion = document.getElementById('materialsQuestion');
         const myMaterialsBtn = document.getElementById('myMaterials');
         const yourMaterialsBtn = document.getElementById('yourMaterials');
+        const materialsForm = document.getElementById('materialsForm');
 
         function toggleGameMode(selectedMode) {
             if (selectedMode === 'singleplayer') {
@@ -43,6 +85,7 @@
                 singleplayerBtn.classList.remove('btn-active');
                 myMaterialsBtn.classList.remove('btn-active');
                 yourMaterialsBtn.classList.remove('btn-active');
+                materialsForm.style.display = 'none';
             }
         }
 
@@ -57,11 +100,13 @@
         myMaterialsBtn.addEventListener('click', function() {
             this.classList.add('btn-active');
             yourMaterialsBtn.classList.remove('btn-active');
+            materialsForm.style.display = 'block';
         });
 
         yourMaterialsBtn.addEventListener('click', function() {
             this.classList.add('btn-active');
             myMaterialsBtn.classList.remove('btn-active');
+            materialsForm.style.display = 'none';
         });
     });
 </script>
