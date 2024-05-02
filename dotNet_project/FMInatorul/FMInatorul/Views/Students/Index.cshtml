@@ -1,9 +1,19 @@
-﻿<!DOCTYPE html>
-<html>
-<body>
-    <form method="post" enctype="multipart/form-data" asp-action="UploadPdf">
-        <input type="file" name="file" accept=".pdf" />
-        <input type="submit" value="Upload PDF" />
-    </form>
+﻿@model ApplicationUser
+
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+@* <form method="post" enctype="multipart/form-data" asp-action="UploadPdf"> *@
+@*     <input type="file" name="file" accept=".pdf" /> *@
+@*     <input type="submit" value="Upload PDF" /> *@
+@* </form> *@
+<body class="align-items-center justify-content-center">
+<div class="text-center">
+    <h2 class="text-white">Bine ai venit, @Model.FirstName @Model.LastName!</h2>
+</div>
 </body>
 </html>

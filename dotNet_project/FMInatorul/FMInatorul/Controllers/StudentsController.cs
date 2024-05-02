@@ -1,11 +1,13 @@
 ﻿using FMInatorul.Data;
 using FMInatorul.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace FMInatorul.Controllers
 {
+    [Authorize]
     public class StudentsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,7 +27,18 @@ namespace FMInatorul.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            return View(user);
+        }
+
+        public IActionResult Play()
         {
             return View();
         }

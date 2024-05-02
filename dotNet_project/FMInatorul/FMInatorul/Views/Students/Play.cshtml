@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Play</title>
+    <style>
+        .btn-active {
+            color: white;
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <label for="gameModeButtons" class="text-white">Ce mod de joc alegi?</label>
+    <div id="gameModeButtons">
+        <button type="button" id="singleplayerBtn" class="btn btn-outline-primary">Singleplayer</button>
+        <button type="button" id="multiplayerBtn" class="btn btn-outline-primary">Multiplayer</button>
+    </div>
+
+    <div id="materialsQuestion" style="display: none;">
+        <p class="text-white">Ai vrea sa joci cu materialele proprii sau sa le incerci pe cele deja existente?</p>
+        <button type="button" id="myMaterials" class="btn btn-outline-primary">Am propriile mele materiale.</button>
+        <button type="button" id="yourMaterials" class="btn btn-outline-primary">As vrea sa le incerc pe cele deja existente.</button>
+    </div>
+</div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const singleplayerBtn = document.getElementById('singleplayerBtn');
+        const multiplayerBtn = document.getElementById('multiplayerBtn');
+        const materialsQuestion = document.getElementById('materialsQuestion');
+        const myMaterialsBtn = document.getElementById('myMaterials');
+        const yourMaterialsBtn = document.getElementById('yourMaterials');
+
+        function toggleGameMode(selectedMode) {
+            if (selectedMode === 'singleplayer') {
+                materialsQuestion.style.display = 'block';
+                singleplayerBtn.classList.add('btn-active');
+                multiplayerBtn.classList.remove('btn-active');
+            } else {
+                materialsQuestion.style.display = 'none';
+                multiplayerBtn.classList.add('btn-active');
+                singleplayerBtn.classList.remove('btn-active');
+                myMaterialsBtn.classList.remove('btn-active');
+                yourMaterialsBtn.classList.remove('btn-active');
+            }
+        }
+
+        singleplayerBtn.addEventListener('click', function() {
+            toggleGameMode('singleplayer');
+        });
+
+        multiplayerBtn.addEventListener('click', function() {
+            toggleGameMode('multiplayer');
+        });
+
+        myMaterialsBtn.addEventListener('click', function() {
+            this.classList.add('btn-active');
+            yourMaterialsBtn.classList.remove('btn-active');
+        });
+
+        yourMaterialsBtn.addEventListener('click', function() {
+            this.classList.add('btn-active');
+            myMaterialsBtn.classList.remove('btn-active');
+        });
+    });
+</script>
+</html>
