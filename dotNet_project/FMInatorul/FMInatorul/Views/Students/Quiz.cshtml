@@ -9,8 +9,9 @@
             border: 2px solid #ccc;
             padding: 10px;
             margin-bottom: 20px;
-            background-color: #333; /* Changed for visibility */
-            color: white; /* Text color changed to white for visibility */
+            background-color: #333;
+            color: white;
+            display: none;
         }
 
         .choices-box {
@@ -41,25 +42,26 @@
         <form method="post" asp-controller="Students" asp-action="SubmitQuiz">
             @for (int i = 0; i < Model.Questions.Count; i++)
             {
-            <div class="question-box glass">
-                <p>@Model.Questions[i].Question</p>
-                <p>@Model.Questions[i].Answer</p>
-                <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
-                <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
-                <div class="choices-box">
-                    @foreach (var choice in Model.Questions[i].Choices)
-                    {
-                    <label>
-                        <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key">
-                        @choice.Value
-                    </label>
-                    <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
-                    }
+                <div class="question-box" id="question-box-@i">
+                    <p>@Model.Questions[i].Question</p>
+                    @* <p>@Model.Questions[i].Answer</p> *@
+                    <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
+                    <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
+                    <div class="choices-box">
+                        @foreach (var choice in Model.Questions[i].Choices)
+                        {
+                            <label>
+                                <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key">
+                                @choice.Value
+                            </label>
+                            <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
+                        }
+                    </div>
                 </div>
-            </div>
             }
-
-            <input type="submit" value="Submit Quiz">
+            <button type="button" id="prev">Inapoi</button>
+            <button type="button" id="next">Inainte</button>
+            <input type="submit" value="Submit Quiz" style="display: none;">
         </form>
     }
     else
@@ -68,4 +70,43 @@
     }
 </div>
 </body>
+<script>
+    let currentQuestion = 0;
+    const questionBoxes = document.querySelectorAll(".question-box");
+    const prevButton = document.getElementById("prev");
+    const nextButton = document.getElementById("next");
+    const submitButton = document.querySelector('input[type="submit"]');
+    
+    if (questionBoxes.length > 0){
+        questionBoxes[0].style.display = 'block';
+        checkButtons();
+    }
+    
+    function showQuestion(index) {
+        questionBoxes.forEach(box => box.style.display = "none");
+        questionBoxes[index].style.display = "block";
+    }
+
+    prevButton.addEventListener('click', () => {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            showQuestion(currentQuestion);
+            checkButtons();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentQuestion < questionBoxes.length - 1) {
+            currentQuestion++;
+            showQuestion(currentQuestion);
+            checkButtons();
+        }
+    });
+    
+    function checkButtons() {
+        prevButton.disabled = currentQuestion === 0;
+        nextButton.disabled = currentQuestion === questionBoxes.length - 1;
+        submitButton.style.display = currentQuestion === questionBoxes.length - 1 ? "block" : "none";
+    }
+</script>
 </html>
