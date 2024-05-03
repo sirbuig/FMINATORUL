@@ -5,18 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz Results</title>
-    <style>
-        .correct { color: green; }
-        .incorrect { color: red; }
-        .question-box {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            background: linear-gradient(135deg, rgba(250, 235, 215, 100), rgb(0, 0, 0,0.5));
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-        }
-    </style>
+    <link rel="stylesheet" href="/css/Students/results.css"/>
 </head>
 <body>
 <h1>Quiz Results</h1>
@@ -42,22 +31,9 @@ else
     <p>No results to display.</p>
 }
 <div class="finalChoices">
-    <button type="button" id="playAgain" class="btn btn-outline-primary">Incearca din nou</button>
-    <button type="button" id="exit" class="btn btn-outline-primary">Exit</button>
+    <button type="button" id="playAgain" class="btn btn-outline-primary" data-url="@Url.Action("Play", "Students")">Incearca din nou</button>
+    <button type="button" id="exit" class="btn btn-outline-primary" data-url="@Url.Action("Index", "Home")">Exit</button>
 </div>
+<script src="/js/Students/results.js"></script>
 </body>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const againBtn = document.getElementById('playAgain');
-        const exitBtn = document.getElementById('exit');
-        
-        againBtn.addEventListener('click', function () {
-            window.location.href = '@Url.Action("Play", "Students")';
-        });
-        
-        exitBtn.addEventListener('click', function () {
-            window.location.href = '@Url.Action("Index", "Home")';
-        });
-    });
-</script>
 </html>

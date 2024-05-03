@@ -1,0 +1,27 @@
+﻿.question-box {
+    border: 2px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #333;
+    color: white;
+    display: none;
+}
+
+.choices-box {
+    margin-left: 25px;
+}
+
+label {
+    color: white;
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+input[type="submit"] {
+    display: block;
+    margin-top: 20px;
+}

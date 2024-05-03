@@ -1,0 +1,10 @@
+﻿.correct { color: green; }
+.incorrect { color: red; }
+.question-box {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: linear-gradient(135deg, rgba(250, 235, 215, 100), rgb(0, 0, 0,0.5));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
