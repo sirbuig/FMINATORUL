@@ -51,7 +51,7 @@
                         @foreach (var choice in Model.Questions[i].Choices)
                         {
                             <label>
-                                <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key">
+                                <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key" required>
                                 @choice.Value
                             </label>
                             <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
@@ -96,12 +96,23 @@
     });
 
     nextButton.addEventListener('click', () => {
+        if (!validAnswer()) {
+            alert("Trebuie sa selectezi un raspuns.");
+            return;
+        }
+        
         if (currentQuestion < questionBoxes.length - 1) {
             currentQuestion++;
             showQuestion(currentQuestion);
             checkButtons();
         }
     });
+    
+    function validAnswer() {
+        const currentBox = questionBoxes[currentQuestion];
+        const radios = currentBox.querySelectorAll('input[type="radio"]');
+        return Array.from(radios).some(radio => radio.checked);
+    }
     
     function checkButtons() {
         prevButton.disabled = currentQuestion === 0;
