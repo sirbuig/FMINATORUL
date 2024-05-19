@@ -1,5 +1,9 @@
 ﻿@model ApplicationUser
 
+@if (ViewBag.Message != null)
+{
+    <h2 class="text-white p-3 rounded-3 text-center mb-5">@ViewBag.Message</h2>
+}
 <!DOCTYPE html>
 <html lang="ro">
 <head>
