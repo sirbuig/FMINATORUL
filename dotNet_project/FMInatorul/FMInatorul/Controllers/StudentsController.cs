@@ -3,6 +3,7 @@ using FMInatorul.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace FMInatorul.Controllers
@@ -34,7 +35,14 @@ namespace FMInatorul.Controllers
             {
                 return Challenge();
             }
+            var student = await db.Students
+                                    .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
+            if(student.CompletedProfile == false)
+            {
+                ViewBag.Message = "Va rugam sa va completati profilul !";
+                return View(user);
+            }
             return View(user);
         }
 
