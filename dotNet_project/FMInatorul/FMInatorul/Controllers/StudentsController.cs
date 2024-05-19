@@ -65,7 +65,7 @@ namespace FMInatorul.Controllers
                 // Get the string response from the API
                 var responseString = await response.Content.ReadAsStringAsync();
                 var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
-                return View("Quiz", quiz); // Pass the quiz model to the view
+                return View("Quiz", responseString); // Pass the quiz model to the view
             }
             else
             {
