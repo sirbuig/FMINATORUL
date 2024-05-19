@@ -113,6 +113,12 @@ namespace FMInatorul.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+<<<<<<< HEAD
+=======
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
+
+>>>>>>> 2989e94d4de4c414f558345ea76418cdfe66bb44
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -132,6 +138,12 @@ namespace FMInatorul.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+<<<<<<< HEAD
+=======
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
+
+>>>>>>> 2989e94d4de4c414f558345ea76418cdfe66bb44
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
