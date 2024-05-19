@@ -49,7 +49,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     "default",
-    "{controller=Home}/{action=Index}/{id?}");
+    "{controller=Home}/{action=IndexNew}/{id?}");
 app.MapRazorPages();
 
 app.Run();

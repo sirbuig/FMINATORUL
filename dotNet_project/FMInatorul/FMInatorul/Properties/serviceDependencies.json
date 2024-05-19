@@ -23,6 +23,11 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:FMInatorul3",
       "dynamicId": null
+    },
+    "mssql6": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:FMInatorul4",
+      "dynamicId": null
     }
   }
 }

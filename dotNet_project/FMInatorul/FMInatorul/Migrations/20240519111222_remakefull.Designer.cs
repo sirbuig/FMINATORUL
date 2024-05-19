@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240519104634_remakefull")]
+    [Migration("20240519111222_remakefull")]
     partial class remakefull
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
