@@ -4,6 +4,7 @@ using FMInatorul.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240515093527_Incercare")]
+    partial class Incercare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,12 +115,6 @@ namespace FMInatorul.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-<<<<<<< HEAD
-=======
-                    b.Property<bool>("CompletedProfile")
-                        .HasColumnType("bit");
-
->>>>>>> 2989e94d4de4c414f558345ea76418cdfe66bb44
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -138,12 +134,6 @@ namespace FMInatorul.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-<<<<<<< HEAD
-=======
-                    b.Property<bool>("CompletedProfile")
-                        .HasColumnType("bit");
-
->>>>>>> 2989e94d4de4c414f558345ea76418cdfe66bb44
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
