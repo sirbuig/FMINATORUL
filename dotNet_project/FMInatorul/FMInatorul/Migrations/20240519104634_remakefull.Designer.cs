@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FMInatorul.Data.Migrations
+namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240423190739_QuizModel1")]
-    partial class QuizModel1
+    [Migration("20240519104634_remakefull")]
+    partial class remakefull
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -115,6 +115,9 @@ namespace FMInatorul.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
@@ -133,6 +136,9 @@ namespace FMInatorul.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
