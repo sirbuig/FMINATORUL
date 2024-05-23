@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <title>Play</title>
+    <link rel="stylesheet" href="/css/Students/play.css"/>
+</head>
+<body>
+<div>
+    <label for="gameModeButtons" class="text-white">Ce mod de joc alegi?</label>
+    <div id="gameModeButtons">
+        <button type="button" id="singleplayerBtn" class="btn btn-outline-primary">Singleplayer</button>
+        <button type="button" id="multiplayerBtn" class="btn btn-outline-primary">Multiplayer</button>
+    </div>
+
+    <div id="materialsQuestion" style="display: none;">
+        <p class="text-white">Ai vrea sa joci cu materialele proprii sau sa le incerci pe cele deja existente?</p>
+        <button type="button" id="myMaterials" class="btn btn-outline-primary">Am propriile mele materiale.</button>
+        <button type="button" id="yourMaterials" class="btn btn-outline-primary">As vrea sa le incerc pe cele deja existente.</button>
+    </div>
+
+    <div id="materialsForm" style="display: none;">
+        <div id="uploadForm">
+            <form method="post" enctype="multipart/form-data" asp-action="UploadPdf">
+                <input type="file" name="file" accept=".pdf"/>
+                <input type="submit" value="Upload PDF"/>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/js/Students/play.js"></script>
+</body>
+</html>

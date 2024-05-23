@@ -1,0 +1,46 @@
+﻿@model QuizModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="/css/Students/quiz.css" />
+</head>
+<body>
+<h2>Quiz</h2>
+<div id="quizContainer">
+    @if (Model.Questions.Any())
+    {
+        <form method="post" asp-controller="Students" asp-action="SubmitQuiz">
+            @for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                <div class="question-box" id="question-box-@i">
+                    <p>@Model.Questions[i].Question</p>
+                    @* <p>@Model.Questions[i].Answer</p> *@
+                    <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
+                    <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
+                    <div class="choices-box">
+                        @foreach (var choice in Model.Questions[i].Choices)
+                        {
+                            <label>
+                                <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key" required>
+                                @choice.Value
+                            </label>
+                            <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
+                        }
+                    </div>
+                </div>
+            }
+            <button type="button" id="prev">Inapoi</button>
+            <button type="button" id="next">Inainte</button>
+            <input type="submit" value="Submit Quiz" style="display: none;">
+        </form>
+    }
+    else
+    {
+        <p>No quiz data available.</p>
+    }
+</div>
+<script src="~/js/Students/quiz.js"></script>
+</body>
+</html>

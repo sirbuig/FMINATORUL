@@ -52,7 +52,7 @@ public static class SeedData
                 {
                     Id = "8e445865-a24d-4543-a6c6-9443d048cdb1",
                     // primary key
-                    UserName = "profesor@test.com",
+                    UserName = "profesor@unibuc.ro",
                     FirstName = "Profesor",
                     LastName = "Profesor",
                     EmailConfirmed = true,
@@ -65,7 +65,7 @@ public static class SeedData
                 {
                     Id = "8e445865-a24d-4543-a6c6-9443d048cdb2",
                     // primary key
-                    UserName = "student@test.com",
+                    UserName = "student@s.unibuc.ro",
                     FirstName = "Student",
                     LastName = "Student",
                     EmailConfirmed = true,

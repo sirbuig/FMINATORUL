@@ -6,28 +6,50 @@
     Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml";
 }
 
+<head>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+
+        /* Am adaugat spatiu intre cele doua casete: email si password */
+        .form-floating + .form-floating {
+            margin-top: 15px;
+        }
+
+        /* Casetele de text transparente*/
+        .form-floating input[type="email"],
+        .form-floating input[type="password"] {
+            background-color: rgba(255, 255, 255, 0.5); 
+            border: 1px solid #ced4da; /* Menține bordura pentru claritate */
+        }
+
+        .form-floating label {
+            color: #000; /* Culorea textului pentru claritate */
+        }
+
+    </style>
+</head>
 
 <div class="row justify-content-center">
     <div class="col-10">
         <section>
             <form id="account" method="post">
                 <h2>Welcome back!</h2>
-                <hr/>
+                <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-floating">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"/>
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
                     <label asp-for="Input.Email" class="form-label"></label>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true"/>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
                     <label asp-for="Input.Password" class="form-label"></label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div>
                     <div class="checkbox">
                         <label asp-for="Input.RememberMe" class="form-label">
-                            <input class="form-check-input" asp-for="Input.RememberMe"/>
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
                             @Html.DisplayNameFor(m => m.Input.RememberMe)
                         </label>
                     </div>
@@ -49,9 +71,8 @@
             </form>
         </section>
     </div>
-
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial"/>
+    <partial name="_ValidationScriptsPartial" />
 }

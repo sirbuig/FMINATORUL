@@ -1,0 +1,39 @@
+﻿@model QuizModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="/css/Students/results.css"/>
+</head>
+<body>
+<h1>Quiz Results</h1>
+@if (Model?.Questions != null && Model.Questions.Any())
+{
+    <div>
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            <div class="question-box">
+                <p>@Model.Questions[i].Question</p>
+                <p><strong>Your Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].SelectedAnswer] (@Model.Questions[i].SelectedAnswer)</p>
+                <p><strong>Correct Answer:</strong> @Model.Questions[i].Choices[Model.Questions[i].Answer] (@Model.Questions[i].Answer)</p>
+                <p class="@(Model.Questions[i].SelectedAnswer == Model.Questions[i].Answer ? "correct" : "incorrect")">
+                    @(Model.Questions[i].SelectedAnswer == Model.Questions[i].Answer ? "Correct" : "Incorrect")
+                </p>
+            </div>
+        }
+        <h2 class="text-white">Your Score: @Model.Questions.Count(question => question.SelectedAnswer == question.Answer) out of @Model.Questions.Count</h2>
+    </div>
+}
+else
+{
+    <p>No results to display.</p>
+}
+<div class="finalChoices">
+    <button type="button" id="playAgain" class="btn btn-outline-primary" data-url="@Url.Action("Play", "Students")">Incearca din nou</button>
+    <button type="button" id="exit" class="btn btn-outline-primary" data-url="@Url.Action("Index", "Home")">Exit</button>
+</div>
+<script src="/js/Students/results.js"></script>
+</body>
+</html>
