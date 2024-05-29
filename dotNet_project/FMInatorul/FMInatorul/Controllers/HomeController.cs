@@ -1,6 +1,10 @@
-﻿using FMInatorul.Models;
+﻿using FMInatorul.Data;
+using FMInatorul.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using NuGet.Protocol;
 using System.Diagnostics;
 
 namespace FMInatorul.Controllers;
@@ -9,9 +13,10 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
-
-    public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
+    private readonly ApplicationDbContext _db;
+    public HomeController(ApplicationDbContext context, ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
     {
+        _db = context;
         _logger = logger;
         _userManager = userManager;
     }
@@ -36,4 +41,123 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    [Authorize(Roles = "Admin")]
+    public IActionResult Admin()
+    {
+        if (User.IsInRole("Admin"))
+        {
+            var Materii = _db.Materii;
+            ViewBag.materii = Materii;
+            return View();
+        }
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "Admin")]
+    public IActionResult UploadAdminPdf()
+    {
+        var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+        ViewBag.materie = _db.Materii.Find(materie_id);
+        
+        ViewBag.materie_id = materie_id;
+
+        return View();
+    }
+
+    public IActionResult Add_Questions(JsonContent questions)
+    {
+        var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+        ViewBag.materie = _db.Materii.Find(materie_id);
+        //add the questions to the database directly from the json
+
+
+        
+        return View(questions);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add_Questions([FromForm] IFormFile file)
+    {
+        var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+        ViewBag.materie = _db.Materii.Find(materie_id);
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded!");
+        }
+
+        if (!IsPdfFile(file))
+        {
+            return BadRequest("Invalid file format. Only PDF files allowed!");
+        }
+
+        // Upload the PDF to your Flask API (replace with your actual API URL)
+        //http://46.101.136.24/
+        var response = await UploadPdfToFlaskApiAsync(file, "http://46.101.136.24:5555/");
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Get the string response from the API
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            var questions = JsonConvert.DeserializeObject<Dictionary<string,List<QuestionDto>>>(responseString);
+
+            foreach (var questionDto in questions["questions"].Skip(1))
+            {
+                var intrebareRasp = new IntrebariRasp
+                {
+                    intrebare = questionDto.question,
+                    raspunsCorect = questionDto.answer,
+                    validareProfesor = 0, // Assuming a default value; adjust as needed
+                    MaterieId = materie_id,
+                    Variante = questionDto.choices.Select(choice => new Variante
+                    {
+                        Choice = choice.Value,
+                        VariantaCorecta = choice.Key == questionDto.answer ? 1 : 0
+                    }).ToList()
+                };
+
+                _db.IntrebariRasps.Add(intrebareRasp);
+            }
+
+            _db.SaveChanges();
+
+            ViewBag.materie = _db.Materii.Find(materie_id);
+
+            return View("Add_Questions", responseString); // Pass the quiz model to the view
+        }
+        else
+        {
+            // Handle API upload error
+            return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
+        }
+    }
+    private bool IsPdfFile(IFormFile file)
+    {
+        return file.ContentType.Contains("application/pdf");
+    }
+
+    private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
+    {
+        using (var client = new HttpClient())
+        {
+            using (var multipartContent = new MultipartFormDataContent())
+            {
+                using (var fileStream = file.OpenReadStream())
+                {
+                    multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
+                    var response = await client.PostAsync(url, multipartContent);
+                    return response;
+                }
+            }
+        }
+    }
+
+    //[HttpPost]
+    //public IActionResult Add_Questions()
+    //{
+
+    //}
+
 }

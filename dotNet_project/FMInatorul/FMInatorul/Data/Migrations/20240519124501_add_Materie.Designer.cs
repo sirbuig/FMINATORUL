@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< Updated upstream:dotNet_project/FMInatorul/FMInatorul/Data/Migrations/20240521115702_YearStudent.Designer.cs
     [Migration("20240521115702_YearStudent")]
     partial class YearStudent
+========
+    [Migration("20240519124501_add_Materie")]
+    partial class add_Materie
+>>>>>>>> Stashed changes:dotNet_project/FMInatorul/FMInatorul/Data/Migrations/20240519124501_add_Materie.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,6 +108,33 @@ namespace FMInatorul.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("FMInatorul.Models.Materie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("anStudiu")
+                        .HasColumnType("int");
+
+                    b.Property<string>("descriere")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("nume")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("semestru")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Materii");
+                });
+
             modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
                 {
                     b.Property<int>("Id")
@@ -140,9 +172,12 @@ namespace FMInatorul.Migrations
                     b.Property<bool>("CompletedProfile")
                         .HasColumnType("bit");
 
+<<<<<<<< Updated upstream:dotNet_project/FMInatorul/FMInatorul/Data/Migrations/20240521115702_YearStudent.Designer.cs
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
+========
+>>>>>>>> Stashed changes:dotNet_project/FMInatorul/FMInatorul/Data/Migrations/20240519124501_add_Materie.Designer.cs
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
