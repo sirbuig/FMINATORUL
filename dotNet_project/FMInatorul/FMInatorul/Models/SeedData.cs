@@ -18,15 +18,18 @@ public static class SeedData
             // daca nu contine roluri, acestea se vor crea
             context.Roles.AddRange(
                 new IdentityRole
-                    { Id = "2c5e174e-3b0e-446f-86af483d56fd7210", Name = "Admin", NormalizedName = "Admin".ToUpper() },
+                { Id = "2c5e174e-3b0e-446f-86af483d56fd7210", Name = "Admin", NormalizedName = "Admin".ToUpper() },
                 new IdentityRole
                 {
-                    Id = "2c5e174e-3b0e-446f-86af483d56fd7211", Name = "Profesor",
+                    Id = "2c5e174e-3b0e-446f-86af483d56fd7211",
+                    Name = "Profesor",
                     NormalizedName = "Profesor".ToUpper()
                 },
                 new IdentityRole
                 {
-                    Id = "2c5e174e-3b0e-446f-86af483d56fd7212", Name = "Student", NormalizedName = "Student".ToUpper()
+                    Id = "2c5e174e-3b0e-446f-86af483d56fd7212",
+                    Name = "Student",
+                    NormalizedName = "Student".ToUpper()
                 }
             );
 
