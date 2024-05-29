@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,10 +46,10 @@
                     var quizContainer = document.getElementById('quizContainer');
                     var questionIndex = 0; // Index for each question
 
-                    jsonData.questions.forEach(function (question) {
-                        var questionBox = document.createElement('div');
-                        questionBox.className = 'question-box';
-                        questionBox.innerHTML = '<p>' + question.question + '</p>';
+            jsonData.questions.slice(1).forEach(function (question) {
+                var questionBox = document.createElement('div');
+                questionBox.className = 'question-box';
+                questionBox.innerHTML = '<p>' + question.question + '</p>';
 
                         var choicesBox = document.createElement('div');
                         choicesBox.className = 'choices-box';

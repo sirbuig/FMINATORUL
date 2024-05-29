@@ -1,0 +1,15 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="materialsForm" >
+    <div id="uploadForm">
+        <form method="post" enctype="multipart/form-data" action="/Home/Add_Questions?materie=@ViewBag.materie_id">
+            <input type="file" name="file" accept=".pdf" />
+            <input type="submit" value="Upload PDF" />
+        </form>
+    </div>
+</div>
+

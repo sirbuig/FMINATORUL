@@ -1,0 +1,42 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+    0. adaugare materii in baza de date (folosind seed data)
+    1. Ii cerem sa selecteze o materie (Temporar)(mai incolo se va stii in controler automat)
+*@
+@{
+   
+}
+@*Text generat cu AI (select + div + script) *@
+<select id="materieDropdown">
+    <option value="">Alegeți o materie</option>
+    @foreach (var materie in ViewBag.Materii)
+    {
+        <option value="@materie.Id">@materie.nume</option>
+    }
+</select>
+
+<!-- Buton pentru adăugarea întrebărilor -->
+<div id="adaugaIntrebareContainer">
+    <a id="adaugaIntrebareLink" href="/Home/UploadAdminPdf?materie=">
+        <button type="button" class="btn btn-success" disabled>Adaugă o nouă întrebare</button>
+    </a>
+</div>
+
+@section scripts {
+    <script>
+        // Capturarea selectării utilizatorului
+        var dropdown = document.getElementById("materieDropdown");
+        dropdown.addEventListener("change", function () {
+            var selectedMaterieId = dropdown.value;
+
+            // Actualizarea link-ului cu materie_id selectat
+            var link = document.getElementById("adaugaIntrebareLink");
+            link.href = "/Home/UploadAdminPdf?materie=" + selectedMaterieId;
+
+            // Activarea butonului dacă s-a selectat o materie
+            var button = link.querySelector("button");
+            button.disabled = selectedMaterieId === "";
+        });
+    </script>
+}

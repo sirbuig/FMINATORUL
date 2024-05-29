@@ -4,4 +4,14 @@ public class Materie
 {
     [Key]
     public int Id { get; set; }
+
+    public string nume { get; set; }
+
+    public int anStudiu { get; set; }
+
+    public int semestru { get; set; }
+
+    public string descriere { get; set; }
+    public virtual ICollection<IntrebariRasp>? IntrebariRasp { get; set; }
+
 }
