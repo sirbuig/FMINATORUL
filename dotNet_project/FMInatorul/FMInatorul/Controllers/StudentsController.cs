@@ -53,9 +53,9 @@ namespace FMInatorul.Controllers
                 }
             }
 
-            if (TempData.ContainsKey("SuccesMessage"))
+            if (TempData.ContainsKey("SuccessMessage"))
             {
-                ViewBag.Message = TempData["SuccesMessage"];
+                ViewBag.Message = TempData["SuccessMessage"];
                 return View(user);
             }
             return View(user);
@@ -138,16 +138,14 @@ namespace FMInatorul.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditYear(int id,Student student)
+        public IActionResult EditYear(int id, Student student)
         {
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Please try completing your profile again.";
-                return RedirectToAction("Index", "Students");
+                return View(student);
             }
             else
             {
-                int userId = int.Parse(_userManager.GetUserId(User));
                 Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
 
                 if (studentToUpdate == null)
@@ -156,13 +154,56 @@ namespace FMInatorul.Controllers
                 }
 
                 studentToUpdate.Year = student.Year;
-                studentToUpdate.CompletedProfile = true;
-                student.CompletedProfile = true;
+                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
+                {
+                    studentToUpdate.CompletedProfile = true;
+                }
                 db.SaveChanges();
-                TempData["SuccesMessage"] = "Year updated successfully.";
+                TempData["SuccessMessage"] = "Year updated successfully.";
                 return RedirectToAction("Index", "Students");
             }
-            
+
+        }
+
+        public async Task<IActionResult> EditSemester()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students
+                                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
+
+        [HttpPost]
+        public IActionResult EditSemester(int id, Student student)
+        {
+            if (ModelState.IsValid)
+            {
+                return View(student);
+            }
+            else
+            {
+              
+                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
+
+                if (studentToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                studentToUpdate.Semester = student.Semester;
+                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
+                {
+                    studentToUpdate.CompletedProfile = true;
+                }
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Semester updated successfully.";
+                return RedirectToAction("Index", "Students");
+            }
+
         }
     }
 }
