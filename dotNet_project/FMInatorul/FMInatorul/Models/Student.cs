@@ -9,5 +9,8 @@ namespace FMInatorul.Models
         public string ApplicationUserId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
         public bool CompletedProfile { get; set; }
+
+        [Range(1, 3, ErrorMessage = "Year must be between 0 and 3.")]
+        public int Year { get; set; }
     }
 }

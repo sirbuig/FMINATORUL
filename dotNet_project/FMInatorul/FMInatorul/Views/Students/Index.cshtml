@@ -1,8 +1,16 @@
 ﻿@model ApplicationUser
 
-@if (ViewBag.Message != null)
+@if (TempData["SuccessMessage"] != null)
 {
-    <h2 class="text-white p-3 rounded-3 text-center mb-5">@ViewBag.Message</h2>
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
 }
 <!DOCTYPE html>
 <html lang="ro">

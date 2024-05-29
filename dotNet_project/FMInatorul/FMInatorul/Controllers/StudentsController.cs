@@ -27,7 +27,7 @@ namespace FMInatorul.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-
+       
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -40,7 +40,22 @@ namespace FMInatorul.Controllers
 
             if(student.CompletedProfile == false)
             {
-                ViewBag.Message = "Va rugam sa va completati profilul !";
+                if (TempData.ContainsKey("ErrorMessage"))
+                {
+                    ViewBag.Message = TempData["ErrorMessage"];
+                    return View(user);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Please finish completing your profile.";
+                    ViewBag.Message = TempData["ErrorMessage"];
+                    return View(user);
+                }
+            }
+
+            if (TempData.ContainsKey("SuccesMessage"))
+            {
+                ViewBag.Message = TempData["SuccesMessage"];
                 return View(user);
             }
             return View(user);
@@ -107,6 +122,47 @@ namespace FMInatorul.Controllers
         public IActionResult SubmitQuiz(QuizModel quiz)
         {
             return View("Results", quiz); // You could also pass the entire model to show detailed results
+        }
+
+
+        public async Task<IActionResult> EditYear()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students
+                                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditYear(int id,Student student)
+        {
+            if (ModelState.IsValid == false)
+            {
+                TempData["ErrorMessage"] = "Please try completing your profile again.";
+                return RedirectToAction("Index", "Students");
+            }
+            else
+            {
+                int userId = int.Parse(_userManager.GetUserId(User));
+                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
+
+                if (studentToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                studentToUpdate.Year = student.Year;
+                studentToUpdate.CompletedProfile = true;
+                student.CompletedProfile = true;
+                db.SaveChanges();
+                TempData["SuccesMessage"] = "Year updated successfully.";
+                return RedirectToAction("Index", "Students");
+            }
+            
         }
     }
 }
