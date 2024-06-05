@@ -18,7 +18,6 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:FMInatorul2",
       "dynamicId": null
-<<<<<<< Updated upstream
     },
     "mssql5": {
       "type": "mssql",
@@ -29,8 +28,6 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:FMInatorul4",
       "dynamicId": null
-=======
->>>>>>> Stashed changes
     }
   }
 }

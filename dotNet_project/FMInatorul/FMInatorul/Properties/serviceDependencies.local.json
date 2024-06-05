@@ -24,7 +24,6 @@
       "type": "mssql.local",
       "connectionId": "ConnectionStrings:FMInatorul2",
       "dynamicId": null
-<<<<<<< Updated upstream
     },
     "mssql5": {
       "serviceConnectorResourceId": "",
@@ -39,8 +38,6 @@
       "type": "mssql.local",
       "connectionId": "ConnectionStrings:FMInatorul4",
       "dynamicId": null
-=======
->>>>>>> Stashed changes
     }
   }
 }
