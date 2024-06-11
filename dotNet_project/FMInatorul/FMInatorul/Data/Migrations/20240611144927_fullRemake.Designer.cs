@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240523084019_incercare")]
-    partial class incercare
+    [Migration("20240611144927_fullRemake")]
+    partial class fullRemake
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,6 +103,62 @@ namespace FMInatorul.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("FMInatorul.Models.IntrebariRasp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("MaterieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("intrebare")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("raspunsCorect")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("validareProfesor")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterieId");
+
+                    b.ToTable("IntrebariRasps");
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Materie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("anStudiu")
+                        .HasColumnType("int");
+
+                    b.Property<string>("descriere")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("nume")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("semestru")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Materii");
+                });
+
             modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
                 {
                     b.Property<int>("Id")
@@ -114,6 +170,9 @@ namespace FMInatorul.Migrations
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -134,11 +193,45 @@ namespace FMInatorul.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("CompletedProfile")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Variante", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Choice")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IntrebariRaspId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VariantaCorecta")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IntrebariRaspId");
+
+                    b.ToTable("Variantes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -278,6 +371,17 @@ namespace FMInatorul.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FMInatorul.Models.IntrebariRasp", b =>
+                {
+                    b.HasOne("FMInatorul.Models.Materie", "Materie")
+                        .WithMany("IntrebariRasp")
+                        .HasForeignKey("MaterieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Materie");
+                });
+
             modelBuilder.Entity("FMInatorul.Models.Profesor", b =>
                 {
                     b.HasOne("FMInatorul.Models.ApplicationUser", "ApplicationUser")
@@ -298,6 +402,17 @@ namespace FMInatorul.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Variante", b =>
+                {
+                    b.HasOne("FMInatorul.Models.IntrebariRasp", "IntrebariRasp")
+                        .WithMany("Variante")
+                        .HasForeignKey("IntrebariRaspId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IntrebariRasp");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -349,6 +464,16 @@ namespace FMInatorul.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.IntrebariRasp", b =>
+                {
+                    b.Navigation("Variante");
+                });
+
+            modelBuilder.Entity("FMInatorul.Models.Materie", b =>
+                {
+                    b.Navigation("IntrebariRasp");
                 });
 #pragma warning restore 612, 618
         }

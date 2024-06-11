@@ -43,12 +43,4 @@
     	  <PackageReference Include="FluentAssertions" Version="6.2.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Migrations\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\Migrations\" />
-    </ItemGroup>
-
 </Project>

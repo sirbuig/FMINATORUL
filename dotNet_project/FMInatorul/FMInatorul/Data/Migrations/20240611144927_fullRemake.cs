@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FMInatorul.Migrations
 {
-    public partial class remakefull : Migration
+    public partial class fullRemake : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -50,6 +50,22 @@ namespace FMInatorul.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Materii",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    nume = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    anStudiu = table.Column<int>(type: "int", nullable: false),
+                    semestru = table.Column<int>(type: "int", nullable: false),
+                    descriere = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materii", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,7 +201,9 @@ namespace FMInatorul.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CompletedProfile = table.Column<bool>(type: "bit", nullable: false)
+                    CompletedProfile = table.Column<bool>(type: "bit", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Semester = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,6 +212,49 @@ namespace FMInatorul.Migrations
                         name: "FK_Students_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IntrebariRasps",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    intrebare = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    raspunsCorect = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    validareProfesor = table.Column<int>(type: "int", nullable: false),
+                    MaterieId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IntrebariRasps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IntrebariRasps_Materii_MaterieId",
+                        column: x => x.MaterieId,
+                        principalTable: "Materii",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Variantes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Choice = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IntrebariRaspId = table.Column<int>(type: "int", nullable: false),
+                    VariantaCorecta = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Variantes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Variantes_IntrebariRasps_IntrebariRaspId",
+                        column: x => x.IntrebariRaspId,
+                        principalTable: "IntrebariRasps",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -238,6 +299,11 @@ namespace FMInatorul.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IntrebariRasps_MaterieId",
+                table: "IntrebariRasps",
+                column: "MaterieId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Profesors_ApplicationUserId",
                 table: "Profesors",
                 column: "ApplicationUserId");
@@ -246,6 +312,11 @@ namespace FMInatorul.Migrations
                 name: "IX_Students_ApplicationUserId",
                 table: "Students",
                 column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Variantes_IntrebariRaspId",
+                table: "Variantes",
+                column: "IntrebariRaspId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -272,10 +343,19 @@ namespace FMInatorul.Migrations
                 name: "Students");
 
             migrationBuilder.DropTable(
+                name: "Variantes");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "IntrebariRasps");
+
+            migrationBuilder.DropTable(
+                name: "Materii");
         }
     }
 }
