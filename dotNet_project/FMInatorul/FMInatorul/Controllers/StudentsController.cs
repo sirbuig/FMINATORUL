@@ -38,7 +38,7 @@ namespace FMInatorul.Controllers
             var student = await db.Students
                                     .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
-            if(student.CompletedProfile == false)
+            if(student.CompletedProfile != false || User.IsInRole("Admin"))
             {
                 if (TempData.ContainsKey("ErrorMessage"))
                 {
@@ -116,6 +116,11 @@ namespace FMInatorul.Controllers
                     }
                 }
             }
+        }
+
+        public ActionResult ChatView()
+        {
+            return View();
         }
         
         [HttpPost]
