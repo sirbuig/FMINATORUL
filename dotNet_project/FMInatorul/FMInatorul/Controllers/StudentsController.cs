@@ -117,6 +117,11 @@ namespace FMInatorul.Controllers
                 }
             }
         }
+
+        public ActionResult ChatView()
+        {
+            return View();
+        }
         
         [HttpPost]
         public IActionResult SubmitQuiz(QuizModel quiz)
