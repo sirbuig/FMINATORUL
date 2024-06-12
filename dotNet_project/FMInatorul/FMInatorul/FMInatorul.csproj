@@ -15,6 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Views\Students\MateriiSingle.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
