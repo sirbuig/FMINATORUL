@@ -4,6 +4,13 @@
     ViewData["Title"] = "Edit Semester";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h2>Edit Semester</h2>
 
 @using (Html.BeginForm(controllerName: "Students", actionName: "EditSemester", method: FormMethod.Post,
