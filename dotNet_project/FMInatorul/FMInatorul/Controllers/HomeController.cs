@@ -101,20 +101,54 @@ public class HomeController : Controller
             // Get the string response from the API
             var responseString = await response.Content.ReadAsStringAsync();
 
-            var questions = JsonConvert.DeserializeObject<Dictionary<string,List<QuestionDto>>>(responseString);
+            // Print the response JSON to the console
+            Console.WriteLine(responseString);
 
-            foreach (var questionDto in questions["questions"].Skip(1))
+            //var questions = await response.Content.ReadFromJsonAsync<QuestionDtoList>();
+            //var questions = await response.Content.ReadAsStringAsync();
+
+            var jsonString = @"
+            {
+                ""Questions"": [
+                {
+                    ""answer"": ""A"",
+                    ""choices"": {
+                    ""A"": ""Option A"",
+                    ""B"": ""Option B"",
+                    ""C"": ""Option C"",
+                    ""D"": ""Option D""
+                    },
+                    ""question"": ""What is the capital of France?""
+                },
+                {
+                    ""answer"": ""C"",
+                    ""choices"": {
+                    ""A"": ""London"",
+                    ""B"": ""Berlin"",
+                    ""C"": ""Paris"",
+                    ""D"": ""Rome""
+                    },
+                    ""question"": ""Which city is known as the City of Love?""
+                }
+                ]
+            }";
+
+            var questions = JsonConvert.DeserializeObject<QuestionDtoList>(jsonString);
+
+ 
+            
+            foreach (var questionDto in questions.Questions)
             {
                 var intrebareRasp = new IntrebariRasp
                 {
-                    intrebare = questionDto.question,
-                    raspunsCorect = questionDto.answer,
+                    intrebare = questionDto.Question,
+                    raspunsCorect = questionDto.Answer,
                     validareProfesor = 0, // Assuming a default value; adjust as needed
                     MaterieId = materie_id,
-                    Variante = questionDto.choices.Select(choice => new Variante
+                    Variante = questionDto.Choices.Select(choice => new Variante
                     {
                         Choice = choice.Value,
-                        VariantaCorecta = choice.Key == questionDto.answer ? 1 : 0
+                        VariantaCorecta = choice.Key == questionDto.Answer ? 1 : 0
                     }).ToList()
                 };
 
@@ -122,10 +156,10 @@ public class HomeController : Controller
             }
 
             _db.SaveChanges();
-
+            
             ViewBag.materie = _db.Materii.Find(materie_id);
 
-            return View("Add_Questions", responseString); // Pass the quiz model to the view
+            return View("Add_Questions"); // Pass the quiz model to the view
         }
         else
         {

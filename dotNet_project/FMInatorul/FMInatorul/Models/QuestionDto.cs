@@ -1,9 +1,17 @@
-﻿namespace FMInatorul.Models
+﻿using FMInatorul.Models;
+
+namespace FMInatorul.Models
 {
     public class QuestionDto
     {
-        public string question { get; set; }
-        public string answer { get; set; }
-        public Dictionary <string,string> choices { get; set; }
+        public string Answer { get; set; }
+        public Dictionary <string,string> Choices { get; set; }
+        public string Question { get; set; }
+    }
+    public class QuestionDtoList
+    {
+
+        public List<QuestionDto> Questions { get; set; }
     }
 }
+
