@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace FMInatorul.Controllers
 {
@@ -88,7 +89,10 @@ namespace FMInatorul.Controllers
                 // Get the string response from the API
                 var responseString = await response.Content.ReadAsStringAsync();
                 var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
-                return View("Quiz", responseString); // Pass the quiz model to the view
+
+                Debug.WriteLine($"Response String: {responseString}");
+
+                return View("Quiz", quiz); // Pass the quiz model to the view
             }
             else
             {

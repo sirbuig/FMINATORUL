@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240611144927_fullRemake")]
+    [Migration("20240612154546_fullRemake")]
     partial class fullRemake
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

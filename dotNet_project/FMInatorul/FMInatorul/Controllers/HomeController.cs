@@ -105,39 +105,13 @@ public class HomeController : Controller
             Console.WriteLine(responseString);
 
             //var questions = await response.Content.ReadFromJsonAsync<QuestionDtoList>();
-            //var questions = await response.Content.ReadAsStringAsync();
+            var questions = await response.Content.ReadAsStringAsync();
 
-            var jsonString = @"
-            {
-                ""Questions"": [
-                {
-                    ""answer"": ""A"",
-                    ""choices"": {
-                    ""A"": ""Option A"",
-                    ""B"": ""Option B"",
-                    ""C"": ""Option C"",
-                    ""D"": ""Option D""
-                    },
-                    ""question"": ""What is the capital of France?""
-                },
-                {
-                    ""answer"": ""C"",
-                    ""choices"": {
-                    ""A"": ""London"",
-                    ""B"": ""Berlin"",
-                    ""C"": ""Paris"",
-                    ""D"": ""Rome""
-                    },
-                    ""question"": ""Which city is known as the City of Love?""
-                }
-                ]
-            }";
-
-            var questions = JsonConvert.DeserializeObject<QuestionDtoList>(jsonString);
+            var questions1 = JsonConvert.DeserializeObject<QuestionDtoList>(questions);
 
  
             
-            foreach (var questionDto in questions.Questions)
+            foreach (var questionDto in questions1.Questions)
             {
                 var intrebareRasp = new IntrebariRasp
                 {

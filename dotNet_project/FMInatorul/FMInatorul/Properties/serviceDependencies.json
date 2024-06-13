@@ -28,6 +28,11 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:FMInatorul4",
       "dynamicId": null
+    },
+    "mssql7": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:FMInatorul7",
+      "dynamicId": null
     }
   }
 }
