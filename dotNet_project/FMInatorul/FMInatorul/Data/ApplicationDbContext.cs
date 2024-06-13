@@ -12,7 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         : base(options)
     { }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-    public DbSet<Profesor> Profesors { get; set; }
+    public DbSet<Profesor> Professors { get; set; }
     public DbSet<Student> Students { get; set; }
 
     public DbSet<Materie> Materii {  get; set; }

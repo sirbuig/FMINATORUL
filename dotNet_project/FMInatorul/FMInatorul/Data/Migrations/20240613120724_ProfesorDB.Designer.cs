@@ -4,6 +4,7 @@ using FMInatorul.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240613120724_ProfesorDB")]
+    partial class ProfesorDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,7 +174,7 @@ namespace FMInatorul.Migrations
                     b.Property<bool>("CompletedProfile")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MaterieId")
+                    b.Property<int>("MaterieId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -395,7 +397,9 @@ namespace FMInatorul.Migrations
 
                     b.HasOne("FMInatorul.Models.Materie", "Materie")
                         .WithMany()
-                        .HasForeignKey("MaterieId");
+                        .HasForeignKey("MaterieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ApplicationUser");
 

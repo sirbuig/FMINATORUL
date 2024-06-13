@@ -1,14 +1,30 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
+
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+    var user = await UserManager.GetUserAsync(User);
+    var userEmail = user?.Email ?? string.Empty;
+    var isStudent = userEmail.Contains("@s.unibuc.ro");
+    var isProfesor = userEmail.Contains("@unibuc.ro") && !userEmail.Contains("@s.unibuc.ro");
 }
+
 <ul class="nav nav-pills flex-column">
     <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
-    <li class="nav-item"><a class="nav-link" id="edit-year" asp-controller="Students" asp-action="EditYear">Edit Year of Study</a></li>
-    <li class="nav-item"><a class="nav-link" id="edit-semester" asp-controller="Students" asp-action="EditSemester">Edit Semester of Study</a></li>
+
+    @if (isStudent)
+    {
+        <li class="nav-item"><a class="nav-link" id="edit-year" asp-controller="Students" asp-action="EditYear">Edit Year of Study</a></li>
+        <li class="nav-item"><a class="nav-link" id="edit-semester" asp-controller="Students" asp-action="EditSemester">Edit Semester of Study</a></li>
+    }
+    @if (isProfesor)
+    {
+        <li class="nav-item"><a class="nav-link" id="edit-group" asp-controller="Professors" asp-action="editMaterie">Edit Materie</a></li>
+    }
     <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
     <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
-    
+
     @if (hasExternalLogins)
     {
         <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>

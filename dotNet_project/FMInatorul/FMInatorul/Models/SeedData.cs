@@ -185,6 +185,7 @@ public static class SeedData
                         semestru = 2,
                         descriere = "Materia pune accent pe dezvoltarea abilităților de a gândi și a structura programele într-un mod modular și reutilizabil, utilizând conceptele POO pentru a crea soluții eficiente și robuste la problemele de programare."
                     }
+                   
                     );
             }
             context.SaveChanges();
