@@ -5,3 +5,7 @@ Link chat: https://chatgpt.com/share/21cbb2f1-30a0-4270-a923-01c231922d8a
 2. Pentru partea de Multiplayer (Server Side + Client Side)
 
 https://chatgpt.com/share/eea8cbb8-9471-4a51-af5c-b1d3353adbbe
+
+3. Pentru logare (verificarea tipului de user)
+
+https://chatgpt.com/share/def6072a-b178-46b5-b2e9-78b2f1080050
