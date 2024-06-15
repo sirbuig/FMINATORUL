@@ -9,243 +9,244 @@ using System.Diagnostics;
 
 namespace FMInatorul.Controllers
 {
-    [Authorize]
-    public class StudentsController : Controller
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
+	[Authorize]
+	public class StudentsController : Controller
+	{
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly SignInManager<ApplicationUser> _signInManager;
+		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly ApplicationDbContext db;
 
-        private readonly SignInManager<ApplicationUser> _signInManager;
+		public StudentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+		{
+			db = context;
+			_userManager = userManager;
+			_roleManager = roleManager;
+		}
 
-        private readonly RoleManager<IdentityRole> _roleManager;
+		// Returns the index view for students.
+		public async Task<IActionResult> Index()
+		{
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return Challenge();
+			}
+			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
-        private readonly ApplicationDbContext db;
-        private object form;
+			if (student.CompletedProfile == false)
+			{
+				if (TempData.ContainsKey("ErrorMessage"))
+				{
+					ViewBag.Message = TempData["ErrorMessage"];
+					return View(user);
+				}
+				else
+				{
+					TempData["ErrorMessage"] = "Please finish completing your profile.";
+					ViewBag.Message = TempData["ErrorMessage"];
+					return View(user);
+				}
+			}
 
-        public StudentsController(ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-        {
-            db = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
-       
-        public async Task<IActionResult> Index()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Challenge();
-            }
-            var student = await db.Students
-                                    .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+			if (TempData.ContainsKey("SuccessMessage"))
+			{
+				ViewBag.Message = TempData["SuccessMessage"];
+				return View(user);
+			}
+			return View(user);
+		}
 
-            if(student.CompletedProfile == false )
-            {
-                if (TempData.ContainsKey("ErrorMessage"))
-                {
-                    ViewBag.Message = TempData["ErrorMessage"];
-                    return View(user);
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Please finish completing your profile.";
-                    ViewBag.Message = TempData["ErrorMessage"];
-                    return View(user);
-                }
-            }
+		// Returns the play view.
+		public IActionResult Play()
+		{
+			return View();
+		}
 
-            if (TempData.ContainsKey("SuccessMessage"))
-            {
-                ViewBag.Message = TempData["SuccessMessage"];
-                return View(user);
-            }
-            return View(user);
-        }
+		// Returns the view to upload a PDF file.
+		public IActionResult UploadPdf()
+		{
+			return View();
+		}
 
-        public IActionResult Play()
-        {
-            return View();
-        }
+		// Handles the post request to upload a PDF file.
+		[HttpPost]
+		public async Task<IActionResult> UploadPdf([FromForm] IFormFile file)
+		{
+			if (file == null || file.Length == 0)
+			{
+				return BadRequest("No file uploaded!");
+			}
 
-        public IActionResult UploadPdf()
-        {
-            return View();
-        }
+			if (!IsPdfFile(file))
+			{
+				return BadRequest("Invalid file format. Only PDF files allowed!");
+			}
 
-        [HttpPost]
-        public async Task<IActionResult> UploadPdf([FromForm] IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file uploaded!");
-            }
-
-            if (!IsPdfFile(file))
-            {
-                return BadRequest("Invalid file format. Only PDF files allowed!");
-            }
-
-            // Upload the PDF to your Flask API (replace with your actual API URL)
+            // Upload the PDF to Flask API (replace with your actual API URL)
             //http://46.101.136.24/
+
             var response = await UploadPdfToFlaskApiAsync(file, "http://46.101.136.24:5555/");
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Get the string response from the API
-                var responseString = await response.Content.ReadAsStringAsync();
-                var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
+			if (response.IsSuccessStatusCode)
+			{
+				//Get the string repsponse from the API
+				var responseString = await response.Content.ReadAsStringAsync();
+				var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
 
-                Debug.WriteLine($"Response String: {responseString}");
+				Debug.WriteLine($"Response String: {responseString}");
 
-                return View("Quiz", quiz); // Pass the quiz model to the view
-            }
-            else
-            {
-                // Handle API upload error
-                return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
-            }
-        }
-        
-        private bool IsPdfFile(IFormFile file)
-        {
-            return file.ContentType.Contains("application/pdf");
-        }
+				return View("Quiz", quiz); //Pass the quiz model to the view
+			}
+			else
+			{
+				// Handle the API error
+				return StatusCode((int)response.StatusCode, $"Error uploading file: {response.ReasonPhrase}");
+			}
+		}
 
-        private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
-        {
-            using (var client = new HttpClient())
-            {
-                using (var multipartContent = new MultipartFormDataContent())
-                {
-                    using (var fileStream = file.OpenReadStream())
-                    {
-                        multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
-                        var response = await client.PostAsync(url, multipartContent);
-                        return response;
-                    }
-                }
-            }
-        }
+		// Checks if the uploaded file is a PDF.
+		private bool IsPdfFile(IFormFile file)
+		{
+			return file.ContentType.Contains("application/pdf");
+		}
 
-        public ActionResult ChatView()
-        {
-            return View();
-        }
-        
-        [HttpPost]
-        public IActionResult SubmitQuiz(QuizModel quiz)
-        {
-            return View("Results", quiz); // You could also pass the entire model to show detailed results
-        }
+		// Uploads the PDF file to a Flask API.
+		private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
+		{
+			using (var client = new HttpClient())
+			{
+				using (var multipartContent = new MultipartFormDataContent())
+				{
+					using (var fileStream = file.OpenReadStream())
+					{
+						multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
+						var response = await client.PostAsync(url, multipartContent);
+						return response;
+					}
+				}
+			}
+		}
 
+		// Returns the chat view.
+		public ActionResult ChatView()
+		{
+			return View();
+		}
 
-        public IActionResult MateriiSingle()
-        {
-            var Materii = db.Materii.ToList();
-            ViewBag.materii = Materii;
-            return View();
-        }
+		// Handles the post request to submit a quiz.
+		[HttpPost]
+		public IActionResult SubmitQuiz(QuizModel quiz)
+		{
+			return View("Results", quiz);
+		}
 
-        public async Task<IActionResult> EditYear()
-        {
-            var userId = _userManager.GetUserId(User);
-            var student = await db.Students
-                                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            if (TempData.ContainsKey("ErrorMessage"))
-            {
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View(student);
-            }
-            return View(student);
-        }
+		// Returns the view for single subject selection.
+		public IActionResult MateriiSingle()
+		{
+			var Materii = db.Materii.ToList();
+			ViewBag.materii = Materii;
+			return View();
+		}
 
-        [HttpPost]
-        public IActionResult EditYear(int id, Student student)
-        {
-            if (ModelState.IsValid)
-            {
-                return View(student);
-            }
-            else
-            {
-                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
+		// Returns the view to edit the student's year.
+		public async Task<IActionResult> EditYear()
+		{
+			var userId = _userManager.GetUserId(User);
+			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+			if (student == null)
+			{
+				return NotFound();
+			}
+			if (TempData.ContainsKey("ErrorMessage"))
+			{
+				ViewBag.Message = TempData["ErrorMessage"];
+				return View(student);
+			}
+			return View(student);
+		}
 
-                if (studentToUpdate == null)
-                {
-                    return NotFound();
-                }
+		// Handles the post request to edit the student's year.
+		[HttpPost]
+		public IActionResult EditYear(int id, Student student)
+		{
+			if (ModelState.IsValid)
+			{
+				return View(student);
+			}
+			else
+			{
+				Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
 
-                studentToUpdate.Year = student.Year;
-                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
-                {
-                    studentToUpdate.CompletedProfile = true;
-                }
-                if (student.Year >= 4 || student.Year <= 0)
-                {
-                    TempData["ErrorMessage"] = "Year must be between 1 and 3.";
-                    return RedirectToAction("EditYear", "Students");
-                }
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Year updated successfully.";
-                return RedirectToAction("Index", "Students");
-            }
+				if (studentToUpdate == null)
+				{
+					return NotFound();
+				}
 
-        }
+				studentToUpdate.Year = student.Year;
+				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
+				{
+					studentToUpdate.CompletedProfile = true;
+				}
+				if (student.Year >= 4 || student.Year <= 0)
+				{
+					TempData["ErrorMessage"] = "Year must be between 1 and 3.";
+					return RedirectToAction("EditYear", "Students");
+				}
+				db.SaveChanges();
+				TempData["SuccessMessage"] = "Year updated successfully.";
+				return RedirectToAction("Index", "Students");
+			}
+		}
 
-        public async Task<IActionResult> EditSemester()
-        {
-            var userId = _userManager.GetUserId(User);
-            var student = await db.Students
-                                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            if (TempData.ContainsKey("ErrorMessage"))
-            {
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View(student);
-            }
-            return View(student);
-        }
+		// Returns the view to edit the student's semester.
+		public async Task<IActionResult> EditSemester()
+		{
+			var userId = _userManager.GetUserId(User);
+			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+			if (student == null)
+			{
+				return NotFound();
+			}
+			if (TempData.ContainsKey("ErrorMessage"))
+			{
+				ViewBag.Message = TempData["ErrorMessage"];
+				return View(student);
+			}
+			return View(student);
+		}
 
-        [HttpPost]
-        public IActionResult EditSemester(int id, Student student)
-        {
-            if (ModelState.IsValid)
-            {
-                return View(student);
-            }
-            else
-            {
+		// Handles the post request to edit the student's semester.
+		[HttpPost]
+		public IActionResult EditSemester(int id, Student student)
+		{
+			if (ModelState.IsValid)
+			{
+				return View(student);
+			}
+			else
+			{
+				Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
 
-                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).First();
+				if (studentToUpdate == null)
+				{
+					return NotFound();
+				}
 
-                if (studentToUpdate == null)
-                {
-                    return NotFound();
-                }
-
-                studentToUpdate.Semester = student.Semester;
-                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
-                {
-                    studentToUpdate.CompletedProfile = true;
-                }
-                if(student.Semester >=3 || student.Semester <=0)
-                {
-                    TempData["ErrorMessage"] = "Semester must be between 1 and 2.";
-                    return RedirectToAction("EditSemester", "Students");
-                }
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Semester updated successfully.";
-                return RedirectToAction("Index", "Students");
-            }
-
-        }
-
-    }
+				studentToUpdate.Semester = student.Semester;
+				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
+				{
+					studentToUpdate.CompletedProfile = true;
+				}
+				if (student.Semester >= 3 || student.Semester <= 0)
+				{
+					TempData["ErrorMessage"] = "Semester must be between 1 and 2.";
+					return RedirectToAction("EditSemester", "Students");
+				}
+				db.SaveChanges();
+				TempData["SuccessMessage"] = "Semester updated successfully.";
+				return RedirectToAction("Index", "Students");
+			}
+		}
+	}
 }

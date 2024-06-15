@@ -1,8 +1,10 @@
 @{
+    // Set the title of the page.
     ViewData["Title"] = "Home Page";
 }
 
 @{
+    // Determine if the user is a Student or Professor.
     bool isStudent = User.IsInRole("Student");
     bool isProfesor = User.IsInRole("Profesor");
 }
@@ -31,12 +33,14 @@
 
 @if (isStudent == true)
 {
+    // Redirect to the Students index page if the user is a Student.
     <script type="text/javascript">
         window.location.href = '@Url.Action("Index", "Students")';
     </script>
 }
 else if (isProfesor == true)
 {
+    // Redirect to the Professors index page if the user is a Professor.
     <script type="text/javascript">
         window.location.href = '@Url.Action("Index", "Professors")';
     </script>
