@@ -2,85 +2,181 @@
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FMInatorul.Controllers
 {
-    public class ProfessorsController : Controller
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
+	public class ProfessorsController : Controller
+	{
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly ApplicationDbContext db;
 
-        private readonly RoleManager<IdentityRole> _roleManager;
+		public ProfessorsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+		{
+			db = context;
+			_userManager = userManager;
+			_roleManager = roleManager;
+		}
 
-        private readonly ApplicationDbContext db;
+		// Returns the index view for professors.
+		public async Task<IActionResult> Index()
+		{
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return Challenge();
+			}
+			var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+			if (profesor.CompletedProfile == false)
+			{
+				if (TempData.ContainsKey("ErrorMessage"))
+				{
+					ViewBag.Message = TempData["ErrorMessage"];
+					return View(user);
+				}
+				else
+				{
+					TempData["ErrorMessage"] = "Please finish completing your profile.";
+					ViewBag.Message = TempData["ErrorMessage"];
+					return View(user);
+				}
+			}
 
-        public ProfessorsController(ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-        {
-            db = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
+			if (TempData.ContainsKey("SuccessMessage"))
+			{
+				ViewBag.Message = TempData["SuccessMessage"];
+				return View(user);
+			}
+			return View();
+		}
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+		// Returns the view to edit the subject for a professor.
+		public async Task<IActionResult> EditMaterie()
+		{
+			var selectList = new List<SelectListItem>();
+			var materii = from m in db.Materii select m;
+			foreach (var item in materii)
+			{
+				selectList.Add(new SelectListItem
+				{
+					Value = item.Id.ToString(),
+					Text = item.nume.ToString()
+				});
+			}
 
+			var userId = _userManager.GetUserId(User);
+			var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+			profesor.Materii = selectList;
+			if (profesor == null)
+			{
+				return NotFound();
+			}
+			if (TempData.ContainsKey("ErrorMessage"))
+			{
+				ViewBag.Message = TempData["ErrorMessage"];
+				return View(profesor);
+			}
+			return View(profesor);
+		}
 
+		// Handles the post request to edit the subject for a professor.
+		[HttpPost]
+		public IActionResult EditMaterie(int id, Profesor prof)
+		{
+			if (ModelState.IsValid)
+			{
+				return View(prof);
+			}
+			else
+			{
+				Profesor profToUpdate = db.Professors.Where(pr => pr.Id == id).First();
 
+				if (profToUpdate == null)
+				{
+					return NotFound();
+				}
 
-        public async Task<IActionResult> editMaterie()
-        {
-            var Materii = db.Materii;
-            ViewBag.materii = Materii;
+				if (prof.MaterieId == null)
+				{
+					TempData["ErrorMessage"] = "Please select a subject.";
+					return RedirectToAction("EditMaterie", "Professors");
+				}
+				profToUpdate.MaterieId = prof.MaterieId;
+				profToUpdate.CompletedProfile = true;
 
-            var userId = _userManager.GetUserId(User);
-            var profesor = await db.Professors
-                                        .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
-            if (profesor == null)
-            {
-                return NotFound();
-            }
-            if (TempData.ContainsKey("ErrorMessage"))
-            {
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View(profesor);
-            }
-            return View(profesor);
-        }
+				db.SaveChanges();
+				TempData["SuccessMessage"] = "Materie updated successfully.";
+				return RedirectToAction("Index", "Professors");
+			}
+		}
 
-        [HttpPost]
-        public IActionResult editMaterie(int id, Profesor prof)
-        {
-            if (ModelState.IsValid)
-            {
-                return View(prof);
-            }
-            else
-            {
+		// Returns the view to validate or delete questions for a professor.
+		public async Task<IActionResult> Intrebari()
+		{
+			var user = await _userManager.GetUserAsync(User);
+			var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
-                Profesor profToUpdate = db.Professors.Where(stu => stu.Id == id).First();
+			if (profesor == null || profesor.MaterieId == null)
+			{
+				TempData["ErrorMessage"] = "Please finish completing your profile.";
+				return RedirectToAction("Index", "Professors");
+			}
 
-                if (profToUpdate == null)
-                {
-                    return NotFound();
-                }
+			var intrebari = await db.IntrebariRasps
+				.Where(i => i.MaterieId == profesor.MaterieId && i.validareProfesor == 0)
+				.ToListAsync();
 
-                profToUpdate.MaterieId = prof.MaterieId;
-               
-              
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Materie updated successfully.";
-                return RedirectToAction("Index", "Professors");
-            }
+			if (TempData.ContainsKey("SuccessMessage"))
+			{
+				ViewBag.Message = TempData["SuccessMessage"];
+				return View(intrebari);
+			}
 
-        }
+			return View(intrebari);
+		}
 
+		// Validates a question by setting its validation status.
+		public async Task<IActionResult> Valideaza(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
+			var intrebare = await db.IntrebariRasps.FindAsync(id);
+			if (intrebare == null)
+			{
+				return NotFound();
+			}
 
+			intrebare.validareProfesor = 1;
+			db.SaveChanges();
 
+			TempData["SuccessMessage"] = "Intrebarea a fost validata cu succes";
+			return RedirectToAction("Intrebari", "Professors");
+		}
 
+		// Deletes a question.
+		public async Task<IActionResult> NuValideaza(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-    }
+			var intrebare = await db.IntrebariRasps.FindAsync(id);
+			if (intrebare == null)
+			{
+				return NotFound();
+			}
+
+			db.IntrebariRasps.Remove(intrebare);
+			db.SaveChanges();
+
+			TempData["SuccessMessage"] = "Intrebarea a fost stearsa cu succes";
+			return RedirectToAction("Intrebari", "Professors");
+		}
+	}
 }

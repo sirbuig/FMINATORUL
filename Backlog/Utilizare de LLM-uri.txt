@@ -5,3 +5,19 @@ Link chat: https://chatgpt.com/share/21cbb2f1-30a0-4270-a923-01c231922d8a
 2. Pentru partea de Multiplayer (Server Side + Client Side)
 
 https://chatgpt.com/share/eea8cbb8-9471-4a51-af5c-b1d3353adbbe
+
+3. Pentru logare (verificarea tipului de user)
+
+https://chatgpt.com/share/def6072a-b178-46b5-b2e9-78b2f1080050
+
+4. Pentru debug la integrarea de AI
+
+https://chatgpt.com/share/a9ab9d99-2352-4b88-ab7d-5c23e182cf9a
+
+5. Dezvoltare feature-uri profesor
+
+https://chatgpt.com/share/f190bdc7-0158-4255-bf1b-09b115c4323b
+
+6. Adaugare de comentarii pertinente
+
+https://chatgpt.com/share/2ac393bf-a753-4fd3-830f-69ec3bb2e954

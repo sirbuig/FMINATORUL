@@ -1,4 +1,4 @@
-﻿@model ApplicationUser
+@model ApplicationUser
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -79,14 +79,12 @@
             }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="jumbotron">
-            <h2>Bine ai venit, @Model.FirstName @Model.LastName!</h2>
-            <h4>Vrei să începi jocul sau să vorbești cu prietenii tăi?</h4>
-            <a href="Play" class="btn btn-primary">Start Game</a>
-            <a href="ChatView" class="btn btn-secondary">Chat with Friends</a>
-        </div>
-    </div>
+<body class="align-items-center justify-content-center">
+<div class="text-center">
+    <h2 class="text-white">Bine ai venit, @Model.FirstName @Model.LastName!</h2>
+    <h4 class="text-white">Vrei sa incepi jocul sau sa vorbesti cu prietenii tai?</h4>
+    <a href="Play" class="btn btn-primary mr-3">Play</a>
+    <a href="ChatView" class="btn btn-secondary">Chat with Friends</a>
+</div>
 </body>
 </html>

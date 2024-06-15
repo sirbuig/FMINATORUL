@@ -1,7 +1,8 @@
 ﻿@model FMInatorul.Models.Profesor
 
 @{
-    ViewData["Title"] = "Edit Materie";
+    // Set the title of the page
+    ViewData["Title"] = "Editare Materie";
 }
 
 @if (TempData["ErrorMessage"] != null)
@@ -13,20 +14,21 @@
 
 <h2>Edit Materie</h2>
 
-@using (Html.BeginForm(controllerName: "Professors", actionName: "editMaterie", method: FormMethod.Post,
-   routeValues: new { id = Model.Id }))
+@using (Html.BeginForm(controllerName: "Professors", actionName: "EditMaterie", method: FormMethod.Post, routeValues: new { id = Model.Id }))
 {
-   
+    <label>Selectati Materia</label>
     <br />
-    @Html.DropDownListFor(m => m.MaterieId, new SelectList(Model.Materii, "Id", "Nume"), new { @class = "form-control" })
+    // Drop-down list for selecting a subject
+    @Html.DropDownListFor(m => m.MaterieId, new SelectList(Model.Materii, "Value", "Text"), "Selectati materia", new { @class = "form-control" })
     @Html.ValidationMessageFor(m => m.MaterieId, null, new { @class = "text-danger" })
 
+    // Hidden fields for properties that should not be directly edited by the user
     @Html.HiddenFor(m => m.CompletedProfile, new { Value = Model.CompletedProfile })
     @Html.HiddenFor(m => m.ApplicationUserId, new { Value = Model.ApplicationUserId })
     @Html.HiddenFor(m => m.ApplicationUser, new { Value = Model.ApplicationUser })
-    
+
     <br />
     <br />
+    // Submit button to save changes
     <button type="submit" class="btn btn-primary">Save</button>
-}
 }
