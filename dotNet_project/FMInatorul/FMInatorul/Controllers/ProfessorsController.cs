@@ -2,6 +2,7 @@
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FMInatorul.Controllers
@@ -22,22 +23,60 @@ namespace FMInatorul.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+            var profesor = await db.Professors
+                                    .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+            if (profesor.CompletedProfile == false)
+            {
+                if (TempData.ContainsKey("ErrorMessage"))
+                {
+                    ViewBag.Message = TempData["ErrorMessage"];
+                    return View(user);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Please finish completing your profile.";
+                    ViewBag.Message = TempData["ErrorMessage"];
+                    return View(user);
+                }
+            }
+
+            if (TempData.ContainsKey("SuccessMessage"))
+            {
+                ViewBag.Message = TempData["SuccessMessage"];
+                return View(user);
+            }
             return View();
         }
 
 
 
 
-        public async Task<IActionResult> editMaterie()
+        public async Task<IActionResult> EditMaterie()
         {
-            var Materii = db.Materii;
-            ViewBag.materii = Materii;
+            var selectList = new List<SelectListItem>();
+            var materii = from m in db.Materii select m;
+            foreach (var item in materii)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Value = item.Id.ToString(),
+                    Text = item.nume.ToString()
+                });
 
+            }
+
+            
             var userId = _userManager.GetUserId(User);
             var profesor = await db.Professors
                                         .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            profesor.Materii = selectList;
             if (profesor == null)
             {
                 return NotFound();
@@ -51,7 +90,7 @@ namespace FMInatorul.Controllers
         }
 
         [HttpPost]
-        public IActionResult editMaterie(int id, Profesor prof)
+        public IActionResult EditMaterie(int id, Profesor prof)
         {
             if (ModelState.IsValid)
             {
@@ -60,16 +99,21 @@ namespace FMInatorul.Controllers
             else
             {
 
-                Profesor profToUpdate = db.Professors.Where(stu => stu.Id == id).First();
+                Profesor profToUpdate = db.Professors.Where(pr => pr.Id == id).First();
 
                 if (profToUpdate == null)
                 {
                     return NotFound();
                 }
 
+                if(prof.MaterieId == null)
+                {
+                    TempData["ErrorMessage"] = "Please select a subject.";
+                    return RedirectToAction("EditMaterie", "Professors");
+                }
                 profToUpdate.MaterieId = prof.MaterieId;
-               
-              
+                profToUpdate.CompletedProfile = true;
+
                 db.SaveChanges();
                 TempData["SuccessMessage"] = "Materie updated successfully.";
                 return RedirectToAction("Index", "Professors");
