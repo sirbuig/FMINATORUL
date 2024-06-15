@@ -67,6 +67,11 @@ namespace FMInatorul.Controllers
             return View();
         }
 
+        public IActionResult UploadPdf()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> UploadPdf([FromForm] IFormFile file)
         {
@@ -241,5 +246,6 @@ namespace FMInatorul.Controllers
             }
 
         }
+
     }
 }
