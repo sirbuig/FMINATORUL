@@ -1,5 +1,6 @@
 @{
     bool isStudent = User.IsInRole("Student");
+    bool isProfesor = User.IsInRole("Profesor");
 }
 
 <!DOCTYPE html>
@@ -56,7 +57,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Play">Play Game</a>
                             </li>
                         }
-                       
+                        @if (isProfesor == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Professors" asp-action="Intrebari">Validare Intrebari</a>
+                            </li>
+                        }
                     </ul>
 
                     <partial name="_LoginPartial.cshtml" />

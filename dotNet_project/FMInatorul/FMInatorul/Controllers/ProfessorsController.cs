@@ -124,6 +124,72 @@ namespace FMInatorul.Controllers
 
 
 
+        public async Task<IActionResult> Intrebari()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var profesor = await db.Professors
+                                    .FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+
+            if (profesor == null || profesor.MaterieId == null)
+            {
+                TempData["ErrorMessage"] = "Please finish completing your profile.";
+                return RedirectToAction("Index", "Professors");
+            }
+
+            var intrebari = await db.IntrebariRasps
+                .Where(i => i.MaterieId == profesor.MaterieId && i.validareProfesor == 0)
+                .ToListAsync();
+
+            if (TempData.ContainsKey("SuccessMessage"))
+            {
+                ViewBag.Message = TempData["SuccessMessage"];
+                return View(intrebari);
+            }
+
+            return View(intrebari);
+        }
+
+        public async Task<IActionResult> Valideaza(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var intrebare = await db.IntrebariRasps.FindAsync(id);
+            if (intrebare == null)
+            {
+                return NotFound();
+            }
+            
+            intrebare.validareProfesor = 1;
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Intrebarea a fost validata cu succes";
+            return RedirectToAction("Intrebari", "Professors");
+
+        }
+
+        public async Task<IActionResult> NuValideaza(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var intrebare = await db.IntrebariRasps.FindAsync(id);
+            if (intrebare == null)
+            {
+                return NotFound();
+            }
+
+            db.IntrebariRasps.Remove(intrebare);
+            db.SaveChanges();
+
+            TempData["SuccessMessage"] = "Intrebarea a fost stearsa cu succes";
+            return RedirectToAction("Intrebari", "Professors");
+
+        }
 
 
     }
