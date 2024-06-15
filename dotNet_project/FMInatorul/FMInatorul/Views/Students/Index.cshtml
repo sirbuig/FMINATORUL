@@ -1,4 +1,4 @@
-@model ApplicationUser
+﻿@model ApplicationUser
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,15 +16,77 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8" />
-    <title>Welcome</title>
+    <title>Welcome to Trivia Game!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+        body {
+            background-color: #292b2c; /* Culoare de fundal închisă */
+            font-family: 'Roboto', sans-serif; /* Font principal */
+            color: #fff; /* Culoare text */
+            text-align: center;
+        }
+
+        .jumbotron {
+            background-color: rgba(241, 241, 241, 0.1); /* Culoare fundal jumbotron */
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2); /* Umbra pentru efect de adâncime */
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 2.5rem; /* Mărime titlu */
+            margin-bottom: 2rem;
+        }
+
+        h4 {
+            font-size: 1.5rem; /* Mărime subtitlu */
+            margin-bottom: 3rem;
+        }
+
+        .btn-primary, .btn-secondary {
+            font-size: 1.2rem;
+            padding: 1rem 3rem;
+            margin: 0.5rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #ffc107; /* Culoare buton primar */
+            border-color: #ffc107;
+            color: #292b2c; /* Culoare text buton */
+        }
+
+            .btn-primary:hover {
+                background-color: #ffca28; /* Culoare hover buton primar */
+                border-color: #ffca28;
+                color: #292b2c; /* Culoare text hover buton */
+            }
+
+        .btn-secondary {
+            background-color: #6c757d; /* Culoare buton secundar */
+            border-color: #6c757d;
+            color: #fff; /* Culoare text buton */
+        }
+
+            .btn-secondary:hover {
+                background-color: #5a6268; /* Culoare hover buton secundar */
+                border-color: #5a6268;
+                color: #fff; /* Culoare text hover buton */
+            }
+    </style>
 </head>
-<body class="align-items-center justify-content-center">
-<div class="text-center">
-    <h2 class="text-white">Bine ai venit, @Model.FirstName @Model.LastName!</h2>
-    <h4 class="text-white">Vrei sa incepi jocul sau sa vorbesti cu prietenii tai?</h4>
-    <a href="Students/Play" class="btn btn-primary mr-3">Play</a>
-    <a href="Students/ChatView" class="btn btn-secondary">Chat with Friends</a>
-</div>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+            <h2>Bine ai venit, @Model.FirstName @Model.LastName!</h2>
+            <h4>Vrei să începi jocul sau să vorbești cu prietenii tăi?</h4>
+            <a href="Play" class="btn btn-primary">Start Game</a>
+            <a href="ChatView" class="btn btn-secondary">Chat with Friends</a>
+        </div>
+    </div>
 </body>
 </html>
