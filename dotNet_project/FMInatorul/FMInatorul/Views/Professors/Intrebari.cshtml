@@ -22,7 +22,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.raspunsCorect)
                 </th>
-                <th></th>
+                
                 <th></th>
             </tr>
         </thead>
@@ -36,6 +36,7 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.raspunsCorect)
+                        @Html.DisplayFor(modelItem => item.Variante)
                     </td>
                     <td>
                         <!-- Button to validate the question -->
