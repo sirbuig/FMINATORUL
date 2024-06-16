@@ -38,7 +38,7 @@
             margin-bottom: 30px; /* Spatiere intre sectiuni */
         }
 
-        /* Stiluri butoane */
+        /* Stiluri butoane specifice pentru pagina */
         .page-btn {
             display: inline-block;
             padding: 15px 30px; /* Marime crescuta a butonului */
@@ -49,6 +49,7 @@
             transition: background-color 0.3s ease;
             background-color: #3f51b5; /* Fundal albastru inchis */
             color: white;
+            margin-bottom: 10px; /* Spatiere intre butoane */
         }
 
         .page-btn:hover {
@@ -67,22 +68,22 @@
     <div>
         <label for="gameModeButtons" class="text-white"><h1>Ce mod de joc alegi?</h1></label>
         <div id="gameModeButtons">
-            <button type="button" id="singleplayerBtn" class="btn btn-outline-primary">Singleplayer</button>
-            <button type="button" id="multiplayerBtn" class="btn btn-outline-primary" onclick="window.location.href='/Students/ChatView'">Multiplayer</button>
+            <button type="button" id="singleplayerBtn" class="page-btn">Singleplayer</button>
+            <button type="button" id="multiplayerBtn" class="page-btn" onclick="window.location.href='/Students/ChatView'">Multiplayer</button>
         </div>
 
         <div id="materialsQuestion" style="display: none;">
             <p class="text-white"><h2>Ai vrea sa joci cu materialele proprii sau sa le incerci pe cele deja existente?</h2></p>
-            <button type="button" id="myMaterials" class="btn btn-outline-primary">Am propriile mele materiale.</button>
-            <button type="button" id="yourMaterials" class="btn btn-outline-primary" onclick="window.location.href='/Students/MateriiSingle'">As vrea sa le incerc pe cele deja existente.</button>
+            <button type="button" id="myMaterials" class="page-btn">Am propriile mele materiale.</button>
+            <button type="button" id="yourMaterials" class="page-btn" onclick="window.location.href='/Students/MateriiSingle'">As vrea sa le incerc pe cele deja existente.</button>
         </div>
 
         <div id="materialsForm" style="display: none;">
             <div id="uploadForm">
                 <form method="post" enctype="multipart/form-data" asp-action="UploadPdf">
-                    <label for="file" class="text-white"> </label>
+                    <label for="file" class="text-white"></label>
                     <input type="file" name="file" accept=".pdf" />
-                    <input type="submit" value="Upload PDF" />
+                    <input type="submit" value="Upload PDF" class="page-btn" />
                 </form>
             </div>
         </div>

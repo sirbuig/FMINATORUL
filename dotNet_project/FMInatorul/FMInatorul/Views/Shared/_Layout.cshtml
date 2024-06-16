@@ -32,6 +32,9 @@
             border-top: 1px solid rgba(255, 255, 255, 0) !important; 
         }
 
+        .navbar-brand {
+            padding: 0 10px; /* Adjust padding as needed */
+        }
 
     </style>
 </head>
@@ -39,7 +42,9 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light transparent-navbar border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FMInatorul</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src='~/images/logo.png' alt="FMInatorul Logo" width="60" height="60" />
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
