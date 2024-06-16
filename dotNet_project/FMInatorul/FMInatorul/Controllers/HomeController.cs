@@ -133,8 +133,8 @@ public class HomeController : Controller
 
 			_db.SaveChanges();
 			ViewBag.materie = _db.Materii.Find(materie_id);
-
-			return View("Add_Questions"); //Pass the Quiz Model to the View
+            TempData["SuccessMessage"] = "Added questions successfully";
+            return RedirectToAction("Admin", "Home"); //Pass the Quiz Model to the View
 		}
 		else
 		{

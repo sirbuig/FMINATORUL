@@ -6,6 +6,12 @@
 @{
 
 }
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 <select id="materieDropdown">
     <option value="">Alegeți o materie</option>
     @foreach (var materie in ViewBag.Materii)
