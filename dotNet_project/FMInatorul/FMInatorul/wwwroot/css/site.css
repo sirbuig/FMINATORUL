@@ -30,10 +30,37 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+.footer[b-9g1omx7iki] {
+    line-height: 2.2rem;
+}
 
 
+#approved_professor {
+    border-radius: 5px;
+    font-size: 0.5rem;
+    overflow: hidden; /* Hides the background when there is no content */
+    display: inline-flex; /* Change display property */
+    width: auto; /* Allow the width to adjust based on content */
+    margin-top:0.5rem;
+    float:right;
+    align-items:center;
 
+    
+}
 
+    #approved_professor img,
+    #approved_professor span {
+        display: inline-block;
+        vertical-align: middle;
+    }
 
+    #approved_professor span {
+        color: white;
+    }
+
+    #approved_professor.has-content {
+        background-color: #808080 !important; /* Override background color */
+    }
+    
 
 

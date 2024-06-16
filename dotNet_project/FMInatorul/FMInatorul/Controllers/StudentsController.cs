@@ -1,4 +1,5 @@
 using FMInatorul.Data;
+using FMInatorul.Migrations;
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -248,5 +249,20 @@ namespace FMInatorul.Controllers
 				return RedirectToAction("Index", "Students");
 			}
 		}
-	}
+
+		public IActionResult ShowIntrebari()
+		{
+            var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+            //luam intrebarile de la materia respectiva care sunt aprobate de profesori
+            var intrebari = db.IntrebariRasps
+								.Where(i => i.MaterieId == materie_id && i.validareProfesor == 1)
+                                .Include(i => i.Materie)
+								.Include(i => i.Variante)
+                                .ToList();
+
+			return View(intrebari);
+        }
+       
+
+    }
 }

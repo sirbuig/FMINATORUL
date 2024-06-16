@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FMInatorul.styles.css" asp-append-version="true" />
     <style>
+
         /* Am facut navbarul mai transparent*/
         .transparent-navbar {
             background-color: rgba(255, 255, 255, 0.3); 
@@ -32,6 +33,9 @@
             border-top: 1px solid rgba(255, 255, 255, 0) !important; 
         }
 
+        <link rel="preconnect" href="https://fonts.googleapis.com" >
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin >
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" >
         .navbar-brand {
             padding: 0 10px; /* Adjust padding as needed */
         }
@@ -89,7 +93,18 @@
     </div>
 
     <footer class="border-top footer text-muted transparent-footer">
-        <div class="container">
+        <div class="container" >
+           
+            <div style="display:inline-block; background-color:#303030; border-radius:1rem; padding:0 1rem; margin-bottom:0.2rem; ">
+                <img src="~/images/Google_Bard_logo_anmyju.svg" height="25px" width="25px"> 
+                <span style="background: linear-gradient(45deg, #00BFFF, #FFFFFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                font-family:Poppins, sans-serif;
+                      font-weight: 400;
+                      font-style: normal;
+                      ">
+                    Powered by Gemini
+                </span>
+            </div>
             &copy; 2024 - FMInatorul - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>

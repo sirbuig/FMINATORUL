@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Protocol;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace FMInatorul.Controllers;
 
@@ -112,18 +114,19 @@ public class HomeController : Controller
 
 			foreach (var questionDto in questions1.Questions)
 			{
+				var stringrasp = "";
 				var intrebareRasp = new IntrebariRasp
 				{
 					intrebare = questionDto.Question,
-					raspunsCorect = questionDto.Answer,
 					validareProfesor = 0,
 					MaterieId = materie_id,
 					Variante = questionDto.Choices.Select(choice => new Variante
 					{
 						Choice = choice.Value,
 						VariantaCorecta = choice.Key == questionDto.Answer ? 1 : 0
-					}).ToList()
-				};
+                    }).ToList(),
+					raspunsCorect = questionDto.Choices.FirstOrDefault(choice => choice.Key == questionDto.Answer).Value
+                };
 
 				_db.IntrebariRasps.Add(intrebareRasp);
 			}
