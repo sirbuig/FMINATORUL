@@ -8,7 +8,22 @@
     bool isStudent = User.IsInRole("Student");
     bool isProfesor = User.IsInRole("Profesor");
 }
-
+<head>
+    <style>
+        h2 {
+            font-size: 3em;
+            margin-bottom: 50px; /* Spatiere crescuta pentru titlu */
+            font-family: 'Dancing Script', cursive; /* Font decorativ pentru titlu */
+        }
+        
+        h4 {
+            font-size: 2em;
+            margin-bottom: 50px; /* Spatiere crescuta pentru titlu */
+            font-family: 'Dancing Script', cursive; /* Font decorativ pentru titlu */
+        }
+        
+    </style>
+</head>
 @if (isStudent == false && isProfesor == false)
 {
     <!DOCTYPE html>
