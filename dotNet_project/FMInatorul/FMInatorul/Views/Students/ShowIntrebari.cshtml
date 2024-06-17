@@ -94,7 +94,7 @@
         loadQuestion(currentIndex);
     }
     function updateProgress() {
-        document.getElementById('progress').innerText = `Întrebări completate: ${currentIndex} din ${questions.length}`;
+        document.getElementById('progress').innerText = `Întrebări completate: ${currentIndex + 1} din ${questions.length}`;
     }
     // Initialize first question
     loadQuestion(currentIndex);
