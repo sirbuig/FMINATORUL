@@ -1,0 +1,88 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Add Questions";
+}
+
+<h2>Add Questions</h2>
+
+<form method="post" asp-controller="Home" asp-action="Add_Questions">
+    <input type="hidden" id="jsonData" name="jsonData" value="@Html.Raw(Model)" />
+
+    <div id="questionsContainer"></div>
+
+    <!-- Hidden fields to store the JSON and the list -->
+    <input type="hidden" id="selectedQuestionsJson" name="selectedQuestionsJson" />
+    <input type="hidden" id="selectionList" name="selectionList" />
+
+    <input type="submit" value="Save Questions" onclick="prepareData()" />
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var jsonData = @Html.Raw(Model);
+
+            var questionsContainer = document.getElementById('questionsContainer');
+
+            jsonData.questions.forEach(function (question, index) {
+                var questionContainer = document.createElement('div');
+                questionContainer.className = 'question-container';
+
+                
+
+                // Add a checkbox to select the entire question
+                var selectQuestionLabel = document.createElement('label');
+                var selectQuestionCheckbox = document.createElement('input');
+                selectQuestionCheckbox.type = 'checkbox';
+                selectQuestionCheckbox.className = 'question-checkbox';
+                selectQuestionCheckbox.value = index;
+                selectQuestionLabel.appendChild(selectQuestionCheckbox);
+
+                var questionBox = document.createElement('div');
+                questionBox.className = 'question-box';
+                questionBox.innerHTML = '<p>' + question.question + '</p>';
+
+                var choicesBox = document.createElement('div');
+                choicesBox.className = 'choices-box';
+
+                for (var choiceKey in question.choices) {
+                    var choiceBox = document.createElement('div');
+                    choiceBox.appendChild(document.createTextNode(choiceKey + ": " + question.choices[choiceKey]));
+                    selectQuestionLabel.appendChild(choiceBox);
+                }
+
+                selectQuestionLabel.appendChild(document.createTextNode(' Select this question'));
+                questionBox.appendChild(selectQuestionLabel);
+
+                questionContainer.appendChild(questionBox);
+
+                // Create a div for the choices (to display, but not selectable)
+                
+
+                questionContainer.appendChild(choicesBox);
+
+                questionsContainer.appendChild(questionContainer);
+            });
+        });
+
+        function prepareData() {
+            var selectedQuestions = [];
+            var selectionList = new Array(JSON.parse(document.getElementById('jsonData').value).questions.length).fill(0);
+
+            // Get all question checkboxes
+            var questionCheckboxes = document.querySelectorAll('.question-checkbox:checked');
+
+            questionCheckboxes.forEach(function (questionCheckbox) {
+                var questionIndex = parseInt(questionCheckbox.value);
+
+                selectedQuestions.push(JSON.parse(document.getElementById('jsonData').value).questions[questionIndex]);
+                selectionList[questionIndex] = 1; // Mark the question as selected
+            });
+
+            // Set the selected questions JSON and the selection list to the hidden inputs
+            document.getElementById('selectedQuestionsJson').value = JSON.stringify({ questions: selectedQuestions });
+            document.getElementById('selectionList').value = JSON.stringify(selectionList);
+        }
+    </script>
+}

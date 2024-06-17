@@ -1,12 +1,29 @@
-﻿@{
+@{
+    // Set the title of the page.
     ViewData["Title"] = "Home Page";
 }
 
 @{
-    bool isStudent = User.IsInRole("Student"); 
+    // Determine if the user is a Student or Professor.
+    bool isStudent = User.IsInRole("Student");
     bool isProfesor = User.IsInRole("Profesor");
 }
-
+<head>
+    <style>
+        h2 {
+            font-size: 3em;
+            margin-bottom: 50px; /* Spatiere crescuta pentru titlu */
+            font-family: 'Dancing Script', cursive; /* Font decorativ pentru titlu */
+        }
+        
+        h4 {
+            font-size: 2em;
+            margin-bottom: 50px; /* Spatiere crescuta pentru titlu */
+            font-family: 'Dancing Script', cursive; /* Font decorativ pentru titlu */
+        }
+        
+    </style>
+</head>
 @if (isStudent == false && isProfesor == false)
 {
     <!DOCTYPE html>
@@ -18,8 +35,12 @@
     </head>
     <body class="align-items-center justify-content-center">
         <div class="text-center">
-            <h2 class="text-white">Bine ai venit! </h2>
-            <h2 class="text-white">Pentru a putea juca, te rugam sa iti faci un cont ! </h2>
+            <h2 class="text-white">Bine ai venit!</h2>
+            <h4 class="text-white">Care este rolul Dumneavoastra?</h4>
+            <div class="mt-4">
+                <a href="Identity/Account/Register" class="btn btn-primary mr-3">Sunt Student</a>
+                <a href="Identity/Account/Register" class="btn btn-secondary">Sunt Profesor</a>
+            </div>
         </div>
     </body>
     </html>
@@ -27,13 +48,15 @@
 
 @if (isStudent == true)
 {
+    // Redirect to the Students index page if the user is a Student.
     <script type="text/javascript">
         window.location.href = '@Url.Action("Index", "Students")';
     </script>
 }
 else if (isProfesor == true)
 {
+    // Redirect to the Professors index page if the user is a Professor.
     <script type="text/javascript">
-        window.location.href = '@Url.Action("Index", "Profesors")';
+        window.location.href = '@Url.Action("Index", "Professors")';
     </script>
 }

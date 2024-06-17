@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Views\Students\MateriiSingle.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
@@ -15,6 +19,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.22" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.28" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.28" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.28" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.28">
             <PrivateAssets>all</PrivateAssets>
@@ -36,8 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Migrations\" />
-      <Folder Include="Migrations\" />
+      <Folder Include="Views\NewFolder\" />
     </ItemGroup>
 
 </Project>

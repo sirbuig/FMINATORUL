@@ -157,8 +157,9 @@ public class RegisterModel : PageModel
                     var profesor = new Profesor
                     {
                         ApplicationUserId = user.Id
+                        
                     };
-                    db.Profesors.Add(profesor);
+                    db.Professors.Add(profesor);
                 }
 
                 _logger.LogInformation("User created a new account with password.");

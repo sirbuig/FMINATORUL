@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+@{
+    bool isStudent = User.IsInRole("Student");
+    bool isProfesor = User.IsInRole("Profesor");
+    bool isAdmin = User.IsInRole("Admin");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,6 +14,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FMInatorul.styles.css" asp-append-version="true" />
     <style>
+
         /* Am facut navbarul mai transparent*/
         .transparent-navbar {
             background-color: rgba(255, 255, 255, 0.3); 
@@ -26,6 +33,12 @@
             border-top: 1px solid rgba(255, 255, 255, 0) !important; 
         }
 
+        <link rel="preconnect" href="https://fonts.googleapis.com" >
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin >
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" >
+        .navbar-brand {
+            padding: 0 10px; /* Adjust padding as needed */
+        }
 
     </style>
 </head>
@@ -33,7 +46,9 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light transparent-navbar border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FMInatorul</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src='~/images/logo.png' alt="FMInatorul Logo" width="60" height="60" />
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -41,18 +56,27 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="IndexNew">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if (User.Identity is { IsAuthenticated: true })
+                        @if (isStudent == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Index">Dashboard</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Play">Play Game</a>
                             </li>
+                        }
+                        @if (isProfesor == true)
+                        {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Students" asp-action="Play">Play</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Professors" asp-action="Intrebari">Validare Intrebari</a>
+                            </li>
+                        }
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Admin">Admin</a>
                             </li>
                         }
                     </ul>
@@ -69,7 +93,18 @@
     </div>
 
     <footer class="border-top footer text-muted transparent-footer">
-        <div class="container">
+        <div class="container" >
+           
+            <div style="display:inline-block; background-color:#303030; border-radius:1rem; padding:0 1rem; margin-bottom:0.2rem; ">
+                <img src="~/images/Google_Bard_logo_anmyju.svg" height="25px" width="25px"> 
+                <span style="background: linear-gradient(45deg, #00BFFF, #FFFFFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                font-family:Poppins, sans-serif;
+                      font-weight: 400;
+                      font-style: normal;
+                      ">
+                    Powered by Gemini
+                </span>
+            </div>
             &copy; 2024 - FMInatorul - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>

@@ -1,0 +1,101 @@
+﻿@model List<FMInatorul.Models.IntrebariRasp>
+
+@{
+    ViewData["Title"] = "Quiz Page";
+    var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            };
+}
+
+<h1 style="text-align:center;"><span style="color:white">Quiz</span>  
+</h1>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var approvedProfessor = document.getElementById("approved_professor");
+        var hasContent = approvedProfessor.querySelector("span").textContent.trim().length > 0;
+        if (hasContent) {
+            approvedProfessor.classList.add("has-content");
+        }
+    });
+</script>
+
+<div class="card h-100 shadow-sm" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px); text-align:center;">
+    <p id="progress">Întrebări completate: 0 din @Model.Count</p>
+</div>
+
+<div id="quiz-container">
+    <!-- Întrebările vor fi generate aici din JavaScript -->
+</div>
+<div id="approved_professor" >
+    <img src="~/images/check.svg" height="25px" width="25px" style="filter: filter: invert(88%) sepia(56%) saturate(5043%) hue-rotate(34deg) brightness(101%) contrast(101%);">
+    <span style="color: white;">All the questions have been approved by a professor.</span>
+</div>
+<button id="next-question" onclick="showNextQuestion()" style="display:none;">Următoarea întrebare</button>
+
+<script>
+    var questions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model, jsonSettings));
+    var currentIndex = 0;
+    var correctAnswers = 0;
+
+    function loadQuestion(index) {
+        if (index >= questions.length) {
+            document.getElementById('quiz-container').innerHTML = '<p>Ai completat toate întrebările! Felicitări!</p>';
+            document.getElementById('next-question').style.display = 'none';
+            return;
+        }
+
+        var question = questions[index];
+        var container = document.getElementById('quiz-container');
+
+        container.innerHTML = `
+                    <div class="card h-100 shadow-sm" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px);">
+
+                    <div class="card-body d-flex flex-column">
+                <h2>${question.intrebare}</h2>
+                <ul>
+                    ${question.Variante.map(v => `
+                        <li>
+                            <input type="radio" name="variant" value="${v.Id}" /> ${v.Choice}
+                        </li>
+                    `).join('')}
+                </ul>
+                <button onclick="checkAnswer()">Verifică răspunsul</button>
+                </div>
+                </div>
+            `;
+        updateProgress();
+       
+    }
+
+    function checkAnswer() {
+        var selectedVariant = document.querySelector('input[name="variant"]:checked');
+        if (!selectedVariant) {
+            alert('Te rog să selectezi o variantă.');
+            return;
+        }
+
+        var variantId = parseInt(selectedVariant.value);
+        var correctVariant = questions[currentIndex].Variante.find(v => v.VariantaCorecta == 1);
+        console.log(correctVariant)
+        if (correctVariant && correctVariant.Id == variantId) {
+            correctAnswers++;
+            alert('Răspuns corect!');
+        } else {
+            alert('Răspuns greșit.');
+        }
+
+        document.getElementById('next-question').style.display = 'inline';
+    }
+
+    function showNextQuestion() {
+        currentIndex++;
+        document.getElementById('next-question').style.display = 'none';
+        loadQuestion(currentIndex);
+    }
+    function updateProgress() {
+        document.getElementById('progress').innerText = `Întrebări completate: ${currentIndex + 1} din ${questions.length}`;
+    }
+    // Initialize first question
+    loadQuestion(currentIndex);
+</script>

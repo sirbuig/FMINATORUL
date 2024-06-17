@@ -1,0 +1,33 @@
+﻿@model ApplicationUser
+
+@{
+    // Display success message if it exists in TempData
+    if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    // Display error message if it exists in TempData
+    if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+}
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8" />
+    <title>Welcome</title>
+    <!-- Link to the site's CSS file with versioning for cache busting -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="align-items-center justify-content-center">
+    <div class="text-center">
+        <!-- Welcome message for the professor -->
+        <h2 class="text-white">Bine ai venit, domnule profesor!</h2>
+    </div>
+</body>
+</html>

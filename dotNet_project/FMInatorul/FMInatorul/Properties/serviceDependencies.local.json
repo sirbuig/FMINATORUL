@@ -38,6 +38,13 @@
       "type": "mssql.local",
       "connectionId": "ConnectionStrings:FMInatorul4",
       "dynamicId": null
+    },
+    "mssql7": {
+      "serviceConnectorResourceId": "",
+      "secretStore": null,
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:FMInatorul7",
+      "dynamicId": null
     }
   }
 }

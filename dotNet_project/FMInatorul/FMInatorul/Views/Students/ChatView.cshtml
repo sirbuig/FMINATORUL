@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .chat {
+            margin: auto;
+            max-width: 400px;
+            /*background-color: rgba(255, 255, 255, 0.9); /* Fundal semi-transparent */
+            /*backdrop-filter: blur(10px); /* Efect de blur pentru fundal de tip glass */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 10px;
+            background: #4a90e2; /* Culoare albastră mai plăcută */
+            color: #fff;
+            text-align: center;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+
+        }
+
+        .chat-body {
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background: rgba(241, 241, 241, 0.5); /* Fundal semi-transparent */
+            backdrop-filter: blur(7px); /* Efect de blur pentru fundal de tip glass */
+            
+        }
+
+        .chat-footer {
+            padding: 10px;
+            background: #4a90e2; /* Culoare albastră mai plăcută */
+            color: #fff;
+            display: flex;
+            gap: 10px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .chat-footer input {
+            flex-grow: 1;
+        }
+
+        .chat-footer button {
+            flex-shrink: 0;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .chat-message.user {
+            align-items: flex-end;
+        }
+
+        .chat-message .message {
+            padding: 10px 15px;
+            border-radius: 20px;
+            background: #4a90e2; /* Culoare albastră mai plăcută */
+            color: #fff;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .chat-message.other .message {
+            background: #6c757d;
+        }
+
+        .chat-message .user-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 chat">
+        <div class="chat-header">
+            <h3>Chat Room</h3>
+        </div>
+        <div class="chat-body" id="messagesList"></div>
+        <div class="chat-footer">
+            <input type="text" id="userInput" placeholder="Enter your name" class="form-control" />
+            <input type="text" id="messageInput" placeholder="Type your message here..." class="form-control" />
+            <button id="sendButton" class="btn btn-primary">Send</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.9/signalr.min.js"></script>
+    <script>
+        "use strict";
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        //Disable the send button until connection is established.
+        document.getElementById("sendButton").disabled = true;
+
+        connection.on("ReceiveMessage", function (user, message) {
+            var div = document.createElement("div");
+            div.classList.add("chat-message");
+
+            var userNameDiv = document.createElement("div");
+            userNameDiv.classList.add("user-name");
+            userNameDiv.textContent = user;
+
+            var messageDiv = document.createElement("div");
+            messageDiv.classList.add("message");
+            messageDiv.textContent = message;
+
+            div.appendChild(userNameDiv);
+            div.appendChild(messageDiv);
+
+            // Check if the message is from the current user
+            if (user === document.getElementById("userInput").value) {
+                div.classList.add("user");
+            } else {
+                div.classList.add("other");
+            }
+
+            document.getElementById("messagesList").appendChild(div);
+            document.getElementById("messagesList").scrollTop = document.getElementById("messagesList").scrollHeight;
+        });
+
+        connection.start().then(function () {
+            document.getElementById("sendButton").disabled = false;
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            var user = document.getElementById("userInput").value;
+            var message = document.getElementById("messageInput").value;
+            connection.invoke("SendMessage", user, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>

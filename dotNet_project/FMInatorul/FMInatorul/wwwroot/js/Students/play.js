@@ -27,6 +27,7 @@
 
     multiplayerBtn.addEventListener('click', function () {
         toggleGameMode('multiplayer');
+        joinMultiplayerRoom();
     });
 
     myMaterialsBtn.addEventListener('click', function () {
@@ -39,5 +40,34 @@
         this.classList.add('btn-active');
         myMaterialsBtn.classList.remove('btn-active');
         materialsForm.style.display = 'none';
+    });
+
+    // SignalR connection setup
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+
+    connection.start().then(function () {
+        console.log("SignalR Connected.");
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    // Function to join multiplayer room
+    function joinMultiplayerRoom() {
+        const roomName = "multiplayerRoom"; 
+        connection.invoke("JoinRoom", roomName).catch(function (err) {
+            return console.error(err.toString());
+        });
+        console.log("Joined room: " + roomName);
+    }
+
+    // Handle PlayerJoined and PlayerLeft events
+    connection.on("PlayerJoined", function (playerId) {
+        console.log(playerId + " joined the room.");
+    });
+
+    connection.on("PlayerLeft", function (playerId) {
+        console.log(playerId + " left the room.");
     });
 });
