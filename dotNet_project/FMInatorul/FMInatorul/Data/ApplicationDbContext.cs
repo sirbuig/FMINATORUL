@@ -19,7 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<IntrebariRasp> IntrebariRasps { get; set; }
     public DbSet<Variante> Variantes { get; set; }
-
+    public DbSet<Facultate> Facultati { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

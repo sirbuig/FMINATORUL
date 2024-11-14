@@ -1,0 +1,43 @@
+﻿@model FMInatorul.Models.Student
+
+@{
+    ViewData["Title"] = "Edit College";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<h2>Edit College</h2>
+
+@if (Model != null && ViewBag.Facultati != null)
+{
+    @using (Html.BeginForm(controllerName: "Students", actionName: "EditCollege", method: FormMethod.Post,
+   routeValues: new { id = Model.Id }))
+    {
+        @Html.DropDownListFor(m => m.FacultateID, new SelectList(ViewBag.Facultati, "Value", "Text"),"Selectati facultatea", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.FacultateID, null, new { @class = "text-danger" })
+
+        @Html.HiddenFor(m => m.Semester)
+        @Html.HiddenFor(m => m.Year)
+        @Html.HiddenFor(m => m.ApplicationUserId)
+        @Html.HiddenFor(m => m.ApplicationUser)
+
+        <br />
+        <button type="submit" class="btn btn-primary">Save</button>
+    }
+}
+else
+{
+    <p>Could not load the student information.</p>
+}

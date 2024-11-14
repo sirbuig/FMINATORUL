@@ -12,6 +12,11 @@ public class Materie
     public int semestru { get; set; }
 
     public string descriere { get; set; }
+
+    public int FacultateID { get; set; }
+
+    public virtual Facultate Facultate { get; set; }
+
     public virtual ICollection<IntrebariRasp>? IntrebariRasp { get; set; }
 
 }

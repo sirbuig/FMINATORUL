@@ -1,37 +1,8 @@
 {
   "dependencies": {
-    "mssql1": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:DefaultConnection"
-    },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:FMInatorul",
-      "dynamicId": null
-    },
     "mssql3": {
       "type": "mssql",
       "connectionId": "FMInatorul",
-      "dynamicId": null
-    },
-    "mssql4": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:FMInatorul2",
-      "dynamicId": null
-    },
-    "mssql5": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:FMInatorul3",
-      "dynamicId": null
-    },
-    "mssql6": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:FMInatorul4",
-      "dynamicId": null
-    },
-    "mssql7": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:FMInatorul7",
       "dynamicId": null
     }
   }

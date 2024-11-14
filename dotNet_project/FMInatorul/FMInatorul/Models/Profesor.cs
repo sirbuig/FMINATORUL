@@ -12,6 +12,10 @@ namespace FMInatorul.Models
         public virtual ApplicationUser ApplicationUser { get; set; }
         public bool CompletedProfile { get; set; }
 
+        public int FacultateID { get; set; }
+
+        public virtual Facultate Facultate { get; set; }
+
         public int? MaterieId { get; set; }
         public virtual Materie? Materie { get; set; }
 

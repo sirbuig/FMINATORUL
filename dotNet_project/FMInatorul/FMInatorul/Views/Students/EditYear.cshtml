@@ -21,9 +21,11 @@
     @Html.EditorFor(m => m.Year, new { htmlAttributes = new { @class = "form-control" } })
     @Html.ValidationMessageFor(m => m.Year, null, new { @class = "text-danger" })
 
-    @Html.HiddenFor(m => m.Semester, new { Value = 2 })
+    @Html.HiddenFor(m => m.Semester, new { Value = Model.Semester })
     @Html.HiddenFor(m => m.ApplicationUserId, new { Value = Model.ApplicationUserId })
     @Html.HiddenFor(m => m.ApplicationUser, new { Value = Model.ApplicationUser })
+    @Html.HiddenFor(m => m.FacultateID, new { Value = Model.FacultateID })
+    @Html.HiddenFor(m => m.Facultate, new { Value = Model.Facultate })
     <br />
     <br />
     <button type="submit" class="btn btn-primary" >Save</button>

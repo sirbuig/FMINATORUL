@@ -55,20 +55,29 @@ namespace FMInatorul.Controllers
 		// Returns the view to edit the subject for a professor.
 		public async Task<IActionResult> EditMaterie()
 		{
-			var selectList = new List<SelectListItem>();
-			var materii = from m in db.Materii select m;
-			foreach (var item in materii)
-			{
-				selectList.Add(new SelectListItem
-				{
-					Value = item.Id.ToString(),
-					Text = item.nume.ToString()
-				});
-			}
 
-			var userId = _userManager.GetUserId(User);
-			var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
-			profesor.Materii = selectList;
+            // Obține ID-ul utilizatorului conectat
+            var userId = _userManager.GetUserId(User);
+
+            // Găsește profesorul pe baza ApplicationUserId
+            var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (profesor == null)
+            {
+                return NotFound();
+            }
+
+            // Obține materiile care aparțin facultății profesorului selectat
+            var materii = await db.Materii
+                .Where(m => m.FacultateID == profesor.FacultateID)
+                .Select(m => new SelectListItem
+                {
+                    Value = m.Id.ToString(),
+                    Text = m.nume
+                })
+                .ToListAsync();
+
+			profesor.Materii = materii;
 			if (profesor == null)
 			{
 				return NotFound();
@@ -137,8 +146,69 @@ namespace FMInatorul.Controllers
 			return View(intrebari);
 		}
 
-		// Validates a question by setting its validation status.
-		public async Task<IActionResult> Valideaza(int? id)
+        public async Task<IActionResult> EditCollegeProf()
+        {
+            var userId = _userManager.GetUserId(User);
+            var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (profesor == null)
+            {
+                TempData["ErrorMessage"] = "Profesor not found.";
+                return RedirectToAction("Index");
+            }
+
+            // Populate the ViewBag with faculties for the dropdown list
+            var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
+
+            ViewBag.Facultati = facultati.Select(f => new SelectListItem
+            {
+                Value = f.Id.ToString(),
+                Text = f.nume
+            }).ToList();
+
+
+            if (TempData.ContainsKey("ErrorMessage"))
+            {
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View(profesor);
+            }
+
+            return View(profesor);
+        }
+
+        // Handles the post request to edit the student's semester.
+        [HttpPost]
+        public IActionResult EditCollegeProf(int id, Profesor profesor)
+        {
+            if (ModelState.IsValid)
+            {
+                return View(profesor);
+            }
+            else
+            {
+                Profesor profesorToUpdate = db.Professors.Where(stu => stu.Id == id).FirstOrDefault();
+
+                if (profesorToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                profesorToUpdate.FacultateID = profesor.FacultateID;
+
+                if (profesor.FacultateID == 1 || profesor.FacultateID == null)
+                {
+                    TempData["ErrorMessage"] = "A college must be selected";
+                    return RedirectToAction("EditCollegeProf", "Professors");
+                }
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "College updated successfully.";
+                return RedirectToAction("Index", "Professors");
+            }
+        }
+
+
+        // Validates a question by setting its validation status.
+        public async Task<IActionResult> Valideaza(int? id)
 		{
 			if (id == null)
 			{

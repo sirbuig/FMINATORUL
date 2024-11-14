@@ -4,6 +4,7 @@ using FMInatorul.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241102141546_terogmergi")]
+    partial class terogmergi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,7 +157,7 @@ namespace FMInatorul.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("FacultateID")
+                    b.Property<int?>("FacultateId")
                         .HasColumnType("int");
 
                     b.Property<int>("anStudiu")
@@ -174,7 +176,7 @@ namespace FMInatorul.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FacultateID");
+                    b.HasIndex("FacultateId");
 
                     b.ToTable("Materii");
                 });
@@ -419,13 +421,9 @@ namespace FMInatorul.Migrations
 
             modelBuilder.Entity("FMInatorul.Models.Materie", b =>
                 {
-                    b.HasOne("FMInatorul.Models.Facultate", "Facultate")
+                    b.HasOne("FMInatorul.Models.Facultate", null)
                         .WithMany("Materies")
-                        .HasForeignKey("FacultateID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Facultate");
+                        .HasForeignKey("FacultateId");
                 });
 
             modelBuilder.Entity("FMInatorul.Models.Profesor", b =>

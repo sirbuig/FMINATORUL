@@ -1,9 +1,10 @@
-using FMInatorul.Data;
+﻿using FMInatorul.Data;
 using FMInatorul.Migrations;
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -143,10 +144,26 @@ namespace FMInatorul.Controllers
 		}
 
 		// Returns the view for single subject selection.
-		public IActionResult MateriiSingle()
+		public async Task<IActionResult> MateriiSingle()
 		{
-			var Materii = db.Materii.ToList();
-			ViewBag.materii = Materii;
+
+            var userId = _userManager.GetUserId(User);
+
+            // Găsește profesorul pe baza ApplicationUserId
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            // Obține materiile care aparțin facultății profesorului selectat
+            var materii = await db.Materii
+                .Where(m => m.FacultateID == student.FacultateID)
+				.Where(m => m.anStudiu == student.Year)
+                .Where(m => m.semestru == student.Semester)
+                .ToListAsync();
+            ViewBag.Materii = materii;
 			return View();
 		}
 
@@ -185,7 +202,7 @@ namespace FMInatorul.Controllers
 				}
 
 				studentToUpdate.Year = student.Year;
-				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
+				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
 				{
 					studentToUpdate.CompletedProfile = true;
 				}
@@ -235,8 +252,8 @@ namespace FMInatorul.Controllers
 				}
 
 				studentToUpdate.Semester = student.Semester;
-				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0)
-				{
+				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
+                {
 					studentToUpdate.CompletedProfile = true;
 				}
 				if (student.Semester >= 3 || student.Semester <= 0)
@@ -250,6 +267,71 @@ namespace FMInatorul.Controllers
 			}
 		}
 
+        
+        public async Task<IActionResult> EditCollege()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Student not found.";
+                return RedirectToAction("Index"); 
+            }
+
+            // Populate the ViewBag with faculties for the dropdown list
+            var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
+
+            ViewBag.Facultati = facultati.Select(f => new SelectListItem
+            {
+                Value = f.Id.ToString(),
+                Text = f.nume
+            }).ToList();
+
+
+            if (TempData.ContainsKey("ErrorMessage"))
+            {
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View(student);
+            }
+            
+            return View(student);
+        }
+
+      
+        [HttpPost]
+        public IActionResult EditCollege(int id, Student student)
+        {
+            if (ModelState.IsValid)
+            {
+                return View(student);
+            }
+            else
+            {
+                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).FirstOrDefault();
+
+                if (studentToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                studentToUpdate.FacultateID = student.FacultateID;
+
+                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID !=1)
+                {
+                    studentToUpdate.CompletedProfile = true;
+                }
+                if (student.FacultateID ==1 || student.FacultateID == null)
+                {
+                    TempData["ErrorMessage"] = "A college must be selected";
+                    return RedirectToAction("EditCollege", "Students");
+                }
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "College updated successfully.";
+                return RedirectToAction("Index", "Students");
+            }
+        }
+        
 		public IActionResult ShowIntrebari()
 		{
             var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);

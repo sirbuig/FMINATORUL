@@ -33,7 +33,7 @@ public class HomeController : Controller
 	// Returns a new version of the index view.
 	public IActionResult IndexNew()
 	{
-		return View();
+        return View();
 	}
 
 	// Returns the privacy view.

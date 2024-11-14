@@ -15,5 +15,7 @@ namespace FMInatorul.Models
 
         [Range(1, 3, ErrorMessage = "Semester must be between 1 and 2.")]
         public int Semester { get; set; }
+        public int FacultateID { get; set; }
+        public virtual Facultate Facultate { get; set; }
     }
 }
