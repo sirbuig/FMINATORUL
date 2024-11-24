@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text;
 
 namespace FMInatorul.Controllers
 {
@@ -85,10 +86,14 @@ namespace FMInatorul.Controllers
 				return BadRequest("Invalid file format. Only PDF files allowed!");
 			}
 
-            // Upload the PDF to Flask API (replace with your actual API URL)
-            //http://46.101.136.24/
+            var jwtToken = await GetJwtTokenAsync("dotnet_user", "unchiipecos123", "https://api.fminatorul.xyz/login");
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                return StatusCode(401, "Failed to authenticate with the Flask API");
+            }
 
-            var response = await UploadPdfToFlaskApiAsync(file, "http://46.101.136.24:5555/");
+
+            var response = await UploadPdfToFlaskApiAsync(file, "https://api.fminatorul.xyz/api/generate-quiz-external-links", jwtToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -113,25 +118,100 @@ namespace FMInatorul.Controllers
 			return file.ContentType.Contains("application/pdf");
 		}
 
-		// Uploads the PDF file to a Flask API.
-		private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
-		{
-			using (var client = new HttpClient())
-			{
-				using (var multipartContent = new MultipartFormDataContent())
-				{
-					using (var fileStream = file.OpenReadStream())
-					{
-						multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
-						var response = await client.PostAsync(url, multipartContent);
-						return response;
-					}
-				}
-			}
-		}
+        private async Task<string> GetJwtTokenAsync(string username, string password, string url)
+        {
+            using (var client = new HttpClient())
+            {
+                try
+				{ 
+                    // Create JSON payload for login
+                    var loginPayload = new
+                    {
+                        username = username,
+                        password = password
+                    };
 
-		// Returns the chat view.
-		public ActionResult ChatView()
+                    var jsonPayload = JsonConvert.SerializeObject(loginPayload);
+                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                    // Send POST request to login endpoint
+                    var response = await client.PostAsync(url, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        var responseJson = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
+
+                        // Extract the JWT token
+                        if (responseJson.TryGetValue("token", out var jwtToken))
+                        {
+                            return jwtToken;
+                        }
+                    }
+
+                    Debug.WriteLine($"Failed to get JWT token. Status Code: {response.StatusCode}");
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error during JWT token retrieval: {ex.Message}");
+                    return null;
+                }
+            }
+        }
+
+        // Uploads the PDF file to a Flask API.
+        private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url, string jwtToken)
+        {
+            using (var client = new HttpClient())
+            {
+                // Create a multipart content for the file upload
+                using (var multipartContent = new MultipartFormDataContent())
+                {
+                    // Open the file stream
+                    var fileStream = file.OpenReadStream();
+
+                    // Add file to the multipart content
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+                    multipartContent.Add(fileContent, "file", file.FileName);
+
+                    // Add headers for the request
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", jwtToken);
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    try
+                    {
+                        // Make the POST request
+                        var response = await client.PostAsync(url, multipartContent);
+
+                        // Log the request for debugging
+                        Debug.WriteLine("===== Request Details =====");
+                        Debug.WriteLine($"URL: {url}");
+                        Debug.WriteLine($"Headers: Authorization: Bearer {jwtToken}");
+                        Debug.WriteLine($"Multipart Content: file={file.FileName}");
+                        Debug.WriteLine("===========================");
+
+                        return response;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the error
+                        Debug.WriteLine($"Error uploading file: {ex.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        // Ensure the file stream is properly disposed
+                        fileStream.Dispose();
+                    }
+                }
+            }
+        }
+
+
+        // Returns the chat view.
+        public ActionResult ChatView()
 		{
 			return View();
 		}
