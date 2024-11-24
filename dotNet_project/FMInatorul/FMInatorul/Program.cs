@@ -4,7 +4,9 @@ using FMInatorul.Models;
 using FMInatorul.Hubs; 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 
