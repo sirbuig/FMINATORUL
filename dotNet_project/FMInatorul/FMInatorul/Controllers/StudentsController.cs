@@ -102,7 +102,7 @@ namespace FMInatorul.Controllers
 				var responseString = await response.Content.ReadAsStringAsync();
 				var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
 
-				Debug.WriteLine($"Response String: {responseString}");
+                Debug.WriteLine($"Response String: {responseString}");
 
 				return View("Quiz", quiz); //Pass the quiz model to the view
 			}

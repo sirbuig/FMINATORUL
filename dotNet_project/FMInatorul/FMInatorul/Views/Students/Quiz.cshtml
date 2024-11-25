@@ -25,31 +25,41 @@
             <!-- Main content area -->
             <div class="main-content">
                 <form method="post" asp-controller="Students" asp-action="SubmitQuiz" class="quiz-form">
-                @for (int i = 0; i < Model.Questions.Count; i++)
-                {
+                    @for (int i = 0; i < Model.Questions.Count; i++)
+                    {
 
-                    var question = Model.Questions[i];
-                    <div id="question-@i" class="question-item">
-                        <h2>Question @(@i + 1)</h2>
-                        <p>@question.Question</p>
-                        <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
-                        <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
-                        <div class="question-form">
-                            @foreach (var choice in question.Choices)
+                        var question = Model.Questions[i];
+                        <div id="question-@i" class="question-item">
+                            <h2>Question @(@i + 1)</h2>
+                            <p>@question.Question</p>
+                            <input type="hidden" name="Questions[@i].Question" value="@Model.Questions[i].Question">
+                            <input type="hidden" name="Questions[@i].Answer" value="@Model.Questions[i].Answer">
+                            <div class="question-form">
+                                @foreach (var choice in question.Choices)
 
-                            {
-                                <div class="choice-item">
-                                        <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key" id="question-@i-choice-@choice.Key" />
-                                    <label for="question-@i-choice-@choice.Key">
-                                        @choice.Value
-                                    </label>
-                                </div>
-                                <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
-                            }
-                            <button type="button" class="clear-selection">Clear Selection</button>
+                                {
+                                    <div class="choice-item">
+                                            <input type="radio" name="Questions[@i].SelectedAnswer" value="@choice.Key" id="question-@i-choice-@choice.Key" />
+                                        <label for="question-@i-choice-@choice.Key">
+                                            @choice.Value
+                                        </label>
+                                    </div>
+                                    <input type="hidden" name="Questions[@i].Choices[@choice.Key]" value="@choice.Value">
+                                }
+                                <button type="button" class="clear-selection">Clear Selection</button>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                    @if (Model.ExternalLinks != null)
+
+                    {
+                        @for (int j = 0; j < Model.ExternalLinks.Count; j++)
+
+                        {
+                            <input type="hidden" name="ExternalLinks[@j]" value="@Model.ExternalLinks[j]" />
+                        }
+                    }
+
                     <div class="submit-button-container">
                         <button type="submit" class="submit-button">Submit Quiz</button>
                     </div>
