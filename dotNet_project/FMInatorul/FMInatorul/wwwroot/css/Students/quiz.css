@@ -198,3 +198,31 @@ input[type="radio"] {
             margin-right: 10px;
         }
 }
+
+.submit-button-container {
+    text-align: center; /* Center-align the button */
+    margin-top: 20px;
+}
+
+/* Submit Button */
+.submit-button {
+    background-color: #4caf50; /* Green background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding for a larger button */
+    font-size: 1.2em; /* Slightly larger text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+    /* Hover Effect */
+    .submit-button:hover {
+        background-color: #45a049; /* Darker green on hover */
+    }
+
+    /* Disabled State */
+    .submit-button:disabled {
+        background-color: #a5d6a7; /* Light green for disabled state */
+        cursor: not-allowed; /* Show not-allowed cursor */
+    }

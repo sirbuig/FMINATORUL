@@ -77,4 +77,34 @@ document.addEventListener('DOMContentLoaded', function () {
         const sidebarScrollHeight = sidebarNav.scrollHeight - sidebarNav.clientHeight;
         sidebarNav.scrollTop = scrollPercentage * sidebarScrollHeight;
     });
+
+
+    const submitButton = document.querySelector('.submit-button');
+    //const questionItems = document.querySelectorAll('.question-item');
+
+    function validateAnswers() {
+        let allAnswered = true;
+
+        questionItems.forEach(question => {
+            const radioButtons = question.querySelectorAll('input[type="radio"]');
+            const isAnswered = Array.from(radioButtons).some(radio => radio.checked);
+            if (!isAnswered) {
+                allAnswered = false;
+            }
+        });
+
+        // Enable or disable the submit button based on validation
+        submitButton.disabled = !allAnswered;
+    }
+
+    // Validate on input change
+    questionItems.forEach(question => {
+        const radioButtons = question.querySelectorAll('input[type="radio"]');
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', validateAnswers);
+        });
+    });
+
+    // Initial validation on page load
+    validateAnswers();
 });
