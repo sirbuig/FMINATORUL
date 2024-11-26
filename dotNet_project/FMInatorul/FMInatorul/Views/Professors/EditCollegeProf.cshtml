@@ -27,8 +27,7 @@
     {
         @Html.DropDownListFor(m => m.FacultateID, new SelectList(ViewBag.Facultati, "Value", "Text"), "Selectati facultatea", new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.FacultateID, null, new { @class = "text-danger" })
-        @Html.HiddenFor(m => m.MaterieId, new { Value = Model.MaterieId })
-        @Html.HiddenFor(m => m.Materie, new { Value = Model.Materie })
+        @Html.HiddenFor(m => m.MateriiPredate, new { Value = Model.MateriiPredate })
         @Html.HiddenFor(m => m.CompletedProfile, new { Value = Model.CompletedProfile })
         @Html.HiddenFor(m => m.ApplicationUserId, new { Value = Model.ApplicationUserId })
         @Html.HiddenFor(m => m.ApplicationUser, new { Value = Model.ApplicationUser })

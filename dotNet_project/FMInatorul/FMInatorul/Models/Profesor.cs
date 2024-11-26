@@ -15,9 +15,10 @@ namespace FMInatorul.Models
         public int FacultateID { get; set; }
 
         public virtual Facultate Facultate { get; set; }
+        public virtual ICollection<Materie>? MateriiPredate { get; set; }
 
-        public int? MaterieId { get; set; }
-        public virtual Materie? Materie { get; set; }
+        [NotMapped] 
+        public List<int> SelectedMateriiIds { get; set; }
 
         [NotMapped]
         public IEnumerable<SelectListItem>? Materii { get; set; }

@@ -37,6 +37,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne<IntrebariRasp>(a => a.IntrebariRasp)
             .WithMany(c => c.Variante)
             .HasForeignKey(a => a.IntrebariRaspId);
-            
+
     }
 }

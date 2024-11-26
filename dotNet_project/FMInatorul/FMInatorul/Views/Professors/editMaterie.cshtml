@@ -1,7 +1,6 @@
 ﻿@model FMInatorul.Models.Profesor
 
 @{
-    // Set the title of the page
     ViewData["Title"] = "Editare Materie";
 }
 
@@ -12,25 +11,34 @@
     </div>
 }
 
-<h2>Edit Materie</h2>
+<h2>Editare Materie</h2>
 
-@using (Html.BeginForm(controllerName: "Professors", actionName: "EditMaterie", method: FormMethod.Post, routeValues: new { id = Model.Id }))
+@using (Html.BeginForm("EditMaterie", "Professors", FormMethod.Post, new { id = Model.Id }))
 {
-    <label>Selectati Materia</label>
+    <label>Selectați Materiile</label>
     <br />
-    // Drop-down list for selecting a subject
-    @Html.DropDownListFor(m => m.MaterieId, new SelectList(Model.Materii, "Value", "Text"), "Selectati materia", new { @class = "form-control" })
-    @Html.ValidationMessageFor(m => m.MaterieId, null, new { @class = "text-danger" })
 
-    // Hidden fields for properties that should not be directly edited by the user
-    @Html.HiddenFor(m => m.CompletedProfile, new { Value = Model.CompletedProfile })
-    @Html.HiddenFor(m => m.ApplicationUserId, new { Value = Model.ApplicationUserId })
-    @Html.HiddenFor(m => m.ApplicationUser, new { Value = Model.ApplicationUser })
-    @Html.HiddenFor(m => m.FacultateID, new { Value = Model.FacultateID})
-    @Html.HiddenFor(m => m.Facultate, new { Value = Model.Facultate })
+    <div>
+        @foreach (var materie in Model.Materii)
+        {
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="materie_@materie.Value"
+                       name="SelectedMateriiIds"
+                       value="@materie.Value"
+                @(Model.SelectedMateriiIds.Contains(int.Parse(materie.Value)) ? "checked" : "") />
+                <label class="form-check-label" for="materie_@materie.Value">
+                    @materie.Text
+                </label>
+            </div>
+        }
+    </div>
+
+    @Html.HiddenFor(m => m.CompletedProfile)
+    @Html.HiddenFor(m => m.ApplicationUserId)
+    @Html.HiddenFor(m => m.FacultateID)
 
     <br />
-    <br />
-    // Submit button to save changes
     <button type="submit" class="btn btn-primary">Save</button>
 }

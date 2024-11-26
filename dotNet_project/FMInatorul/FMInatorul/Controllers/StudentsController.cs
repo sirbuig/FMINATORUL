@@ -88,7 +88,7 @@ namespace FMInatorul.Controllers
             // Upload the PDF to Flask API (replace with your actual API URL)
             //http://46.101.136.24/
 
-            var response = await UploadPdfToFlaskApiAsync(file, "http://46.101.136.24:5555/");
+            var response = await UploadPdfToFlaskApiAsync(file, "http://34.65.214.77/");
 
 			if (response.IsSuccessStatusCode)
 			{
