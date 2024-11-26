@@ -1,9 +1,11 @@
 ﻿using FMInatorul.Data;
+using FMInatorul.Migrations;
 using FMInatorul.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 
 namespace FMInatorul.Controllers
 {
@@ -52,22 +54,20 @@ namespace FMInatorul.Controllers
 			return View();
 		}
 
-		// Returns the view to edit the subject for a professor.
-		public async Task<IActionResult> EditMaterie()
-		{
-
-            // Obține ID-ul utilizatorului conectat
+        // Returns the view to edit the subject for a professor.
+        public async Task<IActionResult> EditMaterie()
+        {
             var userId = _userManager.GetUserId(User);
-
-            // Găsește profesorul pe baza ApplicationUserId
-            var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            var profesor = await db.Professors
+                .Include(p => p.MateriiPredate)
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
 
             if (profesor == null)
             {
                 return NotFound();
             }
 
-            // Obține materiile care aparțin facultății profesorului selectat
+            // Obține toate materiile din facultatea profesorului
             var materii = await db.Materii
                 .Where(m => m.FacultateID == profesor.FacultateID)
                 .Select(m => new SelectListItem
@@ -77,67 +77,88 @@ namespace FMInatorul.Controllers
                 })
                 .ToListAsync();
 
-			profesor.Materii = materii;
-			if (profesor == null)
-			{
-				return NotFound();
-			}
-			if (TempData.ContainsKey("ErrorMessage"))
-			{
-				ViewBag.Message = TempData["ErrorMessage"];
-				return View(profesor);
-			}
-			return View(profesor);
-		}
+            profesor.Materii = materii;
 
-		// Handles the post request to edit the subject for a professor.
-		[HttpPost]
-		public IActionResult EditMaterie(int id, Profesor prof)
-		{
-			if (ModelState.IsValid)
-			{
-				return View(prof);
-			}
-			else
-			{
-				Profesor profToUpdate = db.Professors.Where(pr => pr.Id == id).First();
+            // Setează materiile selectate
+            profesor.SelectedMateriiIds = profesor.MateriiPredate?.Select(m => m.Id).ToList();
 
-				if (profToUpdate == null)
-				{
-					return NotFound();
-				}
+            return View(profesor);
+        }
 
-				if (prof.MaterieId == null)
-				{
-					TempData["ErrorMessage"] = "Please select a subject.";
-					return RedirectToAction("EditMaterie", "Professors");
-				}
-				profToUpdate.MaterieId = prof.MaterieId;
-				profToUpdate.CompletedProfile = true;
 
-				db.SaveChanges();
-				TempData["SuccessMessage"] = "Materie updated successfully.";
-				return RedirectToAction("Index", "Professors");
-			}
-		}
+        // Handles the post request to edit the subject for a professor.
+        [HttpPost]
+        public async Task<IActionResult> EditMaterie(Profesor profesor)
+        {
+            // Validare: Verifică dacă s-au selectat materii
+            if (profesor.SelectedMateriiIds == null || !profesor.SelectedMateriiIds.Any())
+            {
+                TempData["ErrorMessage"] = "Vă rugăm să selectați cel puțin o materie.";
+                return RedirectToAction("EditMaterie", "Professors");
+            }
 
-		// Returns the view to validate or delete questions for a professor.
-		public async Task<IActionResult> Intrebari()
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+            var profesor2 = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+            // Obține profesorul din baza de date
+            var profesorToUpdate = await db.Professors
+                .Include(p => p.MateriiPredate) 
+                .FirstOrDefaultAsync(p => p.Id == profesor2.Id);
+
+            if (profesorToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            // Obține entitățile `Materie` corespunzătoare ID-urilor selectate
+            var selectedMaterii = await db.Materii
+                .Where(m => profesor.SelectedMateriiIds.Contains(m.Id))
+                .ToListAsync();
+
+            // Actualizează relația `MateriiPredate`
+            profesorToUpdate.MateriiPredate = selectedMaterii;
+
+            // Marcare profil completat (opțional)
+            profesorToUpdate.CompletedProfile = true;
+
+            // Salvează modificările
+            try
+            {
+                await db.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Materiile au fost actualizate cu succes.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "A apărut o eroare la salvarea modificărilor: " + ex.Message;
+            }
+
+            return RedirectToAction("Index", "Professors");
+        }
+
+
+
+        // Returns the view to validate or delete questions for a professor.
+        public async Task<IActionResult> Intrebari()
 		{
 			var user = await _userManager.GetUserAsync(User);
-			var profesor = await db.Professors.FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
+            var profesor = await db.Professors.Include(p => p.MateriiPredate).FirstOrDefaultAsync(s => s.ApplicationUserId == user.Id);
 
-			if (profesor == null || profesor.MaterieId == null)
+            if (profesor == null || profesor.MateriiPredate == null || !profesor.MateriiPredate.Any())
 			{
 				TempData["ErrorMessage"] = "Please finish completing your profile.";
 				return RedirectToAction("Index", "Professors");
 			}
 
-			var intrebari = await db.IntrebariRasps
-				.Where(i => i.MaterieId == profesor.MaterieId && i.validareProfesor == 0)
-				.ToListAsync();
+            var materiiPredateIds = profesor.MateriiPredate.Select(m => m.Id).ToList();
 
-			if (TempData.ContainsKey("SuccessMessage"))
+            var intrebari = await db.IntrebariRasps
+                .Where(i => materiiPredateIds.Contains(i.MaterieId) && i.validareProfesor == 0)
+                .ToListAsync();
+
+            if (TempData.ContainsKey("SuccessMessage"))
 			{
 				ViewBag.Message = TempData["SuccessMessage"];
 				return View(intrebari);
