@@ -8,6 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Views\NewFolder\**" />
+      <Content Remove="Views\NewFolder\**" />
+      <EmbeddedResource Remove="Views\NewFolder\**" />
+      <None Remove="Views\NewFolder\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Compile Remove="Views\Students\MateriiSingle.cs" />
     </ItemGroup>
 
@@ -34,14 +41,11 @@
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+	  <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
     	  <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     	  <PackageReference Include="Moq" Version="4.16.1" />
     	  <PackageReference Include="FluentAssertions" Version="6.2.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Views\NewFolder\" />
     </ItemGroup>
 
 </Project>
