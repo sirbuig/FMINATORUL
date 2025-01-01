@@ -103,6 +103,10 @@ public static class SeedData
                 context.Facultati.AddRange(
                     new Facultate
                     {
+                        nume="?"
+                    },
+                    new Facultate
+                    {
                         nume="FMI"
                     },
                     new Facultate
@@ -126,7 +130,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "Studenţii vor dobândi cunoştinţe teoretice avansate privind structurile algebrice şi abilitatea de a face calcule, raţionamente şi aplicaţii folosind noţiunile studiate.",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -134,7 +138,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "Însuşirea cunoştinţelor fundamentale privind organizarea şi funcţionarea calculatoarelor. Însuşirea cunoştinţelor privind aritmetica şi logica calculatoarelor, circuitele logice, arhitectura x86, programarea în limbaj de asamblare",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -142,7 +146,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "Obținerea de cunoștințe de bază legate de programarea în limbajul Python. Cunoașterea şi folosirea tehnicilor de programare Greedy, Divide et Impera, Backtracking și Programare dinamică. Alegerea unui model potrivit pentru rezolvarea problemelor nou întâlnite, prin sinteza noțiunilor asimilate",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -150,7 +154,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "Exersarea unor tehnici fundamentale de raţionament matematic şi a redactării demonstraţiilor formalizate. Însuşirea unei baze de cunoştinţe de teoria mulţimilor, structuri algebrice ordonate şi logică formală necesare pentru cursurile din semestrele următoare.",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -158,7 +162,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "Capacitatea de analizare si sintetizare a notiunilor de Analiză Matematică. Capacitatea de soluţionare a problemelor interdisciplinare Dezvoltarea gândirii critice",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -166,7 +170,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 1,
                         descriere = "blah blah blah",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -174,7 +178,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Obiectivul cursului este prezentarea tehnicilor și tehnologiilor pentru dezvoltarea de aplicații web pe partea de client și familiarizarea cu utilizarea serverelor web și a limbajului JavaScript pe partea de server (Node.js).",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -182,7 +186,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Invatarea unor notiuni si teoreme importante de geometrie euclidiana, a unor teoreme de clasificare si a unor metode specifice de determinare de invarianti metrici",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -190,7 +194,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Studentii isi vor dezvolta capacitatea de a intelege si de a implementa algoritmi si structuri de date precum şi capacitatea de a analiza si rezolva probleme.",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -198,7 +202,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Familiarizarea studenților cu bazele de date relaționale, cu limbajul de interogare standard al acestora, cunoașterea direcțiilor recente în domeniul bazelor de date și aplicarea abilităților dobândite pentru proiectarea bazelor de date.",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -206,7 +210,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "blah blah blah",
-                        FacultateID = 1
+                        FacultateID = 2
                     },
                     new Materie
                     {
@@ -214,7 +218,7 @@ public static class SeedData
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Materia pune accent pe dezvoltarea abilităților de a gândi și a structura programele într-un mod modular și reutilizabil, utilizând conceptele POO pentru a crea soluții eficiente și robuste la problemele de programare.",
-                        FacultateID = 1
+                        FacultateID = 2
                     }
                 );
             }
