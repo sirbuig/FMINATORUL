@@ -8,6 +8,7 @@
     const multiplayerChoice = document.getElementById('multiplayerChoice');
     const joinRoomBtn = document.getElementById('joinRoom');
     const hostRoomBtn = document.getElementById('hostRoom');
+    const joinGameForm = document.getElementById('joinGameForm');
 
     function toggleGameMode(selectedMode) {
         if (selectedMode === 'singleplayer') {
@@ -15,6 +16,7 @@
             multiplayerChoice.style.display = 'none';
             singleplayerBtn.classList.add('btn-active');
             multiplayerBtn.classList.remove('btn-active');
+            joinGameForm.style.display = 'none';
         } else if (selectedMode === 'multiplayer') {
             materialsQuestion.style.display = 'none';
             multiplayerChoice.style.display = 'block';
@@ -31,17 +33,18 @@
     multiplayerBtn.addEventListener('click', function () {
         console.log('Multiplayer button clicked');
         toggleGameMode('multiplayer');
-        //joinMultiplayerRoom();
     });
 
     joinRoomBtn.addEventListener('click', function () {
         this.classList.add('btn-active');
         hostRoomBtn.classList.remove('btn-active');
+        joinGameForm.style.display = 'block';
     });
 
     hostRoomBtn.addEventListener('click', function () {
         this.classList.add('btn-active');
         joinRoomBtn.classList.remove('btn-active');
+        joinGameForm.style.display = 'none';
     });
 
     myMaterialsBtn.addEventListener('click', function () {
@@ -56,32 +59,41 @@
         materialsForm.style.display = 'none';
     });
 
-    // SignalR connection setup
-    //const connection = new signalR.HubConnectionBuilder()
-    //    .withUrl("/gameHub")
-    //    .build();
 
-    //connection.start().then(function () {
-    //    console.log("SignalR Connected.");
-    //}).catch(function (err) {
-    //    return console.error(err.toString());
-    //});
+    // for the room
+    hostRoomBtn.addEventListener('click', async function () {
+        // CreateRoom endpoint
+        const response = await fetch('/Rooms/CreateRoom', { method: 'POST' });
+        const data = await response.json();
 
-    // Function to join multiplayer room
-    function joinMultiplayerRoom() {
-        const roomName = "multiplayerRoom"; 
-        connection.invoke("JoinRoom", roomName).catch(function (err) {
-            return console.error(err.toString());
+        // did we get the code?
+        if (data.code) {
+            window.location.href = `/Rooms/Lobby?code=${data.code}`;
+            connection.invoke('JoinRoomGroup', data.code);
+        } else {
+            // :(
+            alert('Could not create room');
+        }
+    });
+
+    joinGameForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const code = document.getElementById('gameCode').value;
+
+        const response = await fetch('/Rooms/JoinRoom', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
         });
-        console.log("Joined room: " + roomName);
-    }
 
-    //// Handle PlayerJoined and PlayerLeft events
-    //connection.on("PlayerJoined", function (playerId) {
-    //    console.log(playerId + " joined the room.");
-    //});
+        const data = await response.json();
+        if (data.success) {
+            //alert(data.message);
+            window.location.href = `/Rooms/Lobby?code=${code}`;
+            connection.invoke("JoinRoomGroup", code);
+        } else {
+            alert(data.message);
+        }
+    });
 
-    //connection.on("PlayerLeft", function (playerId) {
-    //    console.log(playerId + " left the room.");
-    //});
 });

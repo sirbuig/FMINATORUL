@@ -85,10 +85,10 @@ namespace FMInatorul.Controllers
 				return BadRequest("Invalid file format. Only PDF files allowed!");
 			}
 
-            // Upload the PDF to Flask API (replace with your actual API URL)
-            //http://46.101.136.24/
+			// Upload the PDF to Flask API (replace with your actual API URL)
+			//http://46.101.136.24/
 
-            var response = await UploadPdfToFlaskApiAsync(file, "http://34.65.214.77/");
+			var response = await UploadPdfToFlaskApiAsync(file, "http://34.65.214.77/");
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -147,23 +147,23 @@ namespace FMInatorul.Controllers
 		public async Task<IActionResult> MateriiSingle()
 		{
 
-            var userId = _userManager.GetUserId(User);
+			var userId = _userManager.GetUserId(User);
 
-            // Găsește profesorul pe baza ApplicationUserId
-            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+			// Găsește profesorul pe baza ApplicationUserId
+			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
 
-            if (student == null)
-            {
-                return NotFound();
-            }
+			if (student == null)
+			{
+				return NotFound();
+			}
 
-            // Obține materiile care aparțin facultății profesorului selectat
-            var materii = await db.Materii
-                .Where(m => m.FacultateID == student.FacultateID)
+			// Obține materiile care aparțin facultății profesorului selectat
+			var materii = await db.Materii
+				.Where(m => m.FacultateID == student.FacultateID)
 				.Where(m => m.anStudiu == student.Year)
-                .Where(m => m.semestru == student.Semester)
-                .ToListAsync();
-            ViewBag.Materii = materii;
+				.Where(m => m.semestru == student.Semester)
+				.ToListAsync();
+			ViewBag.Materii = materii;
 			return View();
 		}
 
@@ -253,7 +253,7 @@ namespace FMInatorul.Controllers
 
 				studentToUpdate.Semester = student.Semester;
 				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
-                {
+				{
 					studentToUpdate.CompletedProfile = true;
 				}
 				if (student.Semester >= 3 || student.Semester <= 0)
@@ -267,84 +267,89 @@ namespace FMInatorul.Controllers
 			}
 		}
 
-        
-        public async Task<IActionResult> EditCollege()
-        {
-            var userId = _userManager.GetUserId(User);
-            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
-            
-            if (student == null)
-            {
-                TempData["ErrorMessage"] = "Student not found.";
-                return RedirectToAction("Index"); 
-            }
 
-            // Populate the ViewBag with faculties for the dropdown list
-            var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
+		public async Task<IActionResult> EditCollege()
+		{
+			var userId = _userManager.GetUserId(User);
+			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
 
-            ViewBag.Facultati = facultati.Select(f => new SelectListItem
-            {
-                Value = f.Id.ToString(),
-                Text = f.nume
-            }).ToList();
+			if (student == null)
+			{
+				TempData["ErrorMessage"] = "Student not found.";
+				return RedirectToAction("Index");
+			}
+
+			// Populate the ViewBag with faculties for the dropdown list
+			var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
+
+			ViewBag.Facultati = facultati.Select(f => new SelectListItem
+			{
+				Value = f.Id.ToString(),
+				Text = f.nume
+			}).ToList();
 
 
-            if (TempData.ContainsKey("ErrorMessage"))
-            {
-                ViewBag.Message = TempData["ErrorMessage"];
-                return View(student);
-            }
-            
-            return View(student);
-        }
+			if (TempData.ContainsKey("ErrorMessage"))
+			{
+				ViewBag.Message = TempData["ErrorMessage"];
+				return View(student);
+			}
 
-      
-        [HttpPost]
-        public IActionResult EditCollege(int id, Student student)
-        {
-            if (ModelState.IsValid)
-            {
-                return View(student);
-            }
-            else
-            {
-                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).FirstOrDefault();
+			return View(student);
+		}
 
-                if (studentToUpdate == null)
-                {
-                    return NotFound();
-                }
 
-                studentToUpdate.FacultateID = student.FacultateID;
+		[HttpPost]
+		public IActionResult EditCollege(int id, Student student)
+		{
+			if (ModelState.IsValid)
+			{
+				return View(student);
+			}
+			else
+			{
+				Student studentToUpdate = db.Students.Where(stu => stu.Id == id).FirstOrDefault();
 
-                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID !=1)
-                {
-                    studentToUpdate.CompletedProfile = true;
-                }
-                if (student.FacultateID ==1 || student.FacultateID == null)
-                {
-                    TempData["ErrorMessage"] = "A college must be selected";
-                    return RedirectToAction("EditCollege", "Students");
-                }
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "College updated successfully.";
-                return RedirectToAction("Index", "Students");
-            }
-        }
-        
+				if (studentToUpdate == null)
+				{
+					return NotFound();
+				}
+
+				studentToUpdate.FacultateID = student.FacultateID;
+
+				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
+				{
+					studentToUpdate.CompletedProfile = true;
+				}
+				if (student.FacultateID == 1 || student.FacultateID == null)
+				{
+					TempData["ErrorMessage"] = "A college must be selected";
+					return RedirectToAction("EditCollege", "Students");
+				}
+				db.SaveChanges();
+				TempData["SuccessMessage"] = "College updated successfully.";
+				return RedirectToAction("Index", "Students");
+			}
+		}
+
 		public IActionResult ShowIntrebari()
 		{
-            var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
-            //luam intrebarile de la materia respectiva care sunt aprobate de profesori
-            var intrebari = db.IntrebariRasps
+			var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+			//luam intrebarile de la materia respectiva care sunt aprobate de profesori
+			var intrebari = db.IntrebariRasps
 								.Where(i => i.MaterieId == materie_id && i.validareProfesor == 1)
-                                .Include(i => i.Materie)
+								.Include(i => i.Materie)
 								.Include(i => i.Variante)
-                                .ToList();
+								.ToList();
 
 			return View(intrebari);
-        }
-       
+		}
 
-    }
+		[HttpPost]
+		public IActionResult SubmitCode(string gameCode)
+		{
+			TempData["SuccessMessage"] = $"Code is {gameCode}!";
+            return RedirectToAction("Index", "Students");
+        }
+	}
 }

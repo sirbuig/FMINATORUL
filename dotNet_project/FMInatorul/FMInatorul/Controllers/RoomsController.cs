@@ -1,0 +1,192 @@
+﻿using FMInatorul.Data;
+using FMInatorul.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+
+namespace FMInatorul.Controllers
+{
+    public class RoomsController : Controller
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
+        private readonly IHubContext<RoomHub> _roomHubContext;
+
+        public RoomsController(ApplicationDbContext context, IHubContext<RoomHub> roomHubContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            _context = context;
+            _roomHubContext = roomHubContext;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        // to help map the JSON request
+        public class JoinRoomRequest
+        {
+            public string Code { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> JoinRoom([FromBody] JoinRoomRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Code))
+            {
+                return Json(new { success = false, message = "Invalid room code" });
+            }
+
+            // use ApplicationUser to get identity user id
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "You must be logged in to join a room" });
+            }
+
+            // find the student profile
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null)
+            {
+                return BadRequest(new { success = false, message = "No student profile found!" });
+            }
+
+            // find the room
+            var room = await _context.Rooms
+                .FirstOrDefaultAsync(r => r.Code == request.Code);
+            if (room == null)
+            {
+                return Json(new { success = false, message = "Room not found" });
+            }
+
+            // join the room
+            var participantExists = await _context.Participants
+                                .AnyAsync(p => p.RoomId == room.RoomId && p.StudentId == student.Id);
+            if (!participantExists)
+            {
+                var participant = new Participant
+                {
+                    RoomId = room.RoomId,
+                    StudentId = student.Id
+                };
+                _context.Participants.Add(participant);
+                await _context.SaveChangesAsync();
+            }
+
+            // notify the room
+            await _roomHubContext.Clients.Group(room.Code)
+                .SendAsync("StudentJoined", $"Student {student.Id} joined room {room.Code}.");
+
+            return Json(new { success = true, message = $"Joined room {room.Code} successfully." });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoom()
+        {
+            // get the user
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "You must be logged in to create a room" });
+            }
+
+            // find the student profile
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null)
+            {
+                return Json(new { success = false, message = "No student profile found!" });
+            }
+
+            // generate code
+            string code;
+            do
+            {
+                code = new Random().Next(100000, 999999).ToString();
+            } while (await _context.Rooms.AnyAsync(r => r.Code == code));
+
+            // create & save room
+            var room = new Room { Code = code };
+
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
+
+            // add host as participant
+            var participant = new Participant
+            {
+                RoomId = room.RoomId,
+                StudentId = student.Id
+            };
+            _context.Participants.Add(participant);
+            await _context.SaveChangesAsync();
+
+            return Json(new { code });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LeaveRoom([FromBody] string code)
+        {
+            // current user
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "You must be logged in to leave a room" });
+            }
+
+            // find the student profile
+            var student = await _context.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null)
+            {
+                return Json(new { success = false, message = "No student profile found!" });
+            }
+
+            // find room by code
+            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Code == code);
+            if (room == null)
+            {
+                return Json(new { success = false, message = "Room not found" });
+            }
+
+            // find participant
+            var participant = await _context.Participants
+                .FirstOrDefaultAsync(p => p.RoomId == room.RoomId && p.StudentId == student.Id);
+            if (participant == null)
+            {
+                return Json(new { success = false, message = "You are not in this room" });
+            }
+
+            // remove participant
+            _context.Participants.Remove(participant);
+            await _context.SaveChangesAsync();
+
+            // notify via SignalR
+            //await _roomHubContext.Clients.Group(code)
+            //    .SendAsync("StudentLeft", $"Student {student.Id} left room {code}.");
+
+            return Json(new { success = true, message = "You have left the room." });
+        }
+
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Lobby(string code)
+        {
+            var room = _context.Rooms
+                .Include(r => r.Participants)
+                    .ThenInclude(p => p.Student)
+                        .ThenInclude(s => s.ApplicationUser)
+                .FirstOrDefault(r => r.Code == code);
+
+            if (room == null)
+            {
+                return NotFound("Room does not exist.");
+            }
+
+            return View(room);
+        }
+    }
+}

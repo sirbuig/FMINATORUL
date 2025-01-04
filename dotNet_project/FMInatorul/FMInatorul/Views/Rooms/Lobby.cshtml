@@ -1,0 +1,37 @@
+﻿@model FMInatorul.Models.Room
+
+<h2 class="text-white">Welcome to Room @Model.Code</h2>
+<ul>
+    @foreach (var participant in Model.Participants)
+    {
+        var firstName = participant.Student?.ApplicationUser?.FirstName;
+        var lastName = participant.Student?.ApplicationUser?.LastName;
+        <li class="text-white">
+			Student: @firstName @lastName
+        </li>
+    }
+</ul>
+
+<button id="exitLobbyBtn" class="btn btn-danger">Exit Lobby</button>
+
+@section Scripts {
+    <script>
+        document.getElementById("exitLobbyBtn").addEventListener("click", async () => {
+            const code = "@Model.Code";
+
+            const response = await fetch('/Rooms/LeaveRoom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(code)
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = '/Students/Index';
+            }
+            else {
+                alert(data.message);
+            }
+        });
+    </script>
+}

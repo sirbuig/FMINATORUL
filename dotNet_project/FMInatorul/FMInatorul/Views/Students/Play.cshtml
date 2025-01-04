@@ -78,6 +78,23 @@
             <button type="button" id="joinRoom" class="page-btn">Alatura-te Joc</button>
         </div>
 
+        <div id="joinGameForm" style="display: none;">
+            <p class="text-white"><h2>Introdu codul de 6 cifre</h2></p>
+            <form method="post" asp-action="SubmitCode">
+                <label for="gameCode" class="text-white">Cod:</label>
+                <input 
+                    type="text"
+                    id="gameCode"
+                    name="gameCode"
+                    pattern="[0-9]{6}"
+                    placeholder="******"
+                    required
+                />
+                <br /><br />
+                <button type="submit" class="page-btn">Alatura-te jocului</button>
+            </form>
+        </div>
+
         <div id="materialsQuestion" style="display: none;">
             <p class="text-white"><h2>Ai vrea sa joci cu materialele proprii sau sa le incerci pe cele deja existente?</h2></p>
             <button type="button" id="myMaterials" class="page-btn">Am propriile mele materiale.</button>
