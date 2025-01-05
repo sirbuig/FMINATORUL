@@ -7,16 +7,16 @@ public class RoomHub : Hub
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
 
-        var userName = Context.User?.Identity?.Name ?? $"Connection {Context.ConnectionId}";
+        //var userName = Context.User?.Identity?.Name ?? $"Connection {Context.ConnectionId}";
 
-        await Clients.Group(roomCode).SendAsync("UserJoined", userName);
+        //await Clients.Group(roomCode).SendAsync("UserJoined", userName);
     }
 
     public async Task LeaveRoomGroup(string roomCode)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomCode);
 
-        var userName = Context.User?.Identity?.Name ?? $"Connection {Context.ConnectionId}";
-        await Clients.Group(roomCode).SendAsync("UserLeft", userName);
+        //var userName = Context.User?.Identity?.Name ?? $"Connection {Context.ConnectionId}";
+        //await Clients.Group(roomCode).SendAsync("UserLeft", userName);
     }
 }

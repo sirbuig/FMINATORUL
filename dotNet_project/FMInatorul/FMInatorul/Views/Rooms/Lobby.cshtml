@@ -1,13 +1,13 @@
 ﻿@model FMInatorul.Models.Room
 
 <h2 class="text-white">Welcome to Room @Model.Code</h2>
-<ul>
+<ul id="participantsList">
     @foreach (var participant in Model.Participants)
     {
         var firstName = participant.Student?.ApplicationUser?.FirstName;
         var lastName = participant.Student?.ApplicationUser?.LastName;
         <li class="text-white">
-			Student: @firstName @lastName
+            Student: @firstName @lastName
         </li>
     }
 </ul>
@@ -15,7 +15,47 @@
 <button id="exitLobbyBtn" class="btn btn-danger">Exit Lobby</button>
 
 @section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <script>
+        // start connection
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/roomHub")
+            .build();
+
+        connection.start().then(async () => {
+            console.log("SignalR connected in Lobby.");
+            // join signalR
+            const code = "@Model.Code";
+            await connection.invoke("JoinRoomGroup", code);
+        }).catch(err => console.error(err));
+
+        // UserJoined
+        connection.on("UserJoined", (userName) => {
+            console.log("UserJoined event from server:", userName);
+            const participantsList = document.getElementById("participantsList");
+            const li = document.createElement("li");
+            li.textContent = `Student: ${userName}`;
+            li.classList.add("text-white");
+            participantsList.appendChild(li);
+        });
+
+        // "UserLeft"
+        connection.on("UserLeft", (userName) => {
+            console.log("UserLeft event from server:", userName);
+
+            const participantsList = document.getElementById("participantsList");
+            if (!participantsList) return;
+
+            const listItems = participantsList.querySelectorAll("li");
+            for (const li of listItems) {
+                if (li.textContent.includes(userName)) {
+                    participantsList.removeChild(li);
+                    break;
+                }
+            }
+        });
+
+        // Exit
         document.getElementById("exitLobbyBtn").addEventListener("click", async () => {
             const code = "@Model.Code";
 
@@ -27,6 +67,7 @@
 
             const data = await response.json();
             if (data.success) {
+                await connection.invoke("LeaveRoomGroup", code);
                 window.location.href = '/Students/Index';
             }
             else {

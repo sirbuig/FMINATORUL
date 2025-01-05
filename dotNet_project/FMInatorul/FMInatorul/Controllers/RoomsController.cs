@@ -45,7 +45,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            .Include(s => s.ApplicationUser)
+            .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return BadRequest(new { success = false, message = "No student profile found!" });
@@ -73,9 +74,12 @@ namespace FMInatorul.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            var firstName = student.ApplicationUser.FirstName;
+            var lastName = student.ApplicationUser.LastName;
+            var fullName = $"{firstName} {lastName}";
             // notify the room
             await _roomHubContext.Clients.Group(room.Code)
-                .SendAsync("StudentJoined", $"Student {student.Id} joined room {room.Code}.");
+                .SendAsync("UserJoined", fullName);
 
             return Json(new { success = true, message = $"Joined room {room.Code} successfully." });
         }
@@ -92,7 +96,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+           .Include(s => s.ApplicationUser)
+           .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return Json(new { success = false, message = "No student profile found!" });
@@ -135,7 +140,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+           .Include(s => s.ApplicationUser)
+           .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return Json(new { success = false, message = "No student profile found!" });
@@ -161,8 +167,10 @@ namespace FMInatorul.Controllers
             await _context.SaveChangesAsync();
 
             // notify via SignalR
-            //await _roomHubContext.Clients.Group(code)
-            //    .SendAsync("StudentLeft", $"Student {student.Id} left room {code}.");
+            var fullName = $"{student.ApplicationUser.FirstName} {student.ApplicationUser.LastName}";
+
+            await _roomHubContext.Clients.Group(code)
+                .SendAsync("UserLeft", fullName);
 
             return Json(new { success = true, message = "You have left the room." });
         }
