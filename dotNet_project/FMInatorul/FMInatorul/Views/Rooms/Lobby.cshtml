@@ -1,18 +1,25 @@
 ﻿@model FMInatorul.Models.Room
 
-<h2 class="text-white">Welcome to Room @Model.Code</h2>
-<ul id="participantsList">
-    @foreach (var participant in Model.Participants)
-    {
-        var firstName = participant.Student?.ApplicationUser?.FirstName;
-        var lastName = participant.Student?.ApplicationUser?.LastName;
-        <li class="text-white">
-            Student: @firstName @lastName
-        </li>
-    }
-</ul>
+<div class="container mt-4">
+    <h2 class="text-white text-center">Welcome to Room @Model.Code</h2>
+    <div id="participantsContainer" class="card bg-dark text-white mt-3">
+        <div class="card-header">
+            <h5>Participants</h5>
+        </div>
+        <ul id="participantsList" class="list-group list-group-flush">
+            @foreach (var participant in Model.Participants)
+            {
+                var firstName = participant.Student?.ApplicationUser?.FirstName;
+                var lastName = participant.Student?.ApplicationUser?.LastName;
+                <li class="list-group-item bg-dark text-white">
+                    <span class="fw-bold">Student:</span> @firstName @lastName
+                </li>
+            }
+        </ul>
+    </div>
 
-<button id="exitLobbyBtn" class="btn btn-danger">Exit Lobby</button>
+    <button id="exitLobbyBtn" class="btn btn-danger mt-3 w-100">Exit Lobby</button>
+</div>
 
 @section Scripts {
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
@@ -34,10 +41,20 @@
             console.log("UserJoined event from server:", userName);
             const participantsList = document.getElementById("participantsList");
             const li = document.createElement("li");
-            li.textContent = `Student: ${userName}`;
-            li.classList.add("text-white");
+            li.className = "list-group-item bg-dark text-white";
+
+            const labelNode = document.createElement("span");
+            labelNode.className = "fw-bold";
+            labelNode.textContent = "Student: ";
+
+            const userNameNode = document.createTextNode(userName);
+
+            li.appendChild(labelNode);
+            li.appendChild(userNameNode);
+
             participantsList.appendChild(li);
         });
+
 
         // "UserLeft"
         connection.on("UserLeft", (userName) => {
