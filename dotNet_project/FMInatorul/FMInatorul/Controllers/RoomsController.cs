@@ -194,7 +194,43 @@ namespace FMInatorul.Controllers
                 return NotFound("Room does not exist.");
             }
 
+            var userId = _userManager.GetUserId(User);
+            var student = _context.Students
+                .Include(s => s.ApplicationUser)
+                .FirstOrDefault(s => s.ApplicationUserId == userId);
+
+            var userFullName = (student is not null)
+                ? $"{student.ApplicationUser.FirstName} {student.ApplicationUser.LastName}"
+                : string.Empty;
+
+            ViewBag.UserFullName = userFullName;
+
             return View(room);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StartGame([FromBody] string code)
+        {
+            // find the room
+            var room = await _context.Rooms
+                .Include(r => r.Participants)
+                    .ThenInclude(p => p.Student)
+                        .ThenInclude(s => s.ApplicationUser)
+                .FirstOrDefaultAsync(r => r.Code == code);
+            if (room == null)
+            {
+                return Json(new { success = false, message = "Room not found" });
+            }
+
+            await _roomHubContext.Clients.Group(code)
+                .SendAsync("StartGame");
+
+            return Json(new { success = true, message = "Game started" });
+        }
+
+        public IActionResult Game()
+        {
+            return View();
         }
     }
 }
