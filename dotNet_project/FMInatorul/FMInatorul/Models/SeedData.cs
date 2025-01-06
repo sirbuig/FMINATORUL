@@ -118,8 +118,9 @@ public static class SeedData
                         nume="ACS"
                     }
                     );
+                
+                context.SaveChanges();
             }
-
             //Seeding Materii
             if (!context.Materii.Any())
             {

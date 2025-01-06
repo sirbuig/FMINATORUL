@@ -1,6 +1,7 @@
 ﻿using FMInatorul.Data;
 using FMInatorul.Migrations;
 using FMInatorul.Models;
+using FMInatorul.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text;
 
 namespace FMInatorul.Controllers
 {
@@ -84,11 +86,15 @@ namespace FMInatorul.Controllers
 			{
 				return BadRequest("Invalid file format. Only PDF files allowed!");
 			}
+            var apiSecret = Environment.GetEnvironmentVariable("API_PASSWORD");
+            var jwtToken = await HttpHelper.GetJwtTokenAsync("dotnet_user", apiSecret, "https://api.fminatorul.xyz/login");
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                return StatusCode(401, "Failed to authenticate with the Flask API");
+            }
 
-			// Upload the PDF to Flask API (replace with your actual API URL)
-			//http://46.101.136.24/
 
-			var response = await UploadPdfToFlaskApiAsync(file, "http://34.65.214.77/");
+            var response = await HttpHelper.UploadPdfToFlaskApiAsync(file, "https://api.fminatorul.xyz/api/generate-quiz-external-links", jwtToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -96,7 +102,7 @@ namespace FMInatorul.Controllers
 				var responseString = await response.Content.ReadAsStringAsync();
 				var quiz = JsonConvert.DeserializeObject<QuizModel>(responseString); // Deserialize the JSON response
 
-				Debug.WriteLine($"Response String: {responseString}");
+                Debug.WriteLine($"Response String: {responseString}");
 
 				return View("Quiz", quiz); //Pass the quiz model to the view
 			}
@@ -113,25 +119,9 @@ namespace FMInatorul.Controllers
 			return file.ContentType.Contains("application/pdf");
 		}
 
-		// Uploads the PDF file to a Flask API.
-		private async Task<HttpResponseMessage> UploadPdfToFlaskApiAsync(IFormFile file, string url)
-		{
-			using (var client = new HttpClient())
-			{
-				using (var multipartContent = new MultipartFormDataContent())
-				{
-					using (var fileStream = file.OpenReadStream())
-					{
-						multipartContent.Add(new StreamContent(fileStream), "file", Path.GetFileName(file.FileName));
-						var response = await client.PostAsync(url, multipartContent);
-						return response;
-					}
-				}
-			}
-		}
 
-		// Returns the chat view.
-		public ActionResult ChatView()
+        // Returns the chat view.
+        public ActionResult ChatView()
 		{
 			return View();
 		}
@@ -147,23 +137,23 @@ namespace FMInatorul.Controllers
 		public async Task<IActionResult> MateriiSingle()
 		{
 
-			var userId = _userManager.GetUserId(User);
+            var userId = _userManager.GetUserId(User);
 
-			// Găsește profesorul pe baza ApplicationUserId
-			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            // Găsește profesorul pe baza ApplicationUserId
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
 
-			if (student == null)
-			{
-				return NotFound();
-			}
+            if (student == null)
+            {
+                return NotFound();
+            }
 
-			// Obține materiile care aparțin facultății profesorului selectat
-			var materii = await db.Materii
-				.Where(m => m.FacultateID == student.FacultateID)
+            // Obține materiile care aparțin facultății profesorului selectat
+            var materii = await db.Materii
+                .Where(m => m.FacultateID == student.FacultateID)
 				.Where(m => m.anStudiu == student.Year)
-				.Where(m => m.semestru == student.Semester)
-				.ToListAsync();
-			ViewBag.Materii = materii;
+                .Where(m => m.semestru == student.Semester)
+                .ToListAsync();
+            ViewBag.Materii = materii;
 			return View();
 		}
 
@@ -253,7 +243,7 @@ namespace FMInatorul.Controllers
 
 				studentToUpdate.Semester = student.Semester;
 				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
-				{
+                {
 					studentToUpdate.CompletedProfile = true;
 				}
 				if (student.Semester >= 3 || student.Semester <= 0)
@@ -267,89 +257,84 @@ namespace FMInatorul.Controllers
 			}
 		}
 
+        
+        public async Task<IActionResult> EditCollege()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "Student not found.";
+                return RedirectToAction("Index"); 
+            }
 
-		public async Task<IActionResult> EditCollege()
-		{
-			var userId = _userManager.GetUserId(User);
-			var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            // Populate the ViewBag with faculties for the dropdown list
+            var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
 
-			if (student == null)
-			{
-				TempData["ErrorMessage"] = "Student not found.";
-				return RedirectToAction("Index");
-			}
-
-			// Populate the ViewBag with faculties for the dropdown list
-			var facultati = await db.Facultati.Where(f => f.Id != 1).ToListAsync();
-
-			ViewBag.Facultati = facultati.Select(f => new SelectListItem
-			{
-				Value = f.Id.ToString(),
-				Text = f.nume
-			}).ToList();
-
-
-			if (TempData.ContainsKey("ErrorMessage"))
-			{
-				ViewBag.Message = TempData["ErrorMessage"];
-				return View(student);
-			}
-
-			return View(student);
-		}
+            ViewBag.Facultati = facultati.Select(f => new SelectListItem
+            {
+                Value = f.Id.ToString(),
+                Text = f.nume
+            }).ToList();
 
 
-		[HttpPost]
-		public IActionResult EditCollege(int id, Student student)
-		{
-			if (ModelState.IsValid)
-			{
-				return View(student);
-			}
-			else
-			{
-				Student studentToUpdate = db.Students.Where(stu => stu.Id == id).FirstOrDefault();
+            if (TempData.ContainsKey("ErrorMessage"))
+            {
+                ViewBag.Message = TempData["ErrorMessage"];
+                return View(student);
+            }
+            
+            return View(student);
+        }
 
-				if (studentToUpdate == null)
-				{
-					return NotFound();
-				}
+      
+        [HttpPost]
+        public IActionResult EditCollege(int id, Student student)
+        {
+            if (ModelState.IsValid)
+            {
+                return View(student);
+            }
+            else
+            {
+                Student studentToUpdate = db.Students.Where(stu => stu.Id == id).FirstOrDefault();
 
-				studentToUpdate.FacultateID = student.FacultateID;
+                if (studentToUpdate == null)
+                {
+                    return NotFound();
+                }
 
-				if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID != 1)
-				{
-					studentToUpdate.CompletedProfile = true;
-				}
-				if (student.FacultateID == 1 || student.FacultateID == null)
-				{
-					TempData["ErrorMessage"] = "A college must be selected";
-					return RedirectToAction("EditCollege", "Students");
-				}
-				db.SaveChanges();
-				TempData["SuccessMessage"] = "College updated successfully.";
-				return RedirectToAction("Index", "Students");
-			}
-		}
+                studentToUpdate.FacultateID = student.FacultateID;
 
+                if (studentToUpdate.Year != 0 && studentToUpdate.Semester != 0 && studentToUpdate.FacultateID !=1)
+                {
+                    studentToUpdate.CompletedProfile = true;
+                }
+                if (student.FacultateID ==1 || student.FacultateID == null)
+                {
+                    TempData["ErrorMessage"] = "A college must be selected";
+                    return RedirectToAction("EditCollege", "Students");
+                }
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "College updated successfully.";
+                return RedirectToAction("Index", "Students");
+            }
+        }
+        
 		public IActionResult ShowIntrebari()
 		{
-			var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
-			//luam intrebarile de la materia respectiva care sunt aprobate de profesori
-			var intrebari = db.IntrebariRasps
+            var materie_id = Convert.ToInt32(HttpContext.Request.Query["materie"]);
+            //luam intrebarile de la materia respectiva care sunt aprobate de profesori
+            var intrebari = db.IntrebariRasps
 								.Where(i => i.MaterieId == materie_id && i.validareProfesor == 1)
-								.Include(i => i.Materie)
+                                .Include(i => i.Materie)
 								.Include(i => i.Variante)
-								.ToList();
+                                .ToList();
 
 			return View(intrebari);
-		}
-
-		[HttpPost]
-		public IActionResult SubmitCode(string gameCode)
-		{
-			TempData["SuccessMessage"] = $"Code is {gameCode}!";
-            return RedirectToAction("Index", "Students");
         }
-	}
+       
+
+    }
 }

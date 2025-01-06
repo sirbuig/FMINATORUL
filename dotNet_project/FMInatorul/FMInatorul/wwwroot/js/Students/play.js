@@ -58,7 +58,7 @@
         myMaterialsBtn.classList.remove('btn-active');
         materialsForm.style.display = 'none';
     });
-
+    
 
     // for the room
     hostRoomBtn.addEventListener('click', async function () {
@@ -96,4 +96,42 @@
         }
     });
 
+    const loadingScreen = document.getElementById("loadingScreen");
+    const loadingMessage = document.getElementById("loadingMessage");
+
+    const messages = [
+        "Your PDF is being processed...",
+        "Cooking the questions...",
+        "Almost ready...",
+        "Preparing your quiz..."
+    ];
+
+    let messageIndex = 0;
+
+    function showLoadingScreen() {
+        loadingScreen.style.display = "flex";
+        updateLoadingMessage();
+    }
+
+    function hideLoadingScreen() {
+        loadingScreen.style.display = "none";
+    }
+
+    function updateLoadingMessage() {
+        messageIndex = 0; // Reset to the first message
+        loadingMessage.textContent = messages[messageIndex];
+
+        const interval = setInterval(() => {
+            messageIndex = (messageIndex + 1) % messages.length;
+            loadingMessage.textContent = messages[messageIndex];
+        }, 3000);
+
+        // Stop updating the messages after 10 seconds
+        setTimeout(() => clearInterval(interval), 10000);
+    }
+
+    // Example: Attach the loading screen to a button click and simulate the POST request
+    document.getElementById("uploadpdf-submit").addEventListener("click", function () {
+        showLoadingScreen();
+    });
 });
