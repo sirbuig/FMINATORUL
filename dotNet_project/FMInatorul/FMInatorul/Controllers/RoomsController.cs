@@ -166,6 +166,14 @@ namespace FMInatorul.Controllers
             _context.Participants.Remove(participant);
             await _context.SaveChangesAsync();
 
+            // check if the room is empty
+            bool isRoomEmpty = !await _context.Participants.AnyAsync(p => p.RoomId == room.RoomId);
+            if (isRoomEmpty)
+            {
+                _context.Rooms.Remove(room);
+                await _context.SaveChangesAsync();
+            }
+
             // notify via SignalR
             var fullName = $"{student.ApplicationUser.FirstName} {student.ApplicationUser.LastName}";
 
