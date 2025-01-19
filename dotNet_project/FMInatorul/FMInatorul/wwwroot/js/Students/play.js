@@ -61,9 +61,21 @@
     
 
     // for the room
-    hostRoomBtn.addEventListener('click', async function () {
+    /*hostRoomBtn.addEventListener('click', async function () {
+        const selectedMaterieId = document.getElementById('materiiDropdown').value;
+
+        if (!selectedMaterieId) {
+            alert('Te rugăm să selectezi o materie');
+            return;
+        }
         // CreateRoom endpoint
-        const response = await fetch('/Rooms/CreateRoom', { method: 'POST' });
+        const response = await fetch('/Rooms/CreateRoom', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({selectedMaterieId})
+        });
         const data = await response.json();
 
         // did we get the code?
@@ -74,7 +86,29 @@
             // :(
             alert('Could not create room');
         }
-    });
+    });*/
+
+    multiplayerChoice.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log("am ajuns aici");
+        const code = document.getElementById('materiiDropdown').value;
+        console.log(code);
+        // CreateRoom endpoint
+        const response = await fetch('/Rooms/CreateRoom', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ Code: code })
+        });
+        const data = await response.json();
+
+        if (data.code) {
+            window.location.href = `/Rooms/Lobby?code=${data.code}`;
+            connection.invoke('JoinRoomGroup', data.code);
+        } else {
+            // :(
+            alert('Could not create room');
+        }
+    })
 
     joinGameForm.addEventListener('submit', async (e) => {
         e.preventDefault();

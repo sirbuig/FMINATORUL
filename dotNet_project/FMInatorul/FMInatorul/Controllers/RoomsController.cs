@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Specialized;
+using System.Text.Json;
 
 namespace FMInatorul.Controllers
 {
@@ -85,8 +88,30 @@ namespace FMInatorul.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRoom()
+        [Consumes("application/json")]
+        public async Task<IActionResult> CreateRoom([FromBody] JoinRoomRequest request)
         {
+            if (request == null || string.IsNullOrEmpty(request.Code))
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            int materieId;
+            if (!int.TryParse(request.Code, out materieId))
+            {
+                return BadRequest("Invalid Materie ID.");
+            }
+
+            Console.WriteLine("am ajuns si aici");
+            materieId = int.Parse(request.Code);
+            Console.WriteLine(materieId);
+            // Căutăm materia în baza de date
+            var materie = await _context.Materii.FindAsync(materieId);
+            if (materie == null)
+            {
+                return BadRequest("Materia nu a fost găsită.");
+            }
+
             // get the user
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
@@ -111,7 +136,7 @@ namespace FMInatorul.Controllers
             } while (await _context.Rooms.AnyAsync(r => r.Code == code));
 
             // create & save room
-            var room = new Room { Code = code };
+            var room = new Room { Code = code , MaterieID = materieId, Materie = materie};
 
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();

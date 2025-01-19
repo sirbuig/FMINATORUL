@@ -53,7 +53,7 @@ namespace FMInatorul.Controllers
 				}
 			}
 
-			if (TempData.ContainsKey("SuccessMessage"))
+            if (TempData.ContainsKey("SuccessMessage"))
 			{
 				ViewBag.Message = TempData["SuccessMessage"];
 				return View(user);
@@ -62,9 +62,27 @@ namespace FMInatorul.Controllers
 		}
 
 		// Returns the play view.
-		public IActionResult Play()
+		public async Task<IActionResult> Play()
 		{
-			return View();
+            var userId = _userManager.GetUserId(User);
+
+            // Găsește student pe baza ApplicationUserId
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            // Obține materiile care aparțin facultății studentului selectat
+            var materii = await db.Materii
+                .Where(m => m.FacultateID == student.FacultateID)
+                .Where(m => m.anStudiu == student.Year)
+                .Where(m => m.semestru == student.Semester)
+                .ToListAsync();
+            ViewBag.Materii = materii;
+
+            return View();
 		}
 
 		// Returns the view to upload a PDF file.
@@ -139,7 +157,7 @@ namespace FMInatorul.Controllers
 
             var userId = _userManager.GetUserId(User);
 
-            // Găsește profesorul pe baza ApplicationUserId
+            // Găsește student pe baza ApplicationUserId
             var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
 
             if (student == null)
@@ -147,7 +165,7 @@ namespace FMInatorul.Controllers
                 return NotFound();
             }
 
-            // Obține materiile care aparțin facultății profesorului selectat
+            // Obține materiile care aparțin facultății studentului selectat
             var materii = await db.Materii
                 .Where(m => m.FacultateID == student.FacultateID)
 				.Where(m => m.anStudiu == student.Year)

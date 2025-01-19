@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@model FMInatorul.Models.Student
+@{
+    var materii = ViewBag.Materii as List<Materie>;
+}
+
+<!DOCTYPE html>
 <html lang="ro">
 <head>
     <title>Joacă Trivia</title>
@@ -13,32 +18,48 @@
         </div>
 
         <div id="multiplayerChoice" style="display: none;">
-            <p class="text-white"><h2>Creeaza sau alatura-te unui joc!</h2></p>
-            <button type="button" id="hostRoom" class="page-btn">Creeaza Joc</button>
-            <button type="button" id="joinRoom" class="page-btn">Alatura-te Joc</button>
+            <p class="text-white"><h2>Creează sau alătură-te unui joc!</h2></p>
+            @using (Html.BeginForm("CreateRoom", "Rooms", FormMethod.Post))
+            {
+                <div class="form-container">
+
+                    <div class="materii-container">
+                        <label for="materiiDropdown" class="text-white">Alege Materia:</label>
+                        <select id="materiiDropdown" name="SelectedMaterieId">
+                            <option value="" disabled selected>Selectează o materie</option>
+                            @foreach (var materie in materii)
+                            {
+                                <option value="@materie.Id">@materie.nume</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="hostRoom" class="page-btn">Creează Joc</button>
+                    </div>
+                </div>
+            }
+            <button type="button" id="joinRoom" class="page-btn">Alătură-te Joc</button>
         </div>
 
         <div id="joinGameForm" style="display: none;">
             <p class="text-white"><h2>Introdu codul de 6 cifre</h2></p>
             <form method="post" asp-action="SubmitCode">
                 <label for="gameCode" class="text-white">Cod:</label>
-                <input 
-                    type="text"
-                    id="gameCode"
-                    name="gameCode"
-                    pattern="[0-9]{6}"
-                    placeholder="******"
-                    required
-                />
+                <input type="text"
+                       id="gameCode"
+                       name="gameCode"
+                       pattern="[0-9]{6}"
+                       placeholder="******"
+                       required />
                 <br /><br />
-                <button type="submit" class="page-btn">Alatura-te jocului</button>
+                <button type="submit" class="page-btn">Alătură-te jocului</button>
             </form>
         </div>
 
         <div id="materialsQuestion" style="display: none;">
-            <p class="text-white"><h2>Ai vrea sa joci cu materialele proprii sau sa le incerci pe cele deja existente?</h2></p>
+            <p class="text-white"><h2>Ai vrea să joci cu materialele proprii sau să le încerci pe cele deja existente?</h2></p>
             <button type="button" id="myMaterials" class="page-btn">Am propriile mele materiale.</button>
-            <button type="button" id="yourMaterials" class="page-btn" onclick="window.location.href='/Students/MateriiSingle'">As vrea sa le incerc pe cele deja existente.</button>
+            <button type="button" id="yourMaterials" class="page-btn" onclick="window.location.href='/Students/MateriiSingle'">As vrea să le încerci pe cele deja existente.</button>
         </div>
 
         <div id="materialsForm" style="display: none;">
@@ -46,7 +67,7 @@
                 <form method="post" enctype="multipart/form-data" asp-action="UploadPdf" onsubmit="showLoadingScreen()">
                     <label for="file" class="text-white"></label>
                     <input type="file" name="file" accept=".pdf" />
-                    <input type="submit" value="Upload PDF" class="page-btn" id="uploadpdf-submit"/>
+                    <input type="submit" value="Upload PDF" class="page-btn" id="uploadpdf-submit" />
                 </form>
             </div>
         </div>
