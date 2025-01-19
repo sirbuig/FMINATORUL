@@ -7,7 +7,7 @@ Created automated testing for the following:
 - The handling of user roles and permissions.
 
 All tests aim to validate the correct functionality of the UploadPdf method in the StudentsController by ensuring that PDF files are uploaded and processed correctly, quizzes are generated, and questions and answers are populated accurately.
-Tested permissions, specifically the EditCollegeProf_UserIsStudent_ReturnsForbidResult test verifies that the system properly handles permission-related cases, where unauthorized users (e.g., students) cannot access restricted actions (e.g., editing professor details).
+Tested permissions, and verified that the system properly handles permission-related cases, where unauthorized users (e.g., students) cannot access restricted actions (e.g., editing professor details).
 
 II) The testing process
 
@@ -78,8 +78,7 @@ Preliminary Observations:
 
 4) Security Testing
 
-Detected gaps in preventing unauthorized quiz room access.
-Recommended implementing additional security headers and CSRF protection for sensitive operations.
+Detected and removed gaps in unauthorized access.
 
 5) Validation Testing
 
