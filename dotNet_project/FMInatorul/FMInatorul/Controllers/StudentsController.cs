@@ -148,7 +148,7 @@ namespace FMInatorul.Controllers
 		[HttpPost]
 		public IActionResult SubmitQuiz(QuizModel quiz)
 		{
-			return View("Results", quiz);
+            return View("Results", quiz);
 		}
 
 		// Returns the view for single subject selection.
