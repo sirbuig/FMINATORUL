@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Security.Claims;
 
-public class StudentsControllerTest
+public class CriticalFunctionsUnitTests
 {
 	private readonly StudentsController _controller;
 	private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
@@ -17,7 +17,7 @@ public class StudentsControllerTest
 	private readonly Mock<RoleManager<IdentityRole>> _mockRoleManager;
 	private readonly ApplicationDbContext _mockDbContext;
 
-	public StudentsControllerTest()
+	public CriticalFunctionsUnitTests()
 	{
 		// Create an in-memory SQLite database
 		var connection = new SqliteConnection("DataSource=:memory:");

@@ -201,6 +201,17 @@ namespace FMInatorul.Controllers
         [HttpPost]
         public IActionResult EditCollegeProf(int id, Profesor profesor)
         {
+            var currentUser = _userManager.GetUserAsync(User).Result;
+            if (currentUser == null)
+            {
+                return Forbid(); 
+            }
+            var student = db.Students.FirstOrDefault(s => s.ApplicationUserId == currentUser.Id);
+            if (student != null)
+            {
+                return Forbid();
+            }
+
             if (ModelState.IsValid)
             {
                 return View(profesor);
