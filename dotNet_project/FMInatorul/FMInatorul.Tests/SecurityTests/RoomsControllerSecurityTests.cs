@@ -1,226 +1,254 @@
 ﻿using FMInatorul.Controllers;
 using FMInatorul.Data;
 using FMInatorul.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace FMInatorul.Tests.SecurityTests
 {
+    public static class HttpHelperRoom
+    {
+        /// <summary>
+        /// Sets up a mock HttpContext with a given user ID and optional additional claims.
+        /// </summary>
+        public static void SetupAuthenticatedUser(Controller controller, string userId, List<Claim> additionalClaims = null)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            };
+
+            if (additionalClaims != null)
+            {
+                claims.AddRange(additionalClaims);
+            }
+
+            var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthType"));
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(context => context.User).Returns(mockClaimsPrincipal); // Ensure User is set
+            mockHttpContext.Setup(context => context.TraceIdentifier).Returns($"trace-{userId}");
+
+            // Ensure the controller context has the mocked HttpContext with the user
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            };
+        }
+
+        /// <summary>
+        /// Sets up mock HttpContext with room-specific claims.
+        /// </summary>
+        public static void SetupRoomContext(Controller controller, int roomId, string roomCode, string userId = "user123")
+        {
+            var roomClaims = new List<Claim>
+            {
+                new Claim("RoomId", roomId.ToString()),
+                new Claim("RoomCode", roomCode),
+                new Claim(ClaimTypes.NameIdentifier, userId)  
+            };
+
+            SetupAuthenticatedUser(controller, userId, roomClaims); 
+        }
+
+        /// <summary>
+        /// Sets up mock HttpContext for a participant with room and student-specific claims.
+        /// </summary>
+        public static void SetupParticipantContext(Controller controller, int roomId, int studentId)
+        {
+            var participantClaims = new List<Claim>
+        {
+            new Claim("RoomId", roomId.ToString()),
+            new Claim("StudentId", studentId.ToString())
+        };
+
+            SetupAuthenticatedUser(controller, "participant-user", participantClaims);
+        }
+    }
+
     public class RoomsControllerSecurityTests
     {
-        private readonly Mock<ApplicationDbContext> _mockDbContext;
+        private readonly ApplicationDbContext _mockDbContext;
         private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
         private readonly Mock<RoleManager<IdentityRole>> _mockRoleManager;
         private readonly Mock<IHubContext<RoomHub>> _mockRoomHubContext;
+        private RoomsController _controller;
 
         public RoomsControllerSecurityTests()
         {
-            _mockDbContext = new Mock<ApplicationDbContext>();
-            _mockUserManager = new Mock<UserManager<ApplicationUser>>();
-            _mockRoleManager = new Mock<RoleManager<IdentityRole>>();
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            _mockDbContext = new ApplicationDbContext(options);
+            _mockUserManager = new Mock<UserManager<ApplicationUser>>(
+                Mock.Of<IUserStore<ApplicationUser>>(),
+                null, null, null, null, null, null, null, null
+            );
+            _mockRoleManager = new Mock<RoleManager<IdentityRole>>(
+                Mock.Of<IRoleStore<IdentityRole>>(), null, null, null, null
+            );
             _mockRoomHubContext = new Mock<IHubContext<RoomHub>>();
+
+            _controller = new RoomsController(
+                _mockDbContext, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
         }
 
-        // Helper function to simulate authenticated user
-        private void SetupAuthenticatedUser(string userId)
+        private void SetupHttpContextWithUser(string userId)
         {
-            var mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
-            mockClaimsPrincipal.Setup(p => p.FindFirst(It.IsAny<string>())).Returns(new Claim(ClaimTypes.NameIdentifier, userId));
-            _mockUserManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-        }
+            // Create mock ClaimsPrincipal
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
+            var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthType"));
 
-        // Helper function to simulate a student in the database
-        private void SetupStudent(string userId)
-        {
-            var student = new Student
+            // Mock HttpContext
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(context => context.User).Returns(mockClaimsPrincipal);
+            mockHttpContext.Setup(context => context.TraceIdentifier).Returns("test-trace-id");
+
+            // Assign mock HttpContext to the controller
+            _controller.ControllerContext = new ControllerContext
             {
-                Id = 1,
-                ApplicationUserId = userId,
-                ApplicationUser = new ApplicationUser
-                {
-                    Id = userId,
-                    FirstName = "John",
-                    LastName = "Doe"
-                }
+                HttpContext = mockHttpContext.Object
             };
-
-            var students = new List<Student> { student }.AsQueryable();
-            var mockDbSet = new Mock<DbSet<Student>>();
-            mockDbSet.As<IQueryable<Student>>().Setup(m => m.Provider).Returns(students.Provider);
-            mockDbSet.As<IQueryable<Student>>().Setup(m => m.Expression).Returns(students.Expression);
-            mockDbSet.As<IQueryable<Student>>().Setup(m => m.ElementType).Returns(students.ElementType);
-            mockDbSet.As<IQueryable<Student>>().Setup(m => m.GetEnumerator()).Returns(students.GetEnumerator());
-
-            _mockDbContext.Setup(c => c.Students).Returns(mockDbSet.Object);
         }
 
-        // Setup Rooms DbSet
-        private void SetupRoomsDbSet()
-        {
-            var rooms = new List<Room>
-            {
-                new Room { RoomId = 1, Code = "123456" },
-                new Room { RoomId = 2, Code = "654321" }
-            }.AsQueryable();
-
-            var mockDbSet = new Mock<DbSet<Room>>();
-            mockDbSet.As<IQueryable<Room>>().Setup(m => m.Provider).Returns(rooms.Provider);
-            mockDbSet.As<IQueryable<Room>>().Setup(m => m.Expression).Returns(rooms.Expression);
-            mockDbSet.As<IQueryable<Room>>().Setup(m => m.ElementType).Returns(rooms.ElementType);
-            mockDbSet.As<IQueryable<Room>>().Setup(m => m.GetEnumerator()).Returns(rooms.GetEnumerator());
-
-            _mockDbContext.Setup(c => c.Rooms).Returns(mockDbSet.Object);
-        }
-
-        // Setup Participants DbSet
-        private void SetupParticipantsDbSet()
-        {
-            var participants = new List<Participant>
-            {
-                new Participant { RoomId = 1, StudentId = 1 }
-            }.AsQueryable();
-
-            var mockDbSet = new Mock<DbSet<Participant>>();
-            mockDbSet.As<IQueryable<Participant>>().Setup(m => m.Provider).Returns(participants.Provider);
-            mockDbSet.As<IQueryable<Participant>>().Setup(m => m.Expression).Returns(participants.Expression);
-            mockDbSet.As<IQueryable<Participant>>().Setup(m => m.ElementType).Returns(participants.ElementType);
-            mockDbSet.As<IQueryable<Participant>>().Setup(m => m.GetEnumerator()).Returns(participants.GetEnumerator());
-
-            _mockDbContext.Setup(c => c.Participants).Returns(mockDbSet.Object);
-        }
-
-        // Setup for CreateRoom (valid scenario)
-        private void SetupCreateRoomRequest(string userId, string roomCode)
-        {
-            SetupAuthenticatedUser(userId);
-            SetupStudent(userId);
-            SetupRoomsDbSet();
-        }
-
-        // Test if user is unauthorized when trying to join room
+        // Test: User is unauthorized when trying to join a room
         [Fact]
         public async Task JoinRoom_ShouldReturnUnauthorized_WhenUserIsNotLoggedIn()
         {
             // Arrange
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
-            _mockUserManager.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns((string)null); // Simulate no user logged in
-
+            _mockUserManager.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns((string)null);
             var request = new RoomsController.JoinRoomRequest { Code = "123456" };
 
             // Act
-            var result = await controller.JoinRoom(request);
+            var result = await _controller.JoinRoom(request);
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
-            Assert.Equal("{\"success\":false,\"message\":\"You must be logged in to join a room\"}", jsonResult.Value.ToString());
+
+            // Expected and actual result comparison
+            var expectedResult = new { success = false, message = "You must be logged in to join a room" };
+            var actualResult = jsonResult.Value;
+
+            Assert.Equal(JsonSerializer.Serialize(expectedResult), JsonSerializer.Serialize(actualResult));
         }
 
-        // Test if user can successfully join room
+        // Test: User successfully joins a room
         [Fact]
         public async Task JoinRoom_ShouldReturnSuccess_WhenUserIsAuthorized()
         {
             // Arrange
-            var userId = "user123";
-            SetupCreateRoomRequest(userId, "123456");
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
+            var userId = "user123";  // Set a valid user ID
+
+            // Mock UserManager to return userId correctly
+            SetupHttpContextWithUser(userId); ////////////// Maybe HTTP is wrong here???
+
+            // Set up the HttpContext with the correct user
+            HttpHelperRoom.SetupRoomContext(_controller, 1, "123456", userId);
+
             var request = new RoomsController.JoinRoomRequest { Code = "123456" };
 
             // Act
-            var result = await controller.JoinRoom(request);
+            var result = await _controller.JoinRoom(request);
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Equal("{\"success\":true,\"message\":\"Joined room 123456 successfully.\"}", jsonResult.Value.ToString());
         }
 
-        // Test if user tries to join a room that doesn't exist
+        // Test: Joining a non-existent room
         [Fact]
         public async Task JoinRoom_ShouldReturnNotFound_WhenRoomDoesNotExist()
         {
             // Arrange
             var userId = "user123";
-            SetupCreateRoomRequest(userId, "123456");
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
+            HttpHelperRoom.SetupAuthenticatedUser(_controller, userId);
+            HttpHelperRoom.SetupRoomContext(_controller, 1, "123456");
             var request = new RoomsController.JoinRoomRequest { Code = "999999" };
 
             // Act
-            var result = await controller.JoinRoom(request);
+            var result = await _controller.JoinRoom(request);
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Equal("{\"success\":false,\"message\":\"Room not found\"}", jsonResult.Value.ToString());
         }
 
-        // Test if user can create a room successfully
+        // Test: User creates a room successfully
         [Fact]
         public async Task CreateRoom_ShouldReturnSuccess_WhenUserIsAuthorized()
         {
+            await _mockDbContext.Database.OpenConnectionAsync();
+            await _mockDbContext.Database.EnsureCreatedAsync();
+
             // Arrange
             var userId = "user123";
-            SetupCreateRoomRequest(userId, "123456");
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
+            HttpHelperRoom.SetupAuthenticatedUser(_controller, userId);
             var request = new RoomsController.JoinRoomRequest { Code = "101" };
 
             // Act
-            var result = await controller.CreateRoom(request);
+            var result = await _controller.CreateRoom(request);
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
-            var code = jsonResult.Value.ToString().Contains("code");
-            Assert.True(code);
+            Assert.Contains("code", jsonResult.Value.ToString());
         }
 
-        // Test if user is unable to create room without login
+        // Test: User cannot create a room without login
         [Fact]
         public async Task CreateRoom_ShouldReturnUnauthorized_WhenUserIsNotLoggedIn()
         {
+            await _mockDbContext.Database.OpenConnectionAsync();
+            await _mockDbContext.Database.EnsureCreatedAsync();
+
             // Arrange
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
-            _mockUserManager.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns((string)null); // Simulate no user logged in
+            _mockUserManager.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns((string)null);
             var request = new RoomsController.JoinRoomRequest { Code = "101" };
 
             // Act
-            var result = await controller.CreateRoom(request);
+            var result = await _controller.CreateRoom(request);
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Equal("{\"success\":false,\"message\":\"You must be logged in to create a room\"}", jsonResult.Value.ToString());
         }
 
-        // Test if user can leave the room successfully
+        // Test: User leaves a room successfully
         [Fact]
         public async Task LeaveRoom_ShouldReturnSuccess_WhenUserIsInRoom()
         {
             // Arrange
             var userId = "user123";
-            SetupCreateRoomRequest(userId, "123456");
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
-            var code = "123456";
+            HttpHelperRoom.SetupRoomContext(_controller, 1, "123456");
 
             // Act
-            var result = await controller.LeaveRoom(code);
+            var result = await _controller.LeaveRoom("123456");
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
             Assert.Equal("{\"success\":true,\"message\":\"You have left the room.\"}", jsonResult.Value.ToString());
         }
 
-        // Test if user tries to leave a room they are not in
+        // Test: User tries to leave a room they are not in
         [Fact]
         public async Task LeaveRoom_ShouldReturnError_WhenUserIsNotInRoom()
         {
             // Arrange
             var userId = "user123";
-            SetupCreateRoomRequest(userId, "654321");
-            var controller = new RoomsController(_mockDbContext.Object, _mockRoomHubContext.Object, _mockUserManager.Object, _mockRoleManager.Object);
-            var code = "123456";
+            HttpHelperRoom.SetupRoomContext(_controller, 1, "654321");
 
             // Act
-            var result = await controller.LeaveRoom(code);
+            var result = await _controller.LeaveRoom("123456");
 
             // Assert
             var jsonResult = Assert.IsType<JsonResult>(result);
