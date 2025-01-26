@@ -18,7 +18,6 @@ namespace FMInatorul.Tests.SecurityTests
         public static Func<string, string, string, Task<string>> GetJwtTokenAsync =
             async (username, secret, url) =>
             {
-                // Original implementation here
                 return await Task.FromResult("OriginalToken");
             };
     }
