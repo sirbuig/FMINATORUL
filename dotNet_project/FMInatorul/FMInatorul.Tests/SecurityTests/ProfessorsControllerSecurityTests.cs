@@ -192,7 +192,7 @@ namespace FMInatorul.Tests.SecurityTests
             _controller = new ProfessorsController(_mockDbContext, _mockUserManager.Object, _mockRoleManager.Object);
 
             // Act
-            var result = await _controller.Valideaza(123); // Example integer parameter
+            var result = await _controller.Valideaza(123); 
 
             // Assert
             var challengeResult = Assert.IsType<ChallengeResult>(result);
@@ -213,7 +213,7 @@ namespace FMInatorul.Tests.SecurityTests
             _controller = new ProfessorsController(_mockDbContext, _mockUserManager.Object, _mockRoleManager.Object);
 
             // Act
-            var result = await _controller.NuValideaza(123); // Example integer parameter
+            var result = await _controller.NuValideaza(123);
 
             // Assert
             var challengeResult = Assert.IsType<ChallengeResult>(result);

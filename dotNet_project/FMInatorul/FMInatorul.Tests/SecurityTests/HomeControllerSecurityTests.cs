@@ -92,10 +92,10 @@ namespace FMInatorul.Tests.SecurityTests
         {
             // Create claims for Admin role
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, userId),
-            new Claim(ClaimTypes.Role, "Admin")
-        };
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
             var mockClaimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthType"));
 
             // Mock HttpContext
