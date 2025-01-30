@@ -201,7 +201,7 @@
                 const response = await fetch('/Rooms/StartGame', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(code)
+                    body: JSON.stringify({ code: code })
                 });
 
                 const data = await response.json();
@@ -216,7 +216,7 @@
         });
 
         connection.on("StartGame", () => {
-            window.location.href = "/Rooms/Game";
+            window.location.href = "/Rooms/Game?code=" + encodeURIComponent(code);
         });
 
         // CHAT

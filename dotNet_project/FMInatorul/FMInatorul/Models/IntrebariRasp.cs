@@ -15,8 +15,4 @@ public class IntrebariRasp
     public virtual Materie Materie { get; set; }
     
     public virtual ICollection<Variante>? Variante { get; set; }
-
-    
-
-
 }

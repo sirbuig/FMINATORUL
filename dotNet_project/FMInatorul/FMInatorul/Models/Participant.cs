@@ -14,5 +14,7 @@ namespace FMInatorul.Models
         // 1:1
         public int StudentId { get; set; }
         public Student Student { get; set; }
+
+        public int Score { get; set; }
     }
 }
