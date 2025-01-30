@@ -8,8 +8,8 @@
             };
 }
 
-<h1 style="text-align:center;"><span style="color:white">Quiz</span>  
-</h1>
+<h1 class="text-center text-white">Quiz</h1>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var approvedProfessor = document.getElementById("approved_professor");
@@ -20,18 +20,20 @@
     });
 </script>
 
-<div class="card h-100 shadow-sm" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px); text-align:center;">
+<div class="card h-100 shadow-sm text-center" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px);">
     <p id="progress">Întrebări completate: 0 din @Model.Count</p>
 </div>
 
-<div id="quiz-container">
-    <!-- Întrebările vor fi generate aici din JavaScript -->
+<div id="quiz-container"></div>
+
+<div id="approved_professor" class="mt-3">
+    <img src="~/images/check.svg" height="25px" width="25px" style="filter: invert(88%) sepia(56%) saturate(5043%) hue-rotate(34deg) brightness(101%) contrast(101%);">
+    <span class="text-white">All the questions have been approved by a professor.</span>
 </div>
-<div id="approved_professor" >
-    <img src="~/images/check.svg" height="25px" width="25px" style="filter: filter: invert(88%) sepia(56%) saturate(5043%) hue-rotate(34deg) brightness(101%) contrast(101%);">
-    <span style="color: white;">All the questions have been approved by a professor.</span>
-</div>
-<button id="next-question" onclick="showNextQuestion()" style="display:none;">Următoarea întrebare</button>
+
+<button id="next-question" onclick="showNextQuestion()" style="display:none; margin-top:10px;" class="btn btn-primary">Următoarea întrebare</button>
+
+<p id="score" class="text-center mt-3" style="display: none; font-weight: bold;"></p>
 
 <script>
     var questions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model, jsonSettings));
@@ -40,8 +42,16 @@
 
     function loadQuestion(index) {
         if (index >= questions.length) {
-            document.getElementById('quiz-container').innerHTML = '<p>Ai completat toate întrebările! Felicitări!</p>';
+            var container = document.getElementById('quiz-container');
+            container.innerHTML = `
+                <div class="card shadow-sm p-4 text-center" style="background: rgba(241, 241, 241, 0.7); backdrop-filter: blur(4px); margin-top: 20px;">
+                    <h2 class="mb-3">Felicitări!</h2>
+                    <p class="fs-5">Ai completat toate întrebările!</p>
+                    <p class="fs-5 fw-bold">Scor final: ${correctAnswers} din ${questions.length}</p>
+                </div>
+            `;
             document.getElementById('next-question').style.display = 'none';
+            document.getElementById('score').style.display = 'none';
             return;
         }
 
@@ -49,40 +59,47 @@
         var container = document.getElementById('quiz-container');
 
         container.innerHTML = `
-                    <div class="card h-100 shadow-sm" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px);">
-
-                    <div class="card-body d-flex flex-column">
-                <h2>${question.intrebare}</h2>
-                <ul>
-                    ${question.Variante.map(v => `
-                        <li>
-                            <input type="radio" name="variant" value="${v.Id}" /> ${v.Choice}
-                        </li>
-                    `).join('')}
-                </ul>
-                <button onclick="checkAnswer()">Verifică răspunsul</button>
+            <div class="card h-100 shadow-sm p-3" style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px);">
+                <div class="card-body">
+                    <h2>${question.intrebare}</h2>
+                    <ul id="options" class="list-unstyled">
+                        ${question.Variante.map(v =>
+                            `<li class="option-item" data-id="${v.Id}" onclick="selectAnswer(this, ${v.Id})">
+                                ${v.Choice}
+                            </li>`
+                        ).join('')}
+                    </ul>
+                    <button onclick="checkAnswer()" class="btn btn-success">Verifică răspunsul</button>
                 </div>
-                </div>
-            `;
+            </div>
+        `;
         updateProgress();
-       
+    }
+
+    function selectAnswer(element, id) {
+        document.querySelectorAll('.option-item').forEach(el => {
+            el.classList.remove('selected', 'correct', 'incorrect', 'highlight');
+        });
+        element.classList.add('selected', 'highlight');
+        element.setAttribute('data-selected', id);
     }
 
     function checkAnswer() {
-        var selectedVariant = document.querySelector('input[name="variant"]:checked');
-        if (!selectedVariant) {
+        var selectedElement = document.querySelector('.option-item.selected');
+        if (!selectedElement) {
             alert('Te rog să selectezi o variantă.');
             return;
         }
 
-        var variantId = parseInt(selectedVariant.value);
-        var correctVariant = questions[currentIndex].Variante.find(v => v.VariantaCorecta == 1);
-        console.log(correctVariant)
-        if (correctVariant && correctVariant.Id == variantId) {
+        var selectedId = parseInt(selectedElement.getAttribute('data-selected'));
+        var correctVariant = questions[currentIndex].Variante.find(v => v.VariantaCorecta === 1);
+
+        if (correctVariant.Id === selectedId) {
+            selectedElement.classList.add('correct');
             correctAnswers++;
-            alert('Răspuns corect!');
         } else {
-            alert('Răspuns greșit.');
+            selectedElement.classList.add('incorrect');
+            document.querySelector(`.option-item[data-id="${correctVariant.Id}"]`).classList.add('correct');
         }
 
         document.getElementById('next-question').style.display = 'inline';
@@ -93,9 +110,45 @@
         document.getElementById('next-question').style.display = 'none';
         loadQuestion(currentIndex);
     }
+
     function updateProgress() {
         document.getElementById('progress').innerText = `Întrebări completate: ${currentIndex + 1} din ${questions.length}`;
     }
-    // Initialize first question
+
     loadQuestion(currentIndex);
 </script>
+
+<style>
+    .option-item {
+        cursor: pointer;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px 0;
+        transition: background-color 0.3s, border 0.3s;
+    }
+
+    .option-item.selected {
+        background-color: #f0f0f0;
+    }
+
+    .option-item.correct {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .option-item.incorrect {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .option-item.highlight {
+        border: 3px solid #ffa500;
+    }
+
+    .card.shadow-sm.p-4.text-center {
+        max-width: 600px;
+        margin: 40px auto;
+        border-radius: 10px;
+    }
+</style>
