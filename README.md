@@ -15,7 +15,6 @@ https://github.com/MihaiB-dev/api-pdf-gemini
 `UNLIKE` traditional study apps that only offer static content or generic quizzes   
 `OUR PRODUCT` uses AI to generate dynamic quizzes based on uploaded PDFs,
 allows subject-specific quiz participation, 
-tracks incorrect answers for improvement, 
 and supports collaborative learning in virtual rooms with real-time interactions.
 
 ## User problem and solution
@@ -26,7 +25,7 @@ This is a short summary:
 
 `Problem: Overwhelming and Ineffective study resources: `
 
-Students like Mirel, who prefer quick and easy study methods, and Bursarescu, who seek advanced learning tools, face challenges with traditional resources. Mirel struggles with long, dense materials, while Bursarescu finds standard resources too basic. Their professor, Schiorel, lacks tools to identify student weaknesses and adapt teaching effectively.
+Students like Mirel, who prefer quick and easy study methods, and Bursarescu, who seek advanced learning tools, face challenges with traditional resources. Mirel struggles with long, dense materials, while Bursarescu finds standard resources too basic.
 
 `Solution: Personalized and Interactive Learning: `  
 
@@ -214,3 +213,10 @@ For the Main-app we used rules for the main branch and we did a pull-request and
 Here is a part of our tree branch history:
 
 ![Branches](Backlog/images/branches.png)
+
+## Maintenance 
+
+We use google cloud for storing the AI-API, thus we pay monthly for a VPS with 2 GB RAM. Moreover, we use google cloud
+bucket for managing files sent between GEMINI AI and our API. 
+
+The costs of running the app resumes to that of the API. 
