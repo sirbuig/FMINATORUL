@@ -215,7 +215,7 @@ public static class SeedData
                     },
                     new Materie
                     {
-                        nume = "Programare oritentata pe obiecte",
+                        nume = "Programare orientata pe obiecte",
                         anStudiu = 1,
                         semestru = 2,
                         descriere = "Materia pune accent pe dezvoltarea abilităților de a gândi și a structura programele într-un mod modular și reutilizabil, utilizând conceptele POO pentru a crea soluții eficiente și robuste la problemele de programare.",
