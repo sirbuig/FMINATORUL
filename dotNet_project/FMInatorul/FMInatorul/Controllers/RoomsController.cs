@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Specialized;
 using System.Text.Json;
 
 namespace FMInatorul.Controllers
@@ -17,7 +15,11 @@ namespace FMInatorul.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IHubContext<RoomHub> _roomHubContext;
 
-        public RoomsController(ApplicationDbContext context, IHubContext<RoomHub> roomHubContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public RoomsController(
+            ApplicationDbContext context,
+            IHubContext<RoomHub> roomHubContext,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _roomHubContext = roomHubContext;
@@ -25,8 +27,13 @@ namespace FMInatorul.Controllers
             _roleManager = roleManager;
         }
 
-        // to help map the JSON request
+        // JSON binding
         public class JoinRoomRequest
+        {
+            public string Code { get; set; }
+        }
+
+        public class StartGameRequest
         {
             public string Code { get; set; }
         }
@@ -34,7 +41,7 @@ namespace FMInatorul.Controllers
         [HttpPost]
         public async Task<IActionResult> JoinRoom([FromBody] JoinRoomRequest request)
         {
-            // use ApplicationUser to get identity user id
+            // get identity user id
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
@@ -48,8 +55,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-            .Include(s => s.ApplicationUser)
-            .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+                .Include(s => s.ApplicationUser)
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return BadRequest(new { success = false, message = "No student profile found!" });
@@ -63,9 +70,9 @@ namespace FMInatorul.Controllers
                 return Json(new { success = false, message = "Room not found" });
             }
 
-            // join the room
+            // join the room if not already
             var participantExists = await _context.Participants
-                                .AnyAsync(p => p.RoomId == room.RoomId && p.StudentId == student.Id);
+                .AnyAsync(p => p.RoomId == room.RoomId && p.StudentId == student.Id);
             if (!participantExists)
             {
                 var participant = new Participant
@@ -77,9 +84,8 @@ namespace FMInatorul.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var firstName = student.ApplicationUser.FirstName;
-            var lastName = student.ApplicationUser.LastName;
-            var fullName = $"{firstName} {lastName}";
+            var fullName = $"{student.ApplicationUser.FirstName} {student.ApplicationUser.LastName}";
+
             // notify the room
             await _roomHubContext.Clients.Group(room.Code)
                 .SendAsync("UserJoined", fullName);
@@ -96,15 +102,11 @@ namespace FMInatorul.Controllers
                 return BadRequest("Invalid data.");
             }
 
-            int materieId;
-            if (!int.TryParse(request.Code, out materieId))
+            if (!int.TryParse(request.Code, out int materieId))
             {
                 return BadRequest("Invalid Materie ID.");
             }
 
-            Console.WriteLine("am ajuns si aici");
-            materieId = int.Parse(request.Code);
-            Console.WriteLine(materieId);
             // Căutăm materia în baza de date
             var materie = await _context.Materii.FindAsync(materieId);
             if (materie == null)
@@ -121,8 +123,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-           .Include(s => s.ApplicationUser)
-           .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+                .Include(s => s.ApplicationUser)
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return Json(new { success = false, message = "No student profile found!" });
@@ -133,10 +135,16 @@ namespace FMInatorul.Controllers
             do
             {
                 code = new Random().Next(100000, 999999).ToString();
-            } while (await _context.Rooms.AnyAsync(r => r.Code == code));
+            }
+            while (await _context.Rooms.AnyAsync(r => r.Code == code));
 
             // create & save room
-            var room = new Room { Code = code , MaterieID = materieId, Materie = materie};
+            var room = new Room
+            {
+                Code = code,
+                MaterieID = materieId,
+                Materie = materie
+            };
 
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
@@ -150,6 +158,7 @@ namespace FMInatorul.Controllers
             _context.Participants.Add(participant);
             await _context.SaveChangesAsync();
 
+            // Return the random code so the client can join
             return Json(new { code });
         }
 
@@ -165,8 +174,8 @@ namespace FMInatorul.Controllers
 
             // find the student profile
             var student = await _context.Students
-           .Include(s => s.ApplicationUser)
-           .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+                .Include(s => s.ApplicationUser)
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
             if (student == null)
             {
                 return Json(new { success = false, message = "No student profile found!" });
@@ -201,13 +210,11 @@ namespace FMInatorul.Controllers
 
             // notify via SignalR
             var fullName = $"{student.ApplicationUser.FirstName} {student.ApplicationUser.LastName}";
-
             await _roomHubContext.Clients.Group(code)
                 .SendAsync("UserLeft", fullName);
 
             return Json(new { success = true, message = "You have left the room." });
         }
-
 
         public IActionResult Index()
         {
@@ -242,28 +249,64 @@ namespace FMInatorul.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StartGame([FromBody] string code)
+        public async Task<IActionResult> StartGame([FromBody] StartGameRequest request)
         {
-            // find the room
+            if (request == null || string.IsNullOrEmpty(request.Code))
+            {
+                return Json(new { success = false, message = "Missing or invalid room code." });
+            }
+
+            var code = request.Code;
+
+            // find the room by code
             var room = await _context.Rooms
                 .Include(r => r.Participants)
                     .ThenInclude(p => p.Student)
                         .ThenInclude(s => s.ApplicationUser)
                 .FirstOrDefaultAsync(r => r.Code == code);
+
             if (room == null)
             {
                 return Json(new { success = false, message = "Room not found" });
             }
 
+            // get all questions for the Room's materie
+            var questions = await _context.IntrebariRasps
+                .Include(q => q.Variante)
+                .Where(q => q.MaterieId == room.MaterieID)
+                .ToListAsync();
+
+            if (!questions.Any())
+            {
+                return Json(new { success = false, message = "No questions found for this Materie." });
+            }
+
+            // init in-memory game state
+            InMemoryGameState.RoomGameStates[code] = new GameState
+            {
+                Questions = questions,
+                CurrentQuestionIndex = 0,
+                IsGameActive = true
+            };
+
+            // broadcast events
             await _roomHubContext.Clients.Group(code)
                 .SendAsync("StartGame");
+
+            await _roomHubContext.Clients.Group(code)
+                .SendAsync("TriggerNextQuestion");
 
             return Json(new { success = true, message = "Game started" });
         }
 
-        public IActionResult Game()
+        public IActionResult Game(string code)
         {
-            return View();
+            var room = _context.Rooms.FirstOrDefault(r => r.Code == code);
+            if (room == null)
+            {
+                return NotFound("Room does not exist.");
+            }
+            return View(room);
         }
     }
 }
