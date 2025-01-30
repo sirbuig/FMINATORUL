@@ -40,16 +40,82 @@
 
         #leaderboardContainer {
             display: none;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.7);
+        }
+
+        #leaderboardContainer h3 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 8px rgba(255, 215, 0, 0.6);
         }
 
         #leaderboardContainer ul {
             list-style: none;
             padding: 0;
+            margin-top: 10px;
         }
 
         #leaderboardContainer li {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+            background-color: #444;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ddd;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #leaderboardContainer li:hover {
+            transform: scale(1.05);
+            background-color: #555;
+        }
+
+        .first-place {
+            color: #FFD700 !important;
+            font-size: 1.4rem;
+            text-shadow: 0px 0px 8px rgba(255, 215, 0, 0.7);
+        }
+
+        .second-place {
+            color: #C0C0C0 !important;
+            font-size: 1.3rem;
+            text-shadow: 0px 0px 6px rgba(192, 192, 192, 0.7);
+        }
+
+        .third-place {
+            color: #CD7F32 !important;
+            font-size: 1.2rem;
+            text-shadow: 0px 0px 5px rgba(205, 127, 50, 0.7);
+        }
+
+        .default-rank {
+            color: #ddd;
+        }
+
+        #exitGameBtn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 0px 8px rgba(220, 53, 69, 0.7);
+        }
+
+        #exitGameBtn:hover {
+            background-color: #a71d2a !important;
+            box-shadow: 0px 0px 12px rgba(220, 53, 69, 1);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -153,11 +219,19 @@
         function displayLeaderboard(leaderboard) {
             document.getElementById("questionContainer").style.display = "none";
 
-            let html = "<h3>Final Leaderboard</h3>";
+            let html = "<h3>🏆 Final Leaderboard 🏆</h3>";
             html += "<ul>";
-            for (let entry of leaderboard) {
-                html += `<li><strong>${entry.fullName}</strong> - ${entry.score} points</li>`;
-            }
+
+            leaderboard.forEach((entry, index) => {
+                let rankClass = "default-rank";
+
+                if (index === 0) rankClass = "first-place";
+                else if (index === 1) rankClass = "second-place";
+                else if (index === 2) rankClass = "third-place";
+
+                html += `<li class="${rankClass}"><strong>${entry.fullName}</strong> - ${entry.score} points</li>`;
+            });
+
             html += "</ul>";
 
             html += `
@@ -171,6 +245,8 @@
             lb.style.display = "block";
 
             const exitBtn = document.getElementById("exitGameBtn");
+            exitBtn.classList.add("btn-danger");
+            exitBtn.style.backgroundColor = "#dc3545";
             exitBtn.addEventListener("click", exitGame);
         }
 
