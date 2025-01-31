@@ -25,6 +25,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Participant> Participants { get; set; }
 
+    // mistakes
+    public DbSet<StudentMistake> StudentMistakes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -41,5 +44,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne<IntrebariRasp>(a => a.IntrebariRasp)
             .WithMany(c => c.Variante)
             .HasForeignKey(a => a.IntrebariRaspId);
+
+        // StudentMistake -> Student
+        modelBuilder.Entity<StudentMistake>()
+            .HasOne(sm => sm.Student)
+            .WithMany(s => s.StudentMistakes)
+            .HasForeignKey(sm => sm.StudentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // StudentMistake -> Intrebare
+        modelBuilder.Entity<StudentMistake>()
+           .HasOne(sm => sm.Intrebare)
+           .WithMany()
+           .HasForeignKey(sm => sm.IntrebareId)
+           .OnDelete(DeleteBehavior.Restrict);
     }
 }

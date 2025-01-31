@@ -24,15 +24,19 @@
                 <div class="form-container">
 
                     <div class="materii-container">
-                        <label for="materiiDropdown" class="text-white">Alege Materia:</label>
-                        <select id="materiiDropdown" name="SelectedMaterieId">
-                            <option value="" disabled selected>Selectează o materie</option>
-                            @foreach (var materie in materii)
-                            {
-                                <option value="@materie.Id">@materie.nume</option>
-                            }
-                        </select>
+                        <label for="materiiDropdown" class="dropdown-label">Alege Materia:</label>
+                        <div class="custom-dropdown">
+                            <select id="materiiDropdown" name="SelectedMaterieId" class="styled-dropdown">
+                                <option value="" disabled selected>Selectează o materie</option>
+                                @foreach (var materie in materii)
+                                {
+                                    <option value="@materie.Id">@materie.nume</option>
+                                }
+                            </select>
+                            <div class="dropdown-arrow"></div>
+                        </div>
                     </div>
+
                     <div class="form-actions">
                         <button type="submit" id="hostRoom" class="page-btn">Creează Joc</button>
                     </div>
@@ -57,9 +61,10 @@
         </div>
 
         <div id="materialsQuestion" style="display: none;">
-            <p class="text-white"><h2>Ai vrea să joci cu materialele proprii sau să le încerci pe cele deja existente?</h2></p>
+            <p class="text-white"><h2>Ai vrea să joci cu materialele proprii, să le încerci pe cele deja existente sau să exersezi greșelile?</h2></p>
             <button type="button" id="myMaterials" class="page-btn">Am propriile mele materiale.</button>
-            <button type="button" id="yourMaterials" class="page-btn" onclick="window.location.href='/Students/MateriiSingle'">As vrea să le încerci pe cele deja existente.</button>
+            <button type="button" id="yourMaterials" class="page-btn" onclick="window.location.href='/Students/MateriiSingle'">As vrea să le încerc pe cele deja existente.</button>
+			<button type="button" id="practiceMistakes" class="page-btn" onclick="window.location.href='/Students/PracticeMistakes'">Vreau să exersez greșelile.</button>
         </div>
 
         <div id="materialsForm" style="display: none;">

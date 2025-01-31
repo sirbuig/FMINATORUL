@@ -62,11 +62,11 @@ There are other diagrams such as : [flowchart](Backlog/Flowchart.png), [database
 
 - [x] **Feedback System:** Provide feedback at the end of each quiz, indicating which answers were correct and which were incorrect.
 
+- [x] **Collaborative Quiz Rooms:** Create virtual rooms where students can participate in quizzes together in real-time.
+
+- [x] **Error Tracking:** Centralize incorrect answers across quizzes and allow users to review them for a better understanding of the course.
+
 - [ ] (50%) **PDF Sectional Quiz Generation:** Split uploaded PDFs into sections and generate specific questions for each section.
-
-- [ ] (50%) **Collaborative Quiz Rooms:** Create virtual rooms where students can participate in quizzes together in real-time.
-
-- [ ] **Error Tracking:** Centralize incorrect answers across quizzes and allow users to review them for a better understanding of the course.
 
 ## Non-functional architecture tasks:
 

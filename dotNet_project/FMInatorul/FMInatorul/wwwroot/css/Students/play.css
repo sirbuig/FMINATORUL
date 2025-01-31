@@ -143,3 +143,67 @@ h2 {
     font-weight: bold;
     margin-top: 10px;
 }
+
+.materii-container {
+    text-align: center;
+    margin: 20px auto;
+}
+
+.dropdown-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #3f51b5;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.styled-dropdown {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #3f51b5;
+    background-color: white;
+    color: black;
+    appearance: none;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+}
+
+.styled-dropdown:hover {
+    border-color: #28377d;
+    box-shadow: 0px 0px 8px rgba(63, 81, 181, 0.5);
+}
+
+.styled-dropdown:focus {
+    border-color: #28377d;
+    box-shadow: 0px 0px 12px rgba(63, 81, 181, 0.8);
+}
+
+.dropdown-arrow {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid #3f51b5;
+    border-bottom: 3px solid #3f51b5;
+    transform: rotate(-45deg);
+    pointer-events: none;
+}
+
+.custom-dropdown select {
+    padding-right: 40px;
+}
+
