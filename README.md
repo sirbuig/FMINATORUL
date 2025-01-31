@@ -214,6 +214,36 @@ Here is a part of our tree branch history:
 
 ![Branches](Backlog/images/branches.png)
 
+## Docker
+Make sure you have Docker Desktop or Docker Engine installed. 
+
+### Step 1
+Navigate to the project directory where `docker-compose.yml` is located.
+
+### Step 2
+Run the containers:
+
+```
+docker-compose build
+```
+
+### Step 3
+Start the containers: 
+
+```
+docker-compose up -d
+```
+
+### Step 4
+Check that the containers are running:
+
+```
+docker ps
+```
+
+### Step 5
+Now the app should be accessible at `http://localhost:8080`.
+
 ## Maintenance 
 
 We use google cloud for storing the AI-API, thus we pay monthly for a VPS with 2 GB RAM. Moreover, we use google cloud
