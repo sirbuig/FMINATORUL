@@ -1,0 +1,197 @@
+﻿@model List<FMInatorul.Models.PracticeQuestionViewModel>
+
+@{
+    ViewData["Title"] = "Exerseaza greselile!";
+
+    var jsonSettings = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            };
+    var serializedQuestions = Newtonsoft.Json.JsonConvert.SerializeObject(Model, jsonSettings);
+}
+
+<h1 class="text-center text-white">Exerseaza greselile!</h1>
+
+<div class="card h-100 shadow-sm text-center"
+     style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px);">
+    <p id="progress">Întrebări completate: 0 din @Model.Count</p>
+</div>
+
+<div id="practice-container"></div>
+
+<button id="next-question"
+        style="display:none; margin-top:10px;"
+        class="btn btn-primary"
+        onclick="showNextPracticeQuestion()">
+    Următoarea întrebare
+</button>
+
+<p id="score" class="text-center mt-3" style="display: none; font-weight: bold;"></p>
+
+<script>
+    var questions = @Html.Raw(serializedQuestions);
+    console.log(questions);
+
+    var currentIndex = 0;
+    var selectedVariantId = null;
+
+    var correctAnswers = 0;
+
+    function loadPracticeQuestion(index) {
+        if (index >= questions.length) {
+            endPractice();
+            return;
+        }
+
+        updateProgress();
+
+        var q = questions[index];
+        var container = document.getElementById('practice-container');
+
+        container.innerHTML = `
+            <div class="card h-100 shadow-sm p-3"
+                 style="background: rgba(241, 241, 241, 0.4); backdrop-filter: blur(4px); margin-top:20px;">
+                <div class="card-body">
+                    <h2>${q.Intrebare}</h2>
+                    <ul id="options" class="list-unstyled">
+                        ${q.Variante.map(v => `
+                            <li class="option-item"
+                                data-id="${v.Id}"
+                                onclick="selectAnswer(this, ${v.Id})">
+                                ${v.Choice}
+                            </li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="checkPracticeAnswer(${q.Id})" class="btn btn-success">
+                        Verifică răspunsul
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateProgress() {
+        document.getElementById('progress').innerText =
+            `Întrebări completate: ${currentIndex} din ${questions.length}`;
+    }
+
+    function selectAnswer(element, variantId) {
+        document.querySelectorAll('.option-item').forEach(el => {
+            el.classList.remove('selected', 'correct', 'incorrect', 'highlight');
+        });
+        element.classList.add('selected', 'highlight');
+        selectedVariantId = variantId;
+    }
+
+    function checkPracticeAnswer(questionId) {
+        if (!selectedVariantId) {
+            alert('Te rog să selectezi o variantă.');
+            return;
+        }
+
+        var q = questions[currentIndex];
+        var correctVar = q.Variante.find(v => v.VariantaCorecta === 1);
+        var selectedEl = document.querySelector('.option-item.selected');
+
+        if (correctVar && correctVar.Id === selectedVariantId) {
+            selectedEl.classList.add('correct');
+            correctAnswers++;
+
+            fetch('/Students/MarkMistakeResolved?questionId=' + questionId, {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => console.log('Mistake cleared:', data))
+            .catch(err => console.error(err));
+
+        } else {
+            selectedEl.classList.add('incorrect');
+            var correctEl = document.querySelector(`.option-item[data-id="${correctVar.Id}"]`);
+            if (correctEl) correctEl.classList.add('correct');
+        }
+
+        document.getElementById('next-question').style.display = 'inline';
+    }
+
+    function showNextPracticeQuestion() {
+        currentIndex++;
+        selectedVariantId = null;
+        document.getElementById('next-question').style.display = 'none';
+        loadPracticeQuestion(currentIndex);
+        updateProgress();
+    }
+
+
+    function endPractice() {
+        var container = document.getElementById('practice-container');
+        container.innerHTML = `
+            <div class="card shadow-sm p-4 text-center"
+                 style="background: rgba(241, 241, 241, 0.7);
+                        backdrop-filter: blur(4px);
+                        margin-top: 20px;">
+                <p class="fs-5">Ai parcurs toate întrebările cu greșeli!</p>
+                <p class="fs-5 fw-bold">
+                    Răspunsuri corecte: ${correctAnswers} din ${questions.length}
+                </p>
+                <p class="fs-5" id="mistakes-left"></p>
+            </div>
+        `;
+
+        document.getElementById('next-question').style.display = 'none';
+
+        checkRemainingMistakes();
+    }
+
+    function checkRemainingMistakes() {
+        fetch('/Students/GetMistakesCount', {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        .then(data => {
+            var mistakesLeftEl = document.getElementById('mistakes-left');
+            if (data.count > 0) {
+                mistakesLeftEl.innerText = `Inca mai ai ${data.count} greseli.`;
+            } else {
+                mistakesLeftEl.innerText = 'Felicitari! Esti la zi cu materia!';
+            }
+        })
+        .catch(err => console.error('Error checking remaining mistakes:', err));
+    }
+
+    loadPracticeQuestion(currentIndex);
+</script>
+
+<style>
+    .option-item {
+        cursor: pointer;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 5px 0;
+        transition: background-color 0.3s, border 0.3s;
+    }
+
+    .option-item.selected {
+        background-color: #f0f0f0;
+    }
+
+    .option-item.correct {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .option-item.incorrect {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .option-item.highlight {
+        border: 3px solid #ffa500;
+    }
+
+    .card.shadow-sm.p-4.text-center {
+        max-width: 600px;
+        margin: 40px auto;
+        border-radius: 10px;
+    }
+</style>

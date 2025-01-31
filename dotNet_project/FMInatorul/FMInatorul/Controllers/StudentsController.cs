@@ -28,8 +28,15 @@ namespace FMInatorul.Controllers
 			_roleManager = roleManager;
 		}
 
-		// Returns the index view for students.
-		public async Task<IActionResult> Index()
+        public class QuizAnswerDto
+        {
+            public int questionId { get; set; }
+            public int selectedVariantId { get; set; }
+            public int correctVariantId { get; set; }
+        }
+
+        // Returns the index view for students.
+        public async Task<IActionResult> Index()
 		{
 			var user = await _userManager.GetUserAsync(User);
 			if (user == null)
@@ -387,7 +394,110 @@ namespace FMInatorul.Controllers
 
 			return View(intrebari);
         }
-       
 
+        [HttpPost]
+        public async Task<IActionResult> SaveSingleplayerResults([FromBody] List<QuizAnswerDto> answers)
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            foreach (var ans in answers)
+            {
+                if (ans.selectedVariantId != ans.correctVariantId)
+                {
+                    bool alreadyExists = await db.StudentMistakes
+                        .AnyAsync(m => m.StudentId == student.Id && m.IntrebareId == ans.questionId);
+
+                    if (!alreadyExists)
+                    {
+                        var mistake = new StudentMistake
+                        {
+                            StudentId = student.Id,
+                            IntrebareId = ans.questionId
+						};
+                        db.StudentMistakes.Add(mistake);
+                    }
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+        public async Task<IActionResult> PracticeMistakes()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+            if (student == null) return NotFound("Student not found.");
+
+            var mistakes = await db.StudentMistakes
+                .Where(m => m.StudentId == student.Id)
+                .Include(m => m.Intrebare)
+                    .ThenInclude(q => q.Variante)
+                .ToListAsync();
+
+            var distinctQuestions = mistakes
+                .Select(m => m.Intrebare)
+                .Distinct()
+                .ToList();
+
+            System.Diagnostics.Debug.WriteLine($"Found {mistakes.Count} mistakes for student {student.Id}");
+
+            var model = distinctQuestions.Select(q => new PracticeQuestionViewModel
+            {
+                Id = q.Id,
+                Intrebare = q.intrebare,
+                Variante = q.Variante.Select(v => new PracticeVariantViewModel
+                {
+                    Id = v.Id,
+                    Choice = v.Choice,
+                    VariantaCorecta = v.VariantaCorecta
+                }).ToList()
+            }).ToList();
+
+            return View("PracticeMistakes", model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> MarkMistakeResolved(int questionId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students
+                .FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            var mistakes = db.StudentMistakes
+                .Where(m => m.StudentId == student.Id && m.IntrebareId == questionId);
+
+            db.StudentMistakes.RemoveRange(mistakes);
+
+            await db.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMistakesCount()
+        {
+            var userId = _userManager.GetUserId(User);
+            var student = await db.Students.FirstOrDefaultAsync(s => s.ApplicationUserId == userId);
+
+            if (student == null)
+            {
+                return Json(new { count = 0 });
+            }
+
+            var count = await db.StudentMistakes.CountAsync(m => m.StudentId == student.Id);
+
+            return Json(new { count = count });
+        }
     }
 }

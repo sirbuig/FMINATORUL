@@ -17,5 +17,7 @@ namespace FMInatorul.Models
         public int Semester { get; set; }
         public int FacultateID { get; set; }
         public virtual Facultate Facultate { get; set; }
+
+        public virtual ICollection<StudentMistake> StudentMistakes { get; set; }
     }
 }
