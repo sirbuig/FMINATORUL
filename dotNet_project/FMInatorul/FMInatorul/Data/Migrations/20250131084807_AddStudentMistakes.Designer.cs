@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FMInatorul.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250130234511_AddStudentMistake")]
-    partial class AddStudentMistake
+    [Migration("20250131084807_AddStudentMistakes")]
+    partial class AddStudentMistakes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

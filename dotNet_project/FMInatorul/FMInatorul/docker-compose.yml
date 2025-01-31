@@ -1,0 +1,26 @@
+services:
+  webapp:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: FMInatorul_App
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=FMInatorul;User=sa;Password=Str0ngP@ssw0rd;
+      - API_PASSWORD=p4ssw0rd # placeholder password
+    command: >
+        /bin/sh -c "dotnet ef database update && dotnet FMInatorul.dll"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: FMInatorul_SqlServer
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Str0ngP@ssw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
